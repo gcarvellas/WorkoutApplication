@@ -1,0 +1,20 @@
+{
+  "name": "workout_application",
+  "version": "1.0.0",
+  "description": "CS-546-A Final Project: Workout Application",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gcarvellas/WorkoutApplication.git"
+  },
+  "author": "George Carvellas, Caroline RUiz Nunez, Adam Anikiej, Steven Lee",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gcarvellas/WorkoutApplication/issues"
+  },
+  "homepage": "https://github.com/gcarvellas/WorkoutApplication#readme"
+}
