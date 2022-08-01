@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/gcarvellas/WorkoutApplication/issues"
   },
-  "homepage": "https://github.com/gcarvellas/WorkoutApplication#readme"
+  "homepage": "https://github.com/gcarvellas/WorkoutApplication#readme",
+  "dependencies": {
+    "mongodb": "^4.8.1"
+  }
 }
