@@ -8,6 +8,43 @@ const WORKOUT_OBJECT_KEYS = Object.freeze(["_id", "name", "author", "intensity",
 const EXERCISES_OBJECT_KEYS = Object.freeze(["_id", "user", "name", "muscles"]);
 const EXERCISES_SUBOBJECT_KEYS = Object.freeze(["exerciseId", "sets", "repititions", "rest", "comment"]);
 
+function verifyString(str, errorMessage = undefined){
+    /**
+     * Verifies theree's content in the string
+     * @param str a string
+     * @param errorMessage (optional) If an error is thrown, adds name of variable to error message
+     * @return str valid string
+     * @throws Will throw a string if string is empty or undefined
+     */
+    if (typeof errorMessage === 'undefined'){
+        errorMessage = "string";
+    }
+    if (typeof str === "undefined") throw `${errorMessage} must be provided`;
+        if (typeof str !== "string") throw `${errorMessage} must be a string`;
+        str = str.trim();
+        if (str.length === 0) throw `${errorMessage} cannot be an empty string or just spaces`;
+        return str;
+}
+
+function verifyKeys(obj, keys){
+    /**
+     * Verify an object only contains a certain list of keys
+     * @param {Object} obj Object
+     * @param {String Array} keys the keys of the array
+     * @return {Object} input Object
+     * @throws Will throw an exception if there's a key that doesn't belong in the Object
+     */
+    if (typeof obj === "undefined") throw "Object must be provided";
+    if (typeof obj !== "object") throw  "Object input must be an object";
+
+    if (typeof keys === "undefined") throw "keys must be provided";
+    if (!Array.isArray(keys)) throw "Key array must be provided";
+
+    Object.keys(obj).forEach(function (val, i) {
+        if (!keys.includes(val)) throw `"The input \'${val}\' is not a valid input"`;
+    });
+}
+
 module.exports = {
     verifyUser(user){
         /**
@@ -26,16 +63,13 @@ module.exports = {
          * @throws Will throw an exception if Object is invalid
          */
         if (typeof user !== "object") throw "User must be an object";
-        this.verifyKeys(user, USER_OBJECT_KEYS);
+        verifyKeys(user, USER_OBJECT_KEYS);
         user._id = this.verifyID(user._id);
         user.userInfo = this.verifyUserInfo(user.userInfo);
         user.email = this.verifyEmail(user.email);
 
         //Verify hashed password
-        if (typeof user.hashedPassword === 'undefined') throw "Hashed password must be provided";
-        if (typeof user.hashedPassword !== "string") throw "Hashed password must be a string";
-        user.hashedPassword = user.hashedPassword.trim();
-        if (user.hashedPassword.length === 0) throw "Hashed password cannot be an empty string or just spaces";
+        user.hashedPassword = verifyString(user.hashedPassword, "Hashed password");
 
         //Verify user made workouts
         if (typeof user.userMadeWorkouts === 'undefined') throw "User made workouts must be provided";
@@ -87,16 +121,13 @@ module.exports = {
          * @return {String} Valid id
          * @throws Will throw an exception if ID is invalid
          */
-        if (typeof id === 'undefined') throw "ID must be provided";
-        if (typeof id !== "string") throw "ID must be a string";
-        id = id.trim();
-        if (id.length === 0) throw "ID cannot be an empty string or just spaces";
+        id = verifyString(id, "ID");
         if (!ObjectId.isValid(id)) throw "ID must be valid";
         return id;
     },
     verifyUserInfo(userInfo){
         /**
-         * Verifies a valid userInfo object. A userInfo object must contain:
+         * Verifies a valid userInfo object. A userInfo object contains:
          * firstName {String}
          * lastName {String} (optional)
          * birthDate {Date} (optional)
@@ -110,19 +141,14 @@ module.exports = {
          */
         if (typeof userInfo === 'undefined') throw "userInfo must be provided";
         if (typeof userInfo !== "object") throw "userInfo must be an object";
-        this.verifyKeys(userInfo, USER_INFO_OBJECT_KEYS);
+        verifyKeys(userInfo, USER_INFO_OBJECT_KEYS);
         
         //Verify first name
-        if (typeof userInfo.firstName === 'undefined') throw "First name must be provided";
-        if (typeof userInfo.firstName !== "string") throw "First name must be a string";
-        userInfo.firstName = userInfo.firstName.trim();
-        if (userInfo.firstName.length === 0) throw "First name cannot be an empty string or just spaces";
+        userInfo.firstName = verifyString(userInfo.firstName, "First name");
 
         //Verify last name (optional arg)
         if (typeof userInfo.lastName !== 'undefined'){
-            if (typeof userInfo.lastName !== "string") throw "Last name must be a string";
-            userInfo.lastName = userInfo.lastName.trim();
-            if (userInfo.lastName.length === 0) throw "Last name cannot be an empty string or just spaces";
+            userInfo.lastName = verifyString(userInfo.lastName, "Last name");
         }
 
         //Verify birth date (optional arg)
@@ -132,9 +158,7 @@ module.exports = {
         
         //Verify bio (optional arg)
         if (typeof userInfo.bio !== 'undefined'){
-            if (typeof userInfo.bio !== "string") throw "Bio must be a string";
-            userInfo.bio = userInfo.bio.trim();
-            if (userInfo.bio.length === 0) throw "Bio cannot be an empty string or just spaces";
+            userInfo.bio = verifyString(userInfo.bio, "Bio");
         }
 
         //Verify weight (optional arg)
@@ -157,7 +181,7 @@ module.exports = {
     },
     verifyWeight(weight){
         /**
-         * Verifies a valid weight.
+         * Verifies a valid weight. A weight is a positive integer.
          * @param {int} weight valid weight
          * @return {int} valid weight
          * @throws Will throw an exception if weight is invalid
@@ -198,29 +222,41 @@ module.exports = {
          * @return {String} valid email
          * @throws Will throw an exception if email is invalid
          */
-        if (typeof email === 'undefined') throw "Email must be provided";
-        if (typeof email !== "string") throw "Email must be a string";
-        email = email.trim();
-        if (email.length === 0) throw "Email cannot be an empty string or just spaces";
+        email = verifyString(email, "Email");
         if (email.match(EMAIL_REGEX)) return email;
         else throw "Email is invalid";
     },
-    verifyKeys(obj, keys){
+    verifyWorkoutName(workoutName){
         /**
-         * Verify an array only consists of the list of keys
-         * @param {Object} obj Object
-         * @param {String Array} keys the keys of the array
-         * @return {Object} input Object
-         * @throws Will throw an exception if there's a key that doesn't belong in the Object
+         * Verifies workout name. Workout name is a non-empty string.
+         * @param {String} workoutName the workout name
+         * @return {String} valid workout name
+         * @throws Will throw an exception if workout name is invalid
          */
-        if (typeof obj === "undefined") throw "Object must be provided";
-        if (typeof obj !== "object") throw  "Object input must be an object";
-
-        if (typeof keys === "undefined") throw "keys must be provided";
-        if (!Array.isArray(keys)) throw "Key array must be provided";
-
-        Object.keys(obj).forEach(function (val, i) {
-            if (!keys.includes(val)) throw `"The input \'${val}\' is not a valid input"`;
-        });
-    }       
+        return verifyString(workoutName, "Workout Name");
+    },
+    verifyWorkoutIntensity(workoutIntensity){
+        /**
+         * Verifies workout intensity. Workout intensity is an integer between 1-5.
+         * @param {int} workoutIntensity the workout intensity
+         * @return {int} Valid workout intensity
+         * @throws Will throw an exception if workout intensity is invalid
+         */
+        if (typeof workoutIntensity === "undefined") throw "Workout intensity must be provided";
+        if (!Number.isInteger(workoutIntensity)) throw "Workout intensity must be a number";
+        if (workoutIntensity < 1 || workoutIntensity > 5) throw "Workout intensity must be a value between 1 and 5.";
+        return workoutIntensity;
+    },
+    verifyWorkoutLength(workoutLength){
+        /**
+         * Verifies workout length. WOrkout length is a positive number that represents minutes.
+         * @param {int} workoutLength
+         * @return {int} valid workout length
+         * @throws Will throw an exception if workout length is invalid.
+         */
+        if (typeof workoutLength === "undefined") throw "Workout length must be provided";
+        if (!Number.isInteger(workoutLength)) throw "Workout length must be a number";
+        if (workoutLength <= 0) throw "Workout length must be a value greater than 0";
+        return workoutLength;
+    }
 }

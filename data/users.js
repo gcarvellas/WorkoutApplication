@@ -11,6 +11,9 @@ module.exports = {
     async checkUser(email, password){
         //TODO
     },
+    async getUser(_id){
+        //TODO
+    },
     async incrementTotalLikes(_id){
         //TODO
     },
