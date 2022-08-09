@@ -1,3 +1,5 @@
+const validation = require('./validation');
+
 module.exports = {
     /*
 workoutLog Object:
@@ -33,18 +35,13 @@ workoutLog Object:
     //  parentWorkout = Object (specifically a Workout object) contains _id, name, author, intensity, length, exercises, comments, usersLiked, and workoutType
     //  logInfo = Object contains date, intensity, length, exercises, and comment
     async createWorkoutLogFromWorkout(user, parentWorkout, logInfo){
-        //verify user is provided
-        if (!user) {
-            throw 'user must be provided.';
-        }
-        //verify user is an object
-        if (Array.isArray(user) || typeof(user) !== object) {
-            throw 'user must be object';
-        }
-        //verify user contains correct fields
-        if (!user._id) { //TODO: maybe verify all fields are correct
-            
-        }
+        //verify user
+        user = validation.verifyUser(user);
+        //verify parentWorkout
+        
+
+
+
 
         //verify parentWorkout is provided
         if (!parentWorkout) {

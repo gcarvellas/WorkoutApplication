@@ -4,7 +4,9 @@ const EMAIL_REGEX =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-
 const {ObjectId} = require('mongodb');
 const USER_OBJECT_KEYS = Object.freeze(["_id", "userInfo", "email", "hashedPassword", "userMadeWorkouts", "userLikedWorkouts", "totalLikesReceived", "totalCommentsReceived", "workoutLogs"]);
 const USER_INFO_OBJECT_KEYS = Object.freeze(["firstName", "lastName", "birthDate", "bio", "weight", "height", "frequencyOfWorkingOut"]);
-
+const WORKOUT_OBJECT_KEYS = Object.freeze(["_id", "name", "author", "intensity", "length", "exercises", "comments", "usersLiked", "workoutType"]);
+const EXERCISES_OBJECT_KEYS = Object.freeze(["_id", "user", "name", "muscles"]);
+const EXERCISES_SUBOBJECT_KEYS = Object.freeze(["exerciseId", "sets", "repititions", "rest", "comment"]);
 
 module.exports = {
     verifyUser(user){
@@ -164,6 +166,30 @@ module.exports = {
         if (!Number.isInteger(weight)) throw "Weight must be an integer";
         if (weight < 0) throw "Weight must be a positive value";
         return weight;
+    },
+    verifyWorkout(workout) {
+        /**
+         * Verifies Workout object. Workout object must contain:
+         * _id {String}
+         * name {String}
+         * author {String}
+         * intensity {Integer bounds: [0, 10]}
+         * length {Integer bounds [0, inf]}
+         * exercises {Object} contains valid exercise subobject
+         * comment {String}
+         * @param {Object} workout Valid workout object
+         * @return {Object} valid workout object
+         * @throws Will throw an exception if workout is invalid
+         */
+        if (typeof workout === undefined) throw "workout must be provided";
+        if (typeof workout !== "object") throw "workout must be an object";
+        this.verifyKeys(workout, WORKOUT_OBJECT_KEYS)
+
+        //verify _id 
+        this.verifyID(workout._id)
+
+        //verify name
+        if (typeof workout.name)
     },
     verifyEmail(email){
         /**
