@@ -28,17 +28,17 @@ function verifyString(str, errorMessage = undefined){
         return str;
 }
 
+/**
+ * Verifies number
+ * @param {Number} number a number of type numberType
+ * @param {String} [errorMessage=Number] (optional) If an error is thrown, adds name of variable to error message
+ * @param {String} [numberType=undefined] (optional) specify 'int' if number is an int, if not specified, just checks if number
+ * @param {Number} [lowerBound=undefined] (optional) lower bound for number (inclusive)
+ * @param {Number} [upperBound=undefined] (optional) upper bound for number (inclusive)
+ * @returns {Number} number valid number of numberType
+ * @throws Will throw a string if number is invalid or undefined
+ */
 function verifyNumber(number, errorMessage = undefined, numberType = undefined, lowerBound = undefined, upperBound = undefined) {
-    /**
-     * Verifies number
-     * @param {numberType} number a number of type numberType
-     * @param {String} [errorMessage=number] (optional) If an error is thrown, adds name of variable to error message
-     * @param {String} [numberType=undefined] (optional) specify 'int' if number is an int, if not specified, just checks if number
-     * @param {Number} [lowerBound=undefined] (optional) lower bound for number (inclusive)
-     * @param {Number} [upperBound=undefined] (optional) upper bound for number (inclusive)
-     * @returns {Number} number valid number of numberType
-     * @throws Will throw a string if number is invalid or undefined
-     */
     if (typeof errorMessage === 'undefined') {
         errorMessage = 'number';
     }
@@ -225,22 +225,22 @@ module.exports = {
         if (weight < 0) throw "Weight must be a positive value";
         return weight;
     },
+    /**
+     * Verifies Workout object. Workout object must contain:
+     * @param {String} _id
+     * @param {String} name
+     * @param {String} author
+     * @param {Integer} intensity bounds: [0, 5]
+     * @param {Integer} length bounds: (0, inf)
+     * @param {Object} exercises contains valid subexercise object
+     * @param {String} comments contains valid array of comment ids
+     * @param {String} usersLiked contains valid array of user ids
+     * @param {String} workoutType contains valid array of workoutTypes
+     * @param {Object} workout Valid workout object
+     * @return {Object} valid workout object
+     * @throws Will throw an exception if workout is invalid
+     */
     verifyWorkout(workout) {
-        /**
-         * Verifies Workout object. Workout object must contain:
-         * @param {String} _id
-         * @param {String} name
-         * @param {String} author
-         * @param {Integer bounds: [0, 5]} intensity
-         * @param {Integer bounds: (0, inf)} length
-         * @param {Object} exercises contains valid subexercise object
-         * @param {String ID Array} comments contains valid comment ids
-         * @param {String ID Array} usersLiked contains valid user ids
-         * @param {String Array} workoutType contains valid workoutTypes
-         * @param {Object} workout Valid workout object
-         * @return {Object} valid workout object
-         * @throws Will throw an exception if workout is invalid
-         */
         if (typeof workout === 'undefined') throw "workout must be provided";
         if (typeof workout !== "object") throw "workout must be an object";
         verifyKeys(workout, WORKOUT_OBJECT_KEYS)
@@ -292,25 +292,25 @@ module.exports = {
 
         return workout;
     },
+    /**
+     * Verifies a valid exercise (object from exercise collection)
+    */
     verifyExercises(exercises) {
-        /**
-         * Verifies a valid exercise (object from exercise collection)
-         */
         //TODO
     },
+    /**
+     * Verifies subExercises (which is contained in workout object and workoutLog object)
+     * @param {Object} subExercises
+     * @param {String} subExercises.exerciseId exercise id
+     * @param {Integer} subExercises.sets bounds: [1, inf]
+     * @param {Integer} subExercises.repetitions bounds: [1, inf]
+     * @param {Integer} subExercises.rest bounds: [0, inf]
+     * @param {Integer=} subExercises.weight (optional) bounds: [0, inf]
+     * @param {String=} subExercises.comment (optional) comment id
+     * @return {Object} valid subExercises object
+     * @throws Will throw an exception if there is an issue with any of the fields in subExercises
+    */
     verifySubExercise(subExercises) {
-        /**
-         * Verifies subExercises (which is contained in workout object and workoutLog object)
-         * @param {Object} subExercises
-         * @param {String ID} subExercises.exerciseId
-         * @param {Integer bounds: [1, inf]} subExercises.sets
-         * @param {Integer bounds: [1, inf]} subExercises.repetitions
-         * @param {Integer bounds: [0, inf]} subExercises.rest
-         * @param {Integer bounds: [0, inf]} [subExercises.weight] (optional)
-         * @param {String ID} [subExercises.comment] (optional)
-         * @return {Object} valid subExercises object
-         * @throws Will throw an exception if there is an issue with any of the fields in subExercises
-         */
         if (typeof subExercises === 'undefined') throw 'subExercises must be provided';
         if (!Array.isArray(exercises)) throw 'subExercises must be an array';
 
@@ -344,6 +344,32 @@ module.exports = {
         })
         
         return subExercises;
+    },
+    /**
+     * verifies log info
+     * @param {Object} logInfo 
+     * @param {Date} logInfo.date
+     * @param {Integer} logInfo.intensity bounds [0,5]
+     * @param {Integer} logInfo.length bounds [0, inf]
+     * @param {Object} logInfo.subExercises valid subExcerises object (contained in workout object and workoutLog object)
+     * @param {String=} logInfo.comment (optional)
+    */
+    verifyLogInfo(logInfo) {
+        if (typeof logInfo === 'undefined') throw 'logInfo must be provided';
+        //verify date
+        if (typeof logInfo.date === 'undefined') throw 'logInfo date must be provided';
+        if (Object.prototype.toString.call(logInfo.date) !== '[object Date]' || isNaN(logInfo.date)) throw 'logInfo date must be a date';
+        //verify intensity
+        logInfo.intensity = verifyNumber(logInfo.intensity, 'logInfo intensity', 'int', 0, 5);
+        //verify length
+        logInfo.length = verifyNumber(logInfo.length, 'logInfo length', 'int', 1);
+        //verify subExercises
+        logInfo.exercises = this.verifySubExercise(logInfo.exercises);
+        //verify comment
+        if (typeof logInfo.comment !== 'undefined') {
+            logInfo.comment = verifyString(logInfo.comment, 'logInfo comment id');
+            if (!ObjectId.isValid(logInfo.comment)) throw 'logInfo comment id must be valid';
+        }
     },
     verifyEmail(email){
         /**
