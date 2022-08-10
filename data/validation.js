@@ -1,14 +1,15 @@
 
 //Constants
 const EMAIL_REGEX =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-const {ObjectId} = require('mongodb');
+const UUID_V4_REGEX = /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/;
+const { v4 : uuidv4} = require('uuid');
 const USER_OBJECT_KEYS = Object.freeze(["_id", "userInfo", "email", "hashedPassword", "userMadeWorkouts", "userLikedWorkouts", "totalLikesReceived", "totalCommentsReceived", "workoutLogs"]);
 const USER_INFO_OBJECT_KEYS = Object.freeze(["firstName", "lastName", "birthDate", "bio", "weight", "height", "frequencyOfWorkingOut"]);
-const WORKOUT_OBJECT_KEYS = Object.freeze(["_id", "name", "author", "intensity", "length", "exercises", "comments", "usersLiked", "workoutType"]);
+const WORKOUT_OBJECT_KEYS = Object.freeze(["_id", "name", "author", "intensity", "length", "exercises", "comments", "usersLiked"]);
 const EXERCISES_OBJECT_KEYS = Object.freeze(["_id", "user", "name", "muscles"]);
-const SUBEXERCISES_OBJECT_KEYS = Object.freeze(["exerciseId", "sets", "repititions", "rest", "comment"]);
+const SUBEXERCISES_OBJECT_KEYS = Object.freeze(["exerciseId", "sets", "repititions", "rest", "note"]);
 
-const WORKOUTTYPES = ['chest', 'back', 'arms', 'abs', 'legs', 'shoulders']; //TODO, decide how we are handling muscleTypes
+const MUSCLE_GROUPS = ['chest', 'back', 'arms', 'abs', 'legs', 'shoulders'];
 
 function verifyString(str, errorMessage = undefined){
     /**
@@ -26,36 +27,6 @@ function verifyString(str, errorMessage = undefined){
         str = str.trim();
         if (str.length === 0) throw `${errorMessage} cannot be an empty string or just spaces`;
         return str;
-}
-
-/**
- * Verifies number
- * @param {Number} number a number of type numberType
- * @param {String} [errorMessage=Number] (optional) If an error is thrown, adds name of variable to error message
- * @param {String} [numberType=undefined] (optional) specify 'int' if number is an int, if not specified, just checks if number
- * @param {Number} [lowerBound=undefined] (optional) lower bound for number (inclusive)
- * @param {Number} [upperBound=undefined] (optional) upper bound for number (inclusive)
- * @returns {Number} number valid number of numberType
- * @throws Will throw a string if number is invalid or undefined
- */
-function verifyNumber(number, errorMessage = undefined, numberType = undefined, lowerBound = undefined, upperBound = undefined) {
-    if (typeof errorMessage === 'undefined') {
-        errorMessage = 'number';
-    }
-    if (typeof number === 'undefined') throw `${errorMessage} must be provided`;
-    if (typeof numberType === 'undefined') {
-        if (typeof number !== 'number') throw `${errorMessage} must be a number`;
-    } else if (typeof numberType === 'int') {
-        if (!Number.isInteger(number)) throw `${errorMessage} must be an integer`;
-    } else throw 'numberType can only have value "int" or "undefined"';
-    if (typeof lowerBound !== 'undefined') {
-        if (number < lowerBound) throw `${errorMessage} cannot be below ${lowerBound}`;
-    }
-    if (typeof upperBound !== 'undefined') {
-        if (number > upperBound) throw `${errorMessage} cannot be above ${upperBound}`;
-    }
-    
-    return number;
 }
 
 function verifyKeys(obj, keys){
@@ -226,17 +197,61 @@ module.exports = {
         return weight;
     },
     /**
+     * Verifies number
+     * @param {Number} number a number of type numberType
+     * @param {String} [errorMessage=Number] (optional) If an error is thrown, adds name of variable to error message
+     * @param {String} [numberType=undefined] (optional) specify 'int' if number is an int, if not specified, just checks if number
+     * @param {Number} [lowerBound=undefined] (optional) lower bound for number (inclusive)
+     * @param {Number} [upperBound=undefined] (optional) upper bound for number (inclusive)
+     * @returns {Number} number valid number of numberType
+     * @throws Will throw a string if number is invalid or undefined
+     */
+    verifyNumber(number, errorMessage = undefined, numberType = undefined, lowerBound = undefined, upperBound = undefined) {
+        if (typeof errorMessage === 'undefined') {
+            errorMessage = 'number';
+        }
+        if (typeof number === 'undefined') throw `${errorMessage} must be provided`;
+        if (typeof numberType === 'undefined') {
+            if (typeof number !== 'number') throw `${errorMessage} must be a number`;
+        } else if (typeof numberType === 'int') {
+            if (!Number.isInteger(number)) throw `${errorMessage} must be an integer`;
+        } else throw 'numberType can only have value "int" or "undefined"';
+        if (typeof lowerBound !== 'undefined') {
+            if (number < lowerBound) throw `${errorMessage} cannot be below ${lowerBound}`;
+        }
+        if (typeof upperBound !== 'undefined') {
+            if (number > upperBound) throw `${errorMessage} cannot be above ${upperBound}`;
+        }
+        
+        return number;
+    },
+    /**
+     * 
+     * @param {STRING} uuid valid v4 uuid
+     * @param {STRING=} errorMessage 
+     * @return {STRING} uuid
+     * @throws Will throw an exception if uuid is invalid
+     */
+    verifyUUID(uuid, errorMessage='undefined') {
+        if (typeof errorMessage === 'undefined') {
+            errorMessage = 'uuid';
+        }
+        uuid = verifyString(uuid, errorMessage);
+        if (!uuid.match(UUID_V4_REGEX)) throw errorMessage + ' is not a valid v4 UUID';
+
+        return uuid
+    },
+    /**
      * Verifies Workout object. Workout object must contain:
-     * @param {String} _id
-     * @param {String} name
-     * @param {String} author
-     * @param {Integer} intensity bounds: [0, 5]
-     * @param {Integer} length bounds: (0, inf)
-     * @param {Object} exercises contains valid subexercise object
-     * @param {String} comments contains valid array of comment ids
-     * @param {String} usersLiked contains valid array of user ids
-     * @param {String} workoutType contains valid array of workoutTypes
      * @param {Object} workout Valid workout object
+     * @param {String} workout._id
+     * @param {String} workout.name
+     * @param {String} workout.author
+     * @param {Integer} workout.intensity bounds: [0, 5]
+     * @param {Integer} workout.length bounds: (0, inf)
+     * @param {Object} workout.exercises contains valid subexercise object
+     * @param {String} workout.comments contains valid array of comment ids
+     * @param {String} workout.usersLiked contains valid array of user ids
      * @return {Object} valid workout object
      * @throws Will throw an exception if workout is invalid
      */
@@ -247,47 +262,29 @@ module.exports = {
 
         //verify _id 
         workout._id = this.verifyWorkoutName(workout._id);
-
         //verify name
         workout.name = verifyString(workout.name, "Workout name");
-
         //verify author
-        workout.author = verifyID(workout.author);
-
+        workout.author = verifyUUID(workout.author);
         //verify intensity
         workout.intensity = verifyWorkoutIntensity(workout.intensity);
-
         //verify length
         workout.length = verifyWorkoutLength(workout.length);
-
         //verify exercises
         workout.exercises = verifySubExercise(workout.exercises); 
-
         //verify comments
         if (typeof workout.comments === 'undefined') throw "comments must be provided";
         if (!Array.isArray(workout.comments)) throw "comments must be an array of comment ids";
         workout.comments.forEach((val, i) => {
             //TODO: verify if these exceptions are caught correctly for a forEach
-            workout.comments[i] = verifyString(workout.comments[i], 'comment id');
-            if (!ObjectId.isValid(workout.comments[i])) throw 'comment id must be valid';
+            workout.comments[i] = verifyUUID(workout.comments[i]);
         });
-
         //verify usersLiked
         if (typeof workout.usersLiked === 'undefined') throw 'usersLiked must be provided';
         if (!Array.isArray(workout.usersLiked)) throw 'usersLiked must be an array of user ids';
         workout.usersLiked.forEach((val, i) => {
             //TODO: verify if these exceptions are caught correctly for a forEach
-            workout.usersLiked[i] = verifyString(workout.usersLiked[i], 'usersLiked id');
-            if (!ObjectId.isValid(workout.usersLiked[i])) throw 'usersLiked id must be valid';
-        });
-
-        //verify workoutType
-        if (typeof workout.workoutType === 'undefined') throw 'workoutType must be provided';
-        if (!Array.isArray(workout.workoutType)) throw 'workoutType must be an array of valid workoutTypes';
-        workout.workoutType.forEach((val, i) => {
-            //TODO: verify if these exceptions are caught correctly for a forEach
-            workout.workoutType[i] = verifyString(workout.workoutType[i], 'workoutType item');
-            if (!WORKOUTTYPES.includes(workout.workoutType[i].toLowerCase())) throw 'workoutType item must be a valid workoutType';
+            workout.usersLiked[i] = verifyUUID(workout.usersLiked[i]);
         });
 
         return workout;
@@ -306,7 +303,7 @@ module.exports = {
      * @param {Integer} subExercises.repetitions bounds: [1, inf]
      * @param {Integer} subExercises.rest bounds: [0, inf]
      * @param {Integer=} subExercises.weight (optional) bounds: [0, inf]
-     * @param {String=} subExercises.comment (optional) comment id
+     * @param {String=} subExercises.note (optional) note
      * @return {Object} valid subExercises object
      * @throws Will throw an exception if there is an issue with any of the fields in subExercises
     */
@@ -321,22 +318,20 @@ module.exports = {
                 if (typeof val !== 'object') throw 'subExercises item must be an object';
                 val = verifyKeys(val, SUBEXERCISES_OBJECT_KEYS)
                 //verify exerciseId
-                subExercises[i].exerciseId = verifyString(subExcerises[i].exerciseId, 'subExercises item exerciseId');
-                if (!ObjectId.isValid(subExercises[i].exerciseId)) throw 'subExercises item exerciseId must be valid';
+                subExercises[i].exerciseId = verifyUUID(subExercises[i].exerciseId, 'subExercises item exerciseId');
                 //verify sets
-                subExercises[i].sets = verifyNumber(subExercises[i].sets, 'subExercises item sets', 'int', 1);
+                subExercises[i].sets = verifyNumber(subExercises[i].sets, 'subExercises item sets', 'int', 1, 500);
                 //verify repetitions
-                subExercises[i].repetitions = verifyNumber(subExercises[i].repetitions, 'subExercises item repetitions', 'int', 1);
+                subExercises[i].repetitions = verifyNumber(subExercises[i].repetitions, 'subExercises item repetitions', 'int', 1, 500);
                 //verify rest
-                subExercises[i].rest = verifyNumber(subExericses[i].rest, 'subExercises item rest', 'int', 0);
+                subExercises[i].rest = verifyNumber(subExericses[i].rest, 'subExercises item rest', 'int', 0, 500);
                 //verify weight (optional field)
                 if (typeof subExercises[i].weight !== 'undefined') {
-                    subExercises[i].weight = verifyNumber(subExercises[i].weight, 'subExercises item weight', 'undefined', 0);
+                    subExercises[i].weight = verifyNumber(subExercises[i].weight, 'subExercises item weight', 'undefined', 0, 500);
                 }
-                //verify comment (optional field)
-                if (typeof subExercises[i].comment !== 'undefined') {
-                    subExercises[i].comment = verifyString(subExercises[i].comment, 'subExercises item comment id');
-                    if (!ObjectId.isValid(subExercises[i].comment)) throw 'subExercises item comment id must be valid';
+                //verify note (optional field)
+                if (typeof subExercises[i].note !== 'undefined') {
+                    subExercises[i].note = verifyString(subExercises[i].note, 'subExercises item comment id');
                 }
             } catch (e) {
                 throw `index ${i} threw exception: ` + e;
@@ -353,6 +348,8 @@ module.exports = {
      * @param {Integer} logInfo.length bounds [0, inf]
      * @param {Object} logInfo.subExercises valid subExcerises object (contained in workout object and workoutLog object)
      * @param {String=} logInfo.comment (optional)
+     * @return {Object} logInfo
+     * @throws Will throw an exception if logInfo is invalid
     */
     verifyLogInfo(logInfo) {
         if (typeof logInfo === 'undefined') throw 'logInfo must be provided';
@@ -362,14 +359,15 @@ module.exports = {
         //verify intensity
         logInfo.intensity = verifyNumber(logInfo.intensity, 'logInfo intensity', 'int', 0, 5);
         //verify length
-        logInfo.length = verifyNumber(logInfo.length, 'logInfo length', 'int', 1);
+        logInfo.length = verifyNumber(logInfo.length, 'logInfo length', 'int', 1, 500);
         //verify subExercises
         logInfo.exercises = this.verifySubExercise(logInfo.exercises);
         //verify comment
         if (typeof logInfo.comment !== 'undefined') {
             logInfo.comment = verifyString(logInfo.comment, 'logInfo comment id');
-            if (!ObjectId.isValid(logInfo.comment)) throw 'logInfo comment id must be valid';
         }
+        
+        return logInfo;
     },
     verifyEmail(email){
         /**
@@ -414,5 +412,6 @@ module.exports = {
         if (!Number.isInteger(workoutLength)) throw "Workout length must be a number";
         if (workoutLength <= 0) throw "Workout length must be a value greater than 0";
         return workoutLength;
-    }
+    },
+    MUSCLE_GROUPS
 }
