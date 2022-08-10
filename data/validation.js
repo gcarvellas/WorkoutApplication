@@ -327,7 +327,7 @@ module.exports = {
                 subExercises[i].rest = verifyNumber(subExericses[i].rest, 'subExercises item rest', 'int', 0, 500);
                 //verify weight (optional field)
                 if (typeof subExercises[i].weight !== 'undefined') {
-                    subExercises[i].weight = verifyNumber(subExercises[i].weight, 'subExercises item weight', 'undefined', 0, 500);
+                    subExercises[i].weight = verifyNumber(subExercises[i].weight, 'subExercises item weight', undefined, 0, 500);
                 }
                 //verify note (optional field)
                 if (typeof subExercises[i].note !== 'undefined') {
