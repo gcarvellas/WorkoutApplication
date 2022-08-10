@@ -213,7 +213,7 @@ module.exports = {
         if (typeof number === 'undefined') throw `${errorMessage} must be provided`;
         if (typeof numberType === 'undefined') {
             if (typeof number !== 'number') throw `${errorMessage} must be a number`;
-        } else if (typeof numberType === 'int') {
+        } else if (numberType === 'int') {
             if (!Number.isInteger(number)) throw `${errorMessage} must be an integer`;
         } else throw 'numberType can only have value "int" or "undefined"';
         if (typeof lowerBound !== 'undefined') {

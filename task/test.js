@@ -87,7 +87,7 @@ function testVerifyNumber() {
     }
     //should fail
     try {
-        console.log(validation.verifyNumber(4), 'third test', 'int', 5);
+        console.log(validation.verifyNumber(4, 'third test', 'int', 5));
         console.log('failed to verifyNumber, error:', e);
     } catch (e) {
         console.log('test 3 passed on verifyNumber');
@@ -102,7 +102,7 @@ function testVerifyNumber() {
 
     //should pass
     try {
-        console.log(validation.verifyNumber(16.4, 'fifth test', 'undefined', 5, 23));
+        console.log(validation.verifyNumber(16.4, 'fifth test', undefined, 5, 23));
         console.log('test 5 passed on verifyNumber');
     } catch (e) {
         console.log('failed to verifyNumber, error:', e);
@@ -170,7 +170,8 @@ function testGetWorkoutLog() {
 }
 
 //running validation tests
-testUserValidation();
+//testUserValidation();
+testVerifyNumber();
 
 //running workoutLogDB tests
 // testCreateWorkoutLogFromWorkout();
