@@ -1,15 +1,18 @@
+const { v4 : uuidv4} = require('uuid');
 
 //Constants
 const EMAIL_REGEX =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const UUID_V4_REGEX = /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/;
-const { v4 : uuidv4} = require('uuid');
 const USER_OBJECT_KEYS = Object.freeze(["_id", "userInfo", "email", "hashedPassword", "userMadeWorkouts", "userLikedWorkouts", "totalLikesReceived", "totalCommentsReceived", "workoutLogs"]);
 const USER_INFO_OBJECT_KEYS = Object.freeze(["firstName", "lastName", "birthDate", "bio", "weight", "height", "frequencyOfWorkingOut"]);
 const WORKOUT_OBJECT_KEYS = Object.freeze(["_id", "name", "author", "intensity", "length", "exercises", "comments", "usersLiked"]);
 const EXERCISES_OBJECT_KEYS = Object.freeze(["_id", "user", "name", "muscles"]);
 const SUBEXERCISES_OBJECT_KEYS = Object.freeze(["exerciseId", "sets", "repititions", "rest", "note"]);
-
-const MUSCLE_GROUPS = ['chest', 'back', 'arms', 'abs', 'legs', 'shoulders'];
+const MUSCLE_GROUPS = Object.freeze(['chest', 'back', 'arms', 'abs', 'legs', 'shoulders']);
+const MAX_HEIGHT = 108;
+const MAX_WORKOUT_LENGTH = 240;
+const MAX_WORKOUT_INTENSITY = 5;
+const MAX_WEIGHT = 1400;
 
 function verifyString(str, errorMessage = undefined){
     /**
@@ -69,7 +72,7 @@ module.exports = {
          */
         if (typeof user !== "object") throw "User must be an object";
         verifyKeys(user, USER_OBJECT_KEYS);
-        user._id = this.verifyID(user._id);
+        user._id = this.verifyUUID(user._id);
         user.userInfo = this.verifyUserInfo(user.userInfo);
         user.email = this.verifyEmail(user.email);
 
@@ -119,17 +122,6 @@ module.exports = {
         return user;
 
     },
-    verifyID(id){
-        /**
-         * Verifies a valid Mongo DB ID
-         * @param {String} id Valid mongo DB ID
-         * @return {String} Valid id
-         * @throws Will throw an exception if ID is invalid
-         */
-        id = verifyString(id, "ID");
-        if (!ObjectId.isValid(id)) throw "ID must be valid";
-        return id;
-    },
     verifyUserInfo(userInfo){
         /**
          * Verifies a valid userInfo object. A userInfo object contains:
@@ -173,12 +165,14 @@ module.exports = {
         if (typeof userInfo.height !== 'undefined'){
             if (!Number.isInteger(userInfo.height)) throw "Height must be an integer";
             if (userInfo.height < 0) throw "Height must be greater than or equal to 0";
+            if (userInfo.height > MAX_HEIGHT) throw `Height must be less than ${MAX_HEIGHT}`;
         }
 
         //Verify frequency of working out (optional arg)
         if (typeof userInfo.frequencyOfWorkingOut !== 'undefined'){
             if (!Number.isInteger(userInfo.frequencyOfWorkingOut)) throw "Frequency of working out must be an integer";
             if (userInfo.frequencyOfWorkingOut < 0) throw "Frequency of working out must be a number greater than or equal to 0";
+            if (userInfo.frequencyOfWorkingOut > 7) throw "Frequency of working out cannot be greater than 7";
         }
 
         return userInfo;
@@ -194,6 +188,7 @@ module.exports = {
         if (typeof weight === 'undefined') throw "Weight must be provided";
         if (!Number.isInteger(weight)) throw "Weight must be an integer";
         if (weight < 0) throw "Weight must be a positive value";
+        if (weight > MAX_WEIGHT) throw `Weight must be less than ${MAX_WEIGHT}`;
         return weight;
     },
     /**
@@ -228,7 +223,7 @@ module.exports = {
     /**
      * 
      * @param {STRING} uuid valid v4 uuid
-     * @param {STRING=} errorMessage 
+     * @param {STRING} errorMessage 
      * @return {STRING} uuid
      * @throws Will throw an exception if uuid is invalid
      */
@@ -302,7 +297,7 @@ module.exports = {
      * @param {Integer} subExercises.sets bounds: [1, inf]
      * @param {Integer} subExercises.repetitions bounds: [1, inf]
      * @param {Integer} subExercises.rest bounds: [0, inf]
-     * @param {Integer=} subExercises.weight (optional) bounds: [0, inf]
+     * @param {Integer} subExercises.weight (optional) bounds: [0, inf]
      * @param {String=} subExercises.note (optional) note
      * @return {Object} valid subExercises object
      * @throws Will throw an exception if there is an issue with any of the fields in subExercises
@@ -398,7 +393,7 @@ module.exports = {
          */
         if (typeof workoutIntensity === "undefined") throw "Workout intensity must be provided";
         if (!Number.isInteger(workoutIntensity)) throw "Workout intensity must be a number";
-        if (workoutIntensity < 1 || workoutIntensity > 5) throw "Workout intensity must be a value between 1 and 5.";
+        if (workoutIntensity < 1 || workoutIntensity > MAX_WORKOUT_INTENSITY) throw `Workout intensity must be a value between 1 and ${MAX_WORKOUT_INTENSITY}.`;
         return workoutIntensity;
     },
     verifyWorkoutLength(workoutLength){
@@ -411,7 +406,21 @@ module.exports = {
         if (typeof workoutLength === "undefined") throw "Workout length must be provided";
         if (!Number.isInteger(workoutLength)) throw "Workout length must be a number";
         if (workoutLength <= 0) throw "Workout length must be a value greater than 0";
+        if (workoutLength > MAX_WORKOUT_LENGTH) throw `Workout length must be less than ${MAX_WORKOUT_LENGTH}`;
         return workoutLength;
     },
-    MUSCLE_GROUPS
+    verifyMessage(message){
+        /**
+         * Verifies message is a string.
+         * @param {String} message a non-empty string
+         * @return {String} trimmed string
+         * @throws Will throw an exception if message is invalid
+         */
+        return verifyString(message);
+    },
+    MUSCLE_GROUPS,
+    MAX_HEIGHT,
+    MAX_WORKOUT_LENGTH,
+    MAX_WORKOUT_INTENSITY,
+    MAX_HEIGHT
 }
