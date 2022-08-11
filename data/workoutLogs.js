@@ -20,7 +20,7 @@ async function addUserMadeWorkoutLog(user, _workoutLogId, callback) {
     user = validation.verifyUser(user);
     user = await users.checkUser(user.email, user.password);
     //verify _workoutLogId
-    _workoutLogId = validation.verifyUUID(_workoutLogId);
+    _workoutLogId = validation.verifyUUID(_workoutLogId, "Workout log id");
     if (user.workoutLogs.includes(_workoutLogId)) throw 'user already has a workoutlog under that workoutLogId';
 
     //add _workoutLogId to user.workoutLogs
@@ -49,7 +49,7 @@ async function removeUserMadeWorkoutLog(user, _workoutLogId, callback) {
     user = validation.verifyUser(user);
     user = await users.checkUser(user.email, user.password);
     //verify _workoutLogId
-    _workoutLogId = validation.verifyUUID(_workoutLogId);
+    _workoutLogId = validation.verifyUUID(_workoutLogId, "Workout log id");
     if (!user.workoutLogs.includes(_workoutLogId)) throw 'workoutLog is not in user workoutLogs';
 
     //remove _workoutLogId from user.workoutLogs
@@ -121,7 +121,7 @@ module.exports = {
         user = validation.verifyUser(user);
         user = await users.checkUser(user.email, user.password);
         //verify _workoutLogId
-        _workoutLogId = validation.verifyUUID(_workoutLogId);
+        _workoutLogId = validation.verifyUUID(_workoutLogId, "Workout log id");
         let allWorkoutLogs = await users.getWorkoutLogs(user._id);
         if (!allWorkoutLogs.includes(_workoutLogId)) throw 'user cannot edit other user\'s workoutLog';
         //verify logInfo
@@ -159,7 +159,7 @@ module.exports = {
         user = validation.verifyUser(user);
         user = await users.checkUser(user.email, user.password);
         //verify _workoutLogId
-        _workoutLogId = validation.verifyUUID(_workoutLogId);
+        _workoutLogId = validation.verifyUUID(_workoutLogId, "Workout log id");
         let allWorkoutLogs = await users.getWorkoutLogs(user._id);
         if (!allWorkoutLogs.includes(_workoutLogId)) throw 'user cannot copy other user\'s workoutLog';
         
@@ -180,7 +180,7 @@ module.exports = {
         user = validation.verifyUser(user);
         user = await users.checkUser(user.email, user.password);
         //verify _workoutLogId
-        _workoutLogId = validation.verifyUUID(_workoutLogId);
+        _workoutLogId = validation.verifyUUID(_workoutLogId, "Workout log id");
         let allWorkoutLogs = await users.getWorkoutLogs(user._id);
         if (!allWorkoutLogs.includes(_workoutLogId)) throw 'user cannot delete other user\'s workoutLog';
 
@@ -211,7 +211,7 @@ module.exports = {
         user = validation.verifyUser(user);
         user = await users.checkUser(user.email, user.password);
         //verify _workoutLogId
-        _workoutLogId = validation.verifyUUID(_workoutLogId);
+        _workoutLogId = validation.verifyUUID(_workoutLogId, "Workout log id");
         let allWorkoutLogs = await users.getWorkoutLogs(user._id);
         if (!allWorkoutLogs.includes(_workoutLogId)) throw 'user cannot get other user\'s workoutLog';
 

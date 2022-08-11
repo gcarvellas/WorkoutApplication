@@ -18,7 +18,7 @@ module.exports = {
         user = validation.verifyUser(user);
         user = await users.checkUser(user.email, user.hashedPassword);
 
-        _workoutId = validation.verifyUUID(_workoutId);
+        _workoutId = validation.verifyUUID(_workoutId, "Workout id");
         let workout = await workout.getWorkout(_workoutId); //check if workout exists
         if (workout === null) throw "Workout not found";
 
@@ -45,7 +45,7 @@ module.exports = {
          * @return comment object
          * @throws Will throw an exception if comment is not found
          */
-        _id = validation.verifyUUID(_id);
+        _id = validation.verifyUUID(_id, "Comment id");
         const commentCollection = await comments();
         const comment = await commentCollection.findOne({_id: _id});
         if (comment === null) throw "No comment found";
@@ -57,7 +57,7 @@ module.exports = {
          * @return array of comment objects
          * @throws Will throw an exception if comment is not found
          */
-        _workoutId = validation.verifyUUID(_workoutId);
+        _workoutId = validation.verifyUUID(_workoutId, "Workout id");
         let workout = await workout.getWorkout(_workoutId); //check if workout exists
         if (workout === null) throw "Workout not found";
 
@@ -79,7 +79,7 @@ module.exports = {
         user = validation.verifyUser(user);
         user = await users.checkUser(user.email, user.hashedPassword);
 
-        _id = validation.verifyUUID(_id);
+        _id = validation.verifyUUID(_id, "Comment id");
 
         message = validation.verifyMessage(message);
 
@@ -108,7 +108,7 @@ module.exports = {
          * @return true if comment  was successfully deleted
          * @throws will throw an exception if comment could not be deleted or comment is not made by user
          */
-        _id = validation.verifyUUID(_id);
+        _id = validation.verifyUUID(_id, "Comment id");
 
         user = validation.verifyUser(user);
         user = await users.checkUser(user.email, user.hashedPassword);
