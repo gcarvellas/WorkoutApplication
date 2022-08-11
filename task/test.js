@@ -2,7 +2,8 @@ const data = require('../data');
 const validation = data.validation;
 const workoutLogs = data.workoutLogs;
 const { v4 : uuidv4} = require('uuid');
-
+const mongoCollections = require("../config/mongoCollections");
+const workouts = data.workouts;
 const UUID = uuidv4();
 
 const DATE = new Date();
@@ -169,10 +170,54 @@ function testGetWorkoutLog() {
     }
 }
 
+function createTestDatabase() {
+    //create user. Since user is not implemented yet, adding user this way.
+    const userCollection = await mongoCollections.users();
+    let newUser = {
+        "_id":  uuidv4(),
+        "userInfo": {
+            "firstName": "Admin",
+            "lastName": "User",
+            "birthDate": Date.now(),
+            "bio": "This is a test bio",
+            "weight": 160,
+            "height": 72,
+            "frequencyOfWorkingOut": 3
+        },
+        "email": "admin@gmail.com",
+        "hashedPassword": 123,
+        "userMadeWorkouts": [],
+        "userLikedWorkouts": [],
+        "totalLikesReceived": 0,
+        "totalCommentsReceived": 0,
+        "workoutLogs": []
+    }
+    let insertInfo = await userCollection.insertOne(newWorkout);
+        if (!insertInfo.acknowledged || !insertInfo.insertedId) throw "Could not manually add new user";
+
+    //create exercise. since exercise is not implemented yet, adding exercise this way.
+    const exerciseCollection = await mongoCollections.exercises();
+    let newExercise = {
+        "_id": uuidv4(),
+        "user": newUser._id,
+        "name": "Test Exercise",
+        "muscles": ["quads", "glutes"],
+        "equipment": ["kettle bell"],
+        "note": "test note"
+    }
+    insertInfo = await exerciseCollection.insertOne(newWorkout);
+        if (!insertInfo.acknowledged || !insertInfo.insertedId) throw "Could not manually add new user";
+
+    let workout = await workouts.createWorkout(newUser, "Test Workout", 3, 60, [newExercise]);
+
+    console.log("Success!");
+        
+}
+
 //running validation tests
 //testUserValidation();
-testVerifyNumber();
-
+//testVerifyNumber();
+createTestDatabase();
 //running workoutLogDB tests
 // testCreateWorkoutLogFromWorkout();
 // testEditWorkoutLog();

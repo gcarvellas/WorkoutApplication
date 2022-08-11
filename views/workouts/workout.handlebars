@@ -1,0 +1,38 @@
+{{#if workout}}
+    <h1>{{workout.name}}</h1>         <!-- TODO add like button. Waiting for user auth. -->
+    <ul>
+        <li><a href="/user/{{workout.author}}">Author</a></li>
+        <li>Likes: {{workout.usersLiked.length}}</li>
+        <li>Intensity: {{workout.intensity}}/5</li>
+        <li>Length: {{workout.length}} minutes</li>
+        {{#if exercises.length}}
+            <li><h2>Exercises</h2><ul>
+            {{#each exercises}}
+                <li><h3><a href="/exercise/{{this.exerciseId}}">{{this.name}}</a></h3></li>
+                <li>Sets: {{this.sets}}</li>
+                <li>Rest: {{this.repetitions}}</li>
+                {{#if this.weight}}
+                    <li>Weight: {{this.weight}}lbs</li>
+                {{/if}}
+                {{#if this.comment}}
+                    <li>Comment: {{this.comment}}</li>
+                {{/if}}
+            {{/each}}
+            </ul></li>
+        {{/if}}
+        {{#if comments.length}}
+            <li><h2>Comments</h2><ul>
+            {{#each comments}} <!-- Implement delete and edit comments. Waiting for user auth -->
+                <li>
+                    <a href="/user/{{this.author}}">{{this.name}}</a>
+                    <p>{{this.currentTime}}</p>
+                    <p>{{this.comment}}</p>
+                </li>
+            {{/each}}
+            </ul></li>
+        {{/if}}
+    </ul>
+{{/if}}
+{{#if error}}
+    <p>{{error}}</p>
+{{/if}}
