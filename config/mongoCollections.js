@@ -21,5 +21,5 @@ module.exports = {
   workouts: getCollectionFn('workouts'),
   exercises: getCollectionFn('exercises'),
   comments: getCollectionFn('comments'),
-  workoutsLogs: getCollectionFn('workoutLogs')
+  workoutLogs: getCollectionFn('workoutLogs')
 };
