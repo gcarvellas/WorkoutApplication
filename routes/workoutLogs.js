@@ -5,8 +5,10 @@ const workoutLogs = require('../data/workoutLogs');
 //TODO
 
 router.get('/', (req, res) => {
-  res.render('layouts/workoutLogs');
-})
+  res.render('layouts/landingPage');
+});
+
+
 
 
 
