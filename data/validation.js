@@ -14,21 +14,21 @@ const MAX_WORKOUT_LENGTH = 240;
 const MAX_WORKOUT_INTENSITY = 5;
 const MAX_WEIGHT = 1400;
 
-function verifyString(str, errorMessage = undefined){
+function verifyString(str, variableName = undefined){
     /**
      * Verifies there's content in the string
      * @param str a string
-     * @param errorMessage (optional) If an error is thrown, adds name of variable to error message
+     * @param variableName (optional) If an error is thrown, adds name of variable to error message
      * @return str valid string
      * @throws Will throw a string if string is empty or undefined
      */
-    if (typeof errorMessage === 'undefined'){
-        errorMessage = "string";
+    if (typeof variableName === 'undefined'){
+        variableName = "String";
     }
-    if (typeof str === "undefined") throw `${errorMessage} must be provided`;
-        if (typeof str !== "string") throw `${errorMessage} must be a string`;
+    if (typeof str === "undefined") throw `${variableName} must be provided`;
+        if (typeof str !== "string") throw `${variableName} must be a string`;
         str = str.trim();
-        if (str.length === 0) throw `${errorMessage} cannot be an empty string or just spaces`;
+        if (str.length === 0) throw `${variableName} cannot be an empty string or just spaces`;
         return str;
 }
 
@@ -72,7 +72,7 @@ module.exports = {
          */
         if (typeof user !== "object") throw "User must be an object";
         verifyKeys(user, USER_OBJECT_KEYS);
-        user._id = this.verifyUUID(user._id);
+        user._id = this.verifyUUID(user._id, "User id");
         user.userInfo = this.verifyUserInfo(user.userInfo);
         user.email = this.verifyEmail(user.email);
 
@@ -194,28 +194,28 @@ module.exports = {
     /**
      * Verifies number
      * @param {Number} number a number of type numberType
-     * @param {String} [errorMessage=Number] (optional) If an error is thrown, adds name of variable to error message
+     * @param {String} [variableName=Number] (optional) If an error is thrown, adds name of variable to error message
      * @param {String} [numberType=undefined] (optional) specify 'int' if number is an int, if not specified, just checks if number
      * @param {Number} [lowerBound=undefined] (optional) lower bound for number (inclusive)
      * @param {Number} [upperBound=undefined] (optional) upper bound for number (inclusive)
      * @returns {Number} number valid number of numberType
      * @throws Will throw a string if number is invalid or undefined
      */
-    verifyNumber(number, errorMessage = undefined, numberType = undefined, lowerBound = undefined, upperBound = undefined) {
-        if (typeof errorMessage === 'undefined') {
-            errorMessage = 'number';
+    verifyNumber(number, variableName = undefined, numberType = undefined, lowerBound = undefined, upperBound = undefined) {
+        if (typeof variableName === 'undefined') {
+            variableName = 'number';
         }
-        if (typeof number === 'undefined') throw `${errorMessage} must be provided`;
+        if (typeof number === 'undefined') throw `${variableName} must be provided`;
         if (typeof numberType === 'undefined') {
-            if (typeof number !== 'number') throw `${errorMessage} must be a number`;
+            if (typeof number !== 'number') throw `${variableName} must be a number`;
         } else if (numberType === 'int') {
-            if (!Number.isInteger(number)) throw `${errorMessage} must be an integer`;
+            if (!Number.isInteger(number)) throw `${variableName} must be an integer`;
         } else throw 'numberType can only have value "int" or "undefined"';
         if (typeof lowerBound !== 'undefined') {
-            if (number < lowerBound) throw `${errorMessage} cannot be below ${lowerBound}`;
+            if (number < lowerBound) throw `${variableName} cannot be below ${lowerBound}`;
         }
         if (typeof upperBound !== 'undefined') {
-            if (number > upperBound) throw `${errorMessage} cannot be above ${upperBound}`;
+            if (number > upperBound) throw `${variableName} cannot be above ${upperBound}`;
         }
         
         return number;
@@ -223,16 +223,16 @@ module.exports = {
     /**
      * 
      * @param {STRING} uuid valid v4 uuid
-     * @param {STRING} errorMessage 
+     * @param {STRING} variableName (optional) If an error is thrown, adds name of variable to error message
      * @return {STRING} uuid
      * @throws Will throw an exception if uuid is invalid
      */
-    verifyUUID(uuid, errorMessage='undefined') {
-        if (typeof errorMessage === 'undefined') {
-            errorMessage = 'uuid';
+    verifyUUID(uuid, variableName=undefined) {
+        if (typeof variableName === 'undefined') {
+            variableName = 'Input';
         }
-        uuid = verifyString(uuid, errorMessage);
-        if (!uuid.match(UUID_V4_REGEX)) throw errorMessage + ' is not a valid v4 UUID';
+        uuid = verifyString(uuid, variableName);
+        if (!uuid.match(UUID_V4_REGEX)) throw variableName + ' is not a valid v4 UUID';
 
         return uuid
     },
@@ -260,7 +260,7 @@ module.exports = {
         //verify name
         workout.name = verifyString(workout.name, "Workout name");
         //verify author
-        workout.author = verifyUUID(workout.author);
+        workout.author = verifyUUID(workout.author, "Workout author id");
         //verify intensity
         workout.intensity = verifyWorkoutIntensity(workout.intensity);
         //verify length
@@ -272,14 +272,14 @@ module.exports = {
         if (!Array.isArray(workout.comments)) throw "comments must be an array of comment ids";
         workout.comments.forEach((val, i) => {
             //TODO: verify if these exceptions are caught correctly for a forEach
-            workout.comments[i] = verifyUUID(workout.comments[i]);
+            workout.comments[i] = verifyUUID(workout.comments[i], "Comment id");
         });
         //verify usersLiked
         if (typeof workout.usersLiked === 'undefined') throw 'usersLiked must be provided';
         if (!Array.isArray(workout.usersLiked)) throw 'usersLiked must be an array of user ids';
         workout.usersLiked.forEach((val, i) => {
             //TODO: verify if these exceptions are caught correctly for a forEach
-            workout.usersLiked[i] = verifyUUID(workout.usersLiked[i]);
+            workout.usersLiked[i] = verifyUUID(workout.usersLiked[i], "User id");
         });
 
         return workout;

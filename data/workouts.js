@@ -17,7 +17,7 @@ async function addUserMadeWorkout(user, _id){
      */
     user = validation.verifyUser(user);
     user = await users.checkUser(user.email, user.hashedPassword);
-    _id = validation.verifyUUID(_id);
+    _id = validation.verifyUUID(_id, "Workout id");
 
     if (_id in user.userMadeWorkouts) throw "Workout is already in user made workouts";
 
@@ -40,7 +40,7 @@ async function removeUserMadeWorkout(user, _id){
      */
     user = validation.verifyUser(user);
     user = await users.checkUser(user.email, user.hashedPassword);
-    _id = validation.verifyUUID(_id);
+    _id = validation.verifyUUID(_id, "Workout id");
 
     if (_id in user.userMadeWorkouts) throw "Workout is not in user made workouts";
 
@@ -63,7 +63,7 @@ async function addUserLikedWorkout(user, _id){
      */
     user = validation.verifyUser(user);
     user = await users.checkUser(user.email, user.hashedPassword);
-    _id = validation.verifyUUID(_id);
+    _id = validation.verifyUUID(_id, "Workout id");
 
     if (_id in user.userLikedWorkouts) throw "Workout is already in user liked workouts";
 
@@ -86,7 +86,7 @@ async function removeUserLikedWorkout(user, _id){
      */
     user = validation.verifyUser(user);
     user = await users.checkUser(user.email, user.hashedPassword);
-    _id = validation.verifyUUID(_id);
+    _id = validation.verifyUUID(_id, "Workout id");
 
     if (_id in user.userLikedWorkouts) throw "Workout is not in user liked workouts";
 
@@ -181,11 +181,11 @@ module.exports = {
     async deleteWorkout(user, _id){
         /**
          * @param user {Object} user object
-         * @param _id {String} valid uuid
+         * @param _id {String} valid workout uuid
          * @return true if workout was successfully deleted
          * @throws will throw an exception if workout could not be deleted or workout is not made by user
          */
-        _id = validation.verifyUUID(_id);
+        _id = validation.verifyUUID(_id, "Workout id");
         user = validation.verifyUser(user);
         user = await users.checkUser(user.email, user.hashedPassword);
 
@@ -207,7 +207,7 @@ module.exports = {
          * @return workout object
          * @throws Will throw an exception if workout is not found
          */
-        _id = validation.verifyUUID(_id);
+        _id = validation.verifyUUID(_id, "Workout id");
         const workoutCollection = await workouts();
         const workout = await workoutCollection.findOne({_id:_id});
         if (workout === null) throw "No workout with that id";
@@ -223,7 +223,7 @@ module.exports = {
          */
         user = validation.verifyUser(user);
 
-        _workoutId = validation.verifyUUID(_workoutId);
+        _workoutId = validation.verifyUUID(_workoutId, "Workout id");
 
         comment = validation.verifyMessage(comment);
 
@@ -255,9 +255,9 @@ module.exports = {
          */
          user = validation.verifyUser(user);
 
-         _workoutId = validation.verifyUUID(_workoutId);
+         _workoutId = validation.verifyUUID(_workoutId, "Workout id");
  
-         _commentId = validation.verifyUUID(_commentId);
+         _commentId = validation.verifyUUID(_commentId, "Comment id");
  
          const workout = await this.getWorkout(_workoutId);
          const comment = await comments.getComment(_commentId);
@@ -286,7 +286,7 @@ module.exports = {
          * @param _workoutId {String} workout uuid
          * @return true if user liked workout. false if user did not like workout.
          */
-        _workoutId = validation.verifyUUID(_workoutId);
+        _workoutId = validation.verifyUUID(_workoutId, "Workout id");
         user = validation.verifyUser(user);
         let workout = await this.getWorkout(_workoutId);
         return user._id in workout.usersLiked;
@@ -346,7 +346,7 @@ module.exports = {
          * @param _id {String} uuid of old workout
          * @return new workout object
          */
-        _id = validation.verifyUUID(_id);
+        _id = validation.verifyUUID(_id, "Workout id");
         user = validation.verifyUser(user);
         user = await users.checkUser(user.email, user.hashedPassword);
         let newWorkout = await this.getWorkout(_id);
