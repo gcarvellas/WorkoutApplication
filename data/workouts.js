@@ -228,11 +228,11 @@ module.exports = {
         comment = validation.verifyMessage(comment);
 
         const workout = await this.getWorkout(_workoutId);
-        const comment = await comments.createComment(user, _workoutId, comment);
+        const commentObj = await comments.createComment(user, _workoutId, comment);
 
         const workoutCollection = await workouts();
         let editedWorkout = {
-            "comments": workout.comments.push(comment._id)
+            "comments": workout.comments.push(commentObj._id)
         }
 
         const updatedInfo = await workoutCollection.updateOne(

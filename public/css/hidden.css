@@ -1,3 +1,31 @@
 .hidden {
     display: none;
 }
+
+.navBarImage {
+    height: 50px;
+    width: auto;
+}
+
+.navbar {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.nav-item {
+    font-size: 1.5rem;
+}
+
+/* targeting the signup-btn in navbar for when collapse menu is opened */
+.navbar-collapse.show > ul > li.signup-btn, .navbar-collapse.collapsing > ul > li.signup-btn {
+    padding-right: 0px;
+    padding-bottom: 16px;
+}
+
+li.signup-btn  {
+    padding-right: 8px;
+}
+
+.signup-container {
+    padding-top: 5rem;
+}
