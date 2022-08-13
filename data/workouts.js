@@ -116,10 +116,15 @@ module.exports = {
         intensity = validation.verifyWorkoutIntensity(intensity);
         length = validation.verifyWorkoutLength(length);
         exercises = validation.verifySubExercise(exercises);
-        let workoutSearchResults = await workoutSearch.getWorkoutsByName(workoutName);
-        if (!Array.isArray(workoutSearchResults)) throw "Unexpected error when checking if workout already exists";
-        if (workoutSearchResults !== []) throw "Workout name already exists";
+        
         const workoutCollection = await workouts();
+        const workoutList = await workoutCollection.find({}).toArray();
+        workoutList.forEach(workout => {
+            if(workout.name.toLowerCase() == workoutName.toLowerCase()) {
+                throw `Workout name already exists.`;
+            }
+        });
+
         let newWorkout = {
             "_id": uuidv4(),
             "name": workoutName,
@@ -228,11 +233,11 @@ module.exports = {
         comment = validation.verifyMessage(comment);
 
         const workout = await this.getWorkout(_workoutId);
-        const comment = await comments.createComment(user, _workoutId, comment);
+        const createdComment = await comments.createComment(user, _workoutId, comment);
 
         const workoutCollection = await workouts();
         let editedWorkout = {
-            "comments": workout.comments.push(comment._id)
+            "comments": workout.comments.push(createdComment._id)
         }
 
         const updatedInfo = await workoutCollection.updateOne(
