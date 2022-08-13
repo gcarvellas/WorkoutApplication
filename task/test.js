@@ -1,7 +1,10 @@
 const data = require('../data');
 const validation = data.validation;
 const workoutLogs = data.workoutLogs;
+const workout = data.workouts;
+const exercise = data.exercises;
 const { v4 : uuidv4} = require('uuid');
+const { workoutSearch } = require('../data');
 
 const UUID = uuidv4();
 
@@ -56,6 +59,15 @@ const LOG_INFO = {
     exercises: [WORKOUT_EXERCISES],
     comment: " Test comment"
 }
+
+const EXERCISE_OBJECT = {
+    _id: UUID,
+    user: UUID,
+    name: " Test exercise name",
+    muscles: ["chest"],
+    equipment: ["kettlebells"],
+    note: "Test note"
+};
 
 
 
@@ -124,10 +136,10 @@ function testVerifyNumber() {
 }
 
 //workoutLogsDB tests
-function testCreateWorkoutLogFromWorkout() {
+async function testCreateWorkoutLogFromWorkout() {
     //valid userObject, parentWorkout, and logInfo test
     try {
-        console.log(workoutLogs.createWorkoutLogFromWorkout(USER_OBJECT, WORKOUT_OBJECT, LOG_INFO))
+        console.log(await workoutLogs.createWorkoutLogFromWorkout(USER_OBJECT, WORKOUT_OBJECT, LOG_INFO))
     } catch (e) {
         console.log('failed to createWorkoutLogFromWorkout, error:', e);
     }
@@ -169,9 +181,78 @@ function testGetWorkoutLog() {
     }
 }
 
+async function testExercise() {
+    // valid _id, name, muscles
+    try {
+        console.log("-----EXERCISE TEST START-----");
+        console.log(validation.verifyExercise(EXERCISE_OBJECT));
+        console.log('Verified Exercise Object!');
+
+        let newExercise = await exercise.createExercise(EXERCISE_OBJECT.user, EXERCISE_OBJECT.name, EXERCISE_OBJECT.muscles, undefined, undefined);
+        console.log("Created new exercise:");
+        console.log(newExercise);
+
+        console.log("Get all exercises:");
+        console.log(await exercise.getAllExercise());
+
+        let exerciseFound = await exercise.getExercise(newExercise._id);
+        console.log("Obtained exercise by _id:");
+        console.log(exerciseFound);
+
+        console.log(`Updating exercise with _id: ${exerciseFound._id}`);
+        console.log(await exercise.editExercise(exerciseFound._id, "Test updated exercise name", EXERCISE_OBJECT.muscles, undefined, undefined));
+
+        await exercise.deleteExercise(exerciseFound._id);
+        console.log(`Deleted exercise with _id: ${exerciseFound._id}`);
+    } catch (e) {
+        console.log('failure in testExercise(), error:', e);
+    } finally {
+        console.log("-----EXERCISE TEST END-----");
+    }
+}
+
+async function testWorkoutSearch() {
+    try {
+        console.log("-----WORKOUT SEARCH TEST START-----");
+
+        let newExercise = await exercise.createExercise(EXERCISE_OBJECT.user, EXERCISE_OBJECT.name, EXERCISE_OBJECT.muscles, undefined, undefined);
+        console.log(`Added exercise to test workout search with _id of ${EXERCISE_OBJECT._id}`);
+
+        let TEST_WORKOUT_OBJECT = WORKOUT_OBJECT;
+        TEST_WORKOUT_OBJECT.exercises = [{
+            exerciseId: newExercise._id,
+            sets: WORKOUT_EXERCISES.sets,
+            repetitions: WORKOUT_EXERCISES.repetitions,
+            rest: WORKOUT_EXERCISES.rest
+        }];
+        
+        await workout.createWorkout(USER_OBJECT, TEST_WORKOUT_OBJECT.name, TEST_WORKOUT_OBJECT.intensity, TEST_WORKOUT_OBJECT.length, TEST_WORKOUT_OBJECT.exercises);
+        console.log(`Added workout to test workout search with _id of ${TEST_WORKOUT_OBJECT._id}`);
+
+        console.log(`Searching workouts by most popular:`);
+        console.log(await workoutSearch.getMostPopularWorkouts(2));
+
+        console.log(`Searching workouts by author where the author is "${TEST_WORKOUT_OBJECT.author}"`);
+        console.log(await workoutSearch.getWorkoutsByAuthor(TEST_WORKOUT_OBJECT.author, 2));
+
+        console.log(`Searching workouts by name where the name is "${TEST_WORKOUT_OBJECT.name}"`);
+        console.log(await workoutSearch.getWorkoutsByName(TEST_WORKOUT_OBJECT.name, 2));
+
+        console.log(`Searching workouts by muscle group where the muscle group is "chest"`);
+        console.log(await workoutSearch.getWorkoutsByMuscleGroup("chest", 2));
+
+        await exercise.deleteExercise(newExercise._id);
+        await workout.deleteWorkout(USER_OBJECT, TEST_WORKOUT_OBJECT._id);
+    } catch (e) {
+        console.log('failure in testWorkoutSearch(), error:', e);
+    } finally {
+        console.log("-----WORKOUT SEARCH TEST END-----");
+    }
+}
+
 //running validation tests
 //testUserValidation();
-testVerifyNumber();
+//testVerifyNumber();
 
 //running workoutLogDB tests
 // testCreateWorkoutLogFromWorkout();
@@ -179,3 +260,9 @@ testVerifyNumber();
 // testCopyWorkoutLog();
 // testDeleteWorkoutLog();
 // testGetWorkoutLog();
+
+//running exercise test
+// testExercise();
+
+//running workoutSearch test
+// testWorkoutSearch();

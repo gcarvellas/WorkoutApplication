@@ -1,23 +1,13 @@
 const mongoCollections = require('../config/mongoCollections');
+const validation = require('./validation');
 const exercises = mongoCollections.exercises;
 const { v4 : uuidv4} = require('uuid');
+const MUSCLE_GROUPS = validation.MUSCLE_GROUPS;
 
 function checkArgumentCount(functionName, numOfArgumentsPassed, numOfArgumentsExpected) {
     if (numOfArgumentsPassed !== numOfArgumentsExpected) {
         throw `${numOfArgumentsExpected} arguments must be provided to function ${functionName}. (${numOfArgumentsPassed} arguments were passed)`;
     }
-}
-
-function isValidString(str, strName) {
-    if (!str) {
-        throw `${strName} cannot be null, undefined, or empty string.`;
-    }
-
-    if (typeof str !== 'string') {
-        throw `${strName} is not a valid string.`;
-    }
-
-    return true;
 }
 
 function isValidStringArray(arr, arrayName, elementName) {
@@ -34,24 +24,19 @@ function isValidStringArray(arr, arrayName, elementName) {
     }
 
     arr.forEach(elem => {
-        isValidString(elem, `Provided value of a ${elementName} in the ${arrayName}`);
+        validation.verifyMessage(elem, `Provided value of a ${elementName} in the ${arrayName}`);
     });
 }
 
-function isValidUUID(uuid, variableName) {
-    const UUID_V4_REGEX = /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/;
+function isValidMuscleGroups(arr) {
+    isValidStringArray(arr, 'Provided value of muscles', 'muscles');
 
-    isValidString(uuid, `Provided value of ${variableName}`);
+    arr.forEach((muscle_group) => {
+        validation.verifyMessage(muscle_group, `Provided value of a muscle in the muscles array`);
 
-    if (uuid.trim().length === 0) {
-        throw `${variableName} cannot be a string with empty spaces.`;
-    }
-
-    if(!uuid.match(UUID_V4_REGEX)) {
-        throw `${variableName} is not a valid v4 UUID.`;
-    }
+        if(!MUSCLE_GROUPS.includes(muscle_group.toLowerCase())) throw `The input "${muscle_group}" is not a valid muscle group`;
+    });
 }
-
 
 /**
  * Get all exercises
@@ -82,7 +67,7 @@ function isValidUUID(uuid, variableName) {
  */
  const getExercise = async function getExercise(_id) {
     checkArgumentCount('getExercise', arguments.length, getExercise.length);
-    isValidUUID(_id, 'Provided value of exercise id');
+    validation.verifyUUID(_id, 'Provided value of exercise id');
 
     const exerciseCollection = await exercises();
     const exercise = await exerciseCollection.findOne({_id: _id});
@@ -106,8 +91,8 @@ function isValidUUID(uuid, variableName) {
  */
 const createExercise = async function createExercise(user, name, muscles, equipment, note) {
     checkArgumentCount('createExercise', arguments.length, createExercise.length);
-    isValidUUID(user, 'Provided value of user id');
-    isValidString(name, 'Provided value of exercise name');
+    validation.verifyUUID(user, 'Provided value of user id');
+    validation.verifyMessage(name, 'Provided value of exercise name');
 
     const exerciseList = await getAllExercise();
     exerciseList.forEach(exercise => {
@@ -116,15 +101,11 @@ const createExercise = async function createExercise(user, name, muscles, equipm
         }
     });
 
-    isValidStringArray(muscles, 'Provided value of muscles', 'muscles');
+    isValidMuscleGroups(muscles);
 
-    if (Array.isArray(equipment) && equipment.length !== 0) {
-        isValidStringArray(equipment, 'Provided value of equipment', 'equipment');
-    }
-
-    if (typeof note === 'string' && note.trim().length !== 0) {
-        isValidString(note, 'Provided value of exercise note');
-    }
+    muscles.forEach((muscle, i) => {
+        muscles[i] = muscle.toLowerCase();
+    });
 
     const exerciseCollection = await exercises();
 
@@ -132,10 +113,18 @@ const createExercise = async function createExercise(user, name, muscles, equipm
         _id : uuidv4(),
         user : user,
         name : name,
-        muscles : muscles,
-        equipment : equipment,
-        note : note 
+        muscles : Array.from(new Set(muscles))
     };
+
+    if (Array.isArray(equipment) && equipment.length !== 0) {
+        isValidStringArray(equipment, 'Provided value of equipment', 'equipment');
+        newExercise.equipment = equipment;
+    }
+
+    if (typeof note === 'string' && note.trim().length !== 0) {
+        validation.verifyMessage(note, 'Provided value of exercise note');
+        newExercise.note = note;
+    }
 
     const insertInfo = await exerciseCollection.insertOne(newExercise);
     if (!insertInfo.acknowledged || !insertInfo.insertedId) {
@@ -159,7 +148,7 @@ const createExercise = async function createExercise(user, name, muscles, equipm
  */
 const editExercise = async function editExercise(_id, name, muscles, equipment, note) {
     checkArgumentCount('editExercise', arguments.length, editExercise.length);
-    isValidUUID(_id, 'Provided value of exercise id');
+    validation.verifyUUID(_id, 'Provided value of exercise id');
 
     const exerciseCollection = await exercises();
     const exerciseToUpdate = await this.getExercise(_id);
@@ -171,12 +160,15 @@ const editExercise = async function editExercise(_id, name, muscles, equipment, 
     const updatedExercise = {};
     
     if(name) {
-        isValidString(name, 'Provided value of exercise name');
+        validation.verifyMessage(name, 'Provided value of exercise name');
         updatedExercise.name = name;
     }
 
     if(muscles) {
-        isValidStringArray(muscles, 'Provided value of muscles', 'muscles');
+        isValidMuscleGroups(muscles);
+        muscles.forEach((muscle, i) => {
+            muscles[i] = muscle.toLowerCase();
+        });
         updatedExercise.muscles = muscles;
     }
 
@@ -186,7 +178,7 @@ const editExercise = async function editExercise(_id, name, muscles, equipment, 
     }
 
     if(note) {
-        isValidString(note, 'Provided value of exercise note');
+        validation.verifyMessage(note, 'Provided value of exercise note');
         updatedExercise.note = note;
     }
 
@@ -205,7 +197,7 @@ const editExercise = async function editExercise(_id, name, muscles, equipment, 
  */
 const deleteExercise = async function deleteExercise(_id) {
     checkArgumentCount('deleteExercise', arguments.length, deleteExercise.length);
-    isValidUUID(_id, 'Provided value of exercise id');
+    validation.verifyUUID(_id, 'Provided value of exercise id');
 
     const exerciseCollection = await exercises();
     const exerciseToRemove = await this.getExercise(_id);

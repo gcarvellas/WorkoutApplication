@@ -6,8 +6,8 @@ const UUID_V4_REGEX = /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-
 const USER_OBJECT_KEYS = Object.freeze(["_id", "userInfo", "email", "hashedPassword", "userMadeWorkouts", "userLikedWorkouts", "totalLikesReceived", "totalCommentsReceived", "workoutLogs"]);
 const USER_INFO_OBJECT_KEYS = Object.freeze(["firstName", "lastName", "birthDate", "bio", "weight", "height", "frequencyOfWorkingOut"]);
 const WORKOUT_OBJECT_KEYS = Object.freeze(["_id", "name", "author", "intensity", "length", "exercises", "comments", "usersLiked"]);
-const EXERCISES_OBJECT_KEYS = Object.freeze(["_id", "user", "name", "muscles"]);
-const SUBEXERCISES_OBJECT_KEYS = Object.freeze(["exerciseId", "sets", "repititions", "rest", "note"]);
+const EXERCISES_OBJECT_KEYS = Object.freeze(["_id", "user", "name", "muscles", "equipment", "note"]);
+const SUBEXERCISES_OBJECT_KEYS = Object.freeze(["exerciseId", "sets", "repetitions", "rest", "weight", "comment"]);
 const MUSCLE_GROUPS = Object.freeze(['chest', 'back', 'arms', 'abs', 'legs', 'shoulders']);
 const MAX_HEIGHT = 108;
 const MAX_WORKOUT_LENGTH = 240;
@@ -82,21 +82,15 @@ module.exports = {
         //Verify user made workouts
         if (typeof user.userMadeWorkouts === 'undefined') throw "User made workouts must be provided";
         if (!Array.isArray(user.userMadeWorkouts)) throw "User made workouts must be an array of ids";
-        user.userMadeWorkouts.forEach(function (val, i){
-            if (typeof val !== "string") throw "User made workout ID must be a string";
-            user.userMadeWorkouts[i] = val.trim();
-            val = val.trim();
-            if (!ObjectId.isValid(val)) throw "User made workout ID must be valid";
+        user.userMadeWorkouts.forEach((userMadeWorkout) => {
+            this.verifyUUID(userMadeWorkout, "User made workout ID");
         });
 
         //Verify user liked workouts
         if (typeof user.userLikedWorkouts === 'undefined') throw "User liked workouts must be provided";
         if (!Array.isArray(user.userLikedWorkouts)) throw "User liked workouts must be an array of ids";
-        user.userLikedWorkouts.forEach(function (val, i){
-            if (typeof val !== "string") throw "User liked workout ID must be a string";
-            user.userLikedWorkouts[i] = val.trim();
-            val = val.trim();
-            if (!ObjectId.isValid(val)) throw "User liked workout ID must be valid";
+        user.userLikedWorkouts.forEach((userLikedWorkout) => {
+            this.verifyUUID(userLikedWorkout, "User liked workout ID");
         });
 
         //Verify total likes received
@@ -112,11 +106,8 @@ module.exports = {
         //Verify workout logs
         if (typeof user.workoutLogs === 'undefined') throw "Workout logs must be provided";
         if (!Array.isArray(user.workoutLogs)) throw "Workout logs must be an array of ids";
-        user.workoutLogs.forEach(function (val, i) {
-            if (typeof val !== "string") throw "Workout log ID must be a string";
-            user.workoutLogs[i] = val.trim();
-            val = val.trim();
-            if (!ObjectId.isValid(val)) throw "Workout log ID must be valid";
+        user.workoutLogs.forEach((workoutLog) => {
+            this.verifyUUID(workoutLog, "Workout Log ID");
         });
 
         return user;
@@ -260,26 +251,26 @@ module.exports = {
         //verify name
         workout.name = verifyString(workout.name, "Workout name");
         //verify author
-        workout.author = verifyUUID(workout.author, "Workout author id");
+        workout.author = this.verifyUUID(workout.author, "Workout author id");
         //verify intensity
-        workout.intensity = verifyWorkoutIntensity(workout.intensity);
+        workout.intensity = this.verifyWorkoutIntensity(workout.intensity);
         //verify length
-        workout.length = verifyWorkoutLength(workout.length);
+        workout.length = this.verifyWorkoutLength(workout.length);
         //verify exercises
-        workout.exercises = verifySubExercise(workout.exercises); 
+        workout.exercises = this.verifySubExercise(workout.exercises); 
         //verify comments
         if (typeof workout.comments === 'undefined') throw "comments must be provided";
         if (!Array.isArray(workout.comments)) throw "comments must be an array of comment ids";
         workout.comments.forEach((val, i) => {
             //TODO: verify if these exceptions are caught correctly for a forEach
-            workout.comments[i] = verifyUUID(workout.comments[i], "Comment id");
+            workout.comments[i] = this.verifyUUID(workout.comments[i], "Comment id");
         });
         //verify usersLiked
         if (typeof workout.usersLiked === 'undefined') throw 'usersLiked must be provided';
         if (!Array.isArray(workout.usersLiked)) throw 'usersLiked must be an array of user ids';
         workout.usersLiked.forEach((val, i) => {
             //TODO: verify if these exceptions are caught correctly for a forEach
-            workout.usersLiked[i] = verifyUUID(workout.usersLiked[i], "User id");
+            workout.usersLiked[i] = this.verifyUUID(workout.usersLiked[i], "User id");
         });
 
         return workout;
@@ -287,8 +278,37 @@ module.exports = {
     /**
      * Verifies a valid exercise (object from exercise collection)
     */
-    verifyExercises(exercises) {
-        //TODO
+    verifyExercise(exercise) {
+        if (typeof exercise === 'undefined') throw "workout must be provided";
+        if (typeof exercise !== "object") throw "workout must be an object";
+        verifyKeys(exercise, EXERCISES_OBJECT_KEYS);
+
+        // verify _id
+        exercise._id = this.verifyUUID(exercise._id, "Exercise id");
+        // verify user
+        exercise.user = this.verifyUUID(exercise.user, "Exercise user id");
+        // verify name
+        exercise.name = verifyString(exercise.name, "Exercise name");
+        // verify muscles
+        if (typeof exercise.muscles === 'undefined') throw 'muscles must be provided';
+        if (!Array.isArray(exercise.muscles)) throw 'muscles must be an array of strings';
+        exercise.muscles.forEach((muscle_group) => {
+            verifyString(muscle_group);
+            if(!MUSCLE_GROUPS.includes(muscle_group.toLowerCase())) throw `The input "${muscle_group}" is not a valid muscle group`;
+        }); 
+
+        if (typeof exercise.equipment !== 'undefined') {
+            if(!Array.isArray(exercise.equipment)) throw 'equipment must be an array of strings';
+            exercise.equipment.forEach((single_equipment) => {
+                verifyString(single_equipment);
+            });
+        }
+
+        if (typeof exercise.note !== 'undefined') {
+            exercise.note = verifyString(exercise.note, "Exercise note");
+        }
+
+        return exercise;
     },
     /**
      * Verifies subExercises (which is contained in workout object and workoutLog object)
@@ -304,29 +324,30 @@ module.exports = {
     */
     verifySubExercise(subExercises) {
         if (typeof subExercises === 'undefined') throw 'subExercises must be provided';
-        if (!Array.isArray(exercises)) throw 'subExercises must be an array';
+        if (!Array.isArray(subExercises)) throw 'subExercises must be an array';
 
         //verify that each object in subExercises is a valid subExercise
+        
         subExercises.forEach((val, i) => {
             try {
                 //TODO: verify if these exceptions are caught correctly for a forEach
                 if (typeof val !== 'object') throw 'subExercises item must be an object';
                 val = verifyKeys(val, SUBEXERCISES_OBJECT_KEYS)
                 //verify exerciseId
-                subExercises[i].exerciseId = verifyUUID(subExercises[i].exerciseId, 'subExercises item exerciseId');
+                subExercises[i].exerciseId = this.verifyUUID(subExercises[i].exerciseId, 'subExercises item exerciseId');
                 //verify sets
-                subExercises[i].sets = verifyNumber(subExercises[i].sets, 'subExercises item sets', 'int', 1, 500);
+                subExercises[i].sets = this.verifyNumber(subExercises[i].sets, 'subExercises item sets', 'int', 1, 500);
                 //verify repetitions
-                subExercises[i].repetitions = verifyNumber(subExercises[i].repetitions, 'subExercises item repetitions', 'int', 1, 500);
+                subExercises[i].repetitions = this.verifyNumber(subExercises[i].repetitions, 'subExercises item repetitions', 'int', 1, 500);
                 //verify rest
-                subExercises[i].rest = verifyNumber(subExericses[i].rest, 'subExercises item rest', 'int', 0, 500);
+                subExercises[i].rest = this.verifyNumber(subExercises[i].rest, 'subExercises item rest', 'int', 0, 500);
                 //verify weight (optional field)
                 if (typeof subExercises[i].weight !== 'undefined') {
-                    subExercises[i].weight = verifyNumber(subExercises[i].weight, 'subExercises item weight', undefined, 0, 500);
+                    subExercises[i].weight = this.verifyNumber(subExercises[i].weight, 'subExercises item weight', undefined, 0, 500);
                 }
                 //verify note (optional field)
                 if (typeof subExercises[i].note !== 'undefined') {
-                    subExercises[i].note = verifyString(subExercises[i].note, 'subExercises item comment id');
+                    subExercises[i].note = this.verifyString(subExercises[i].note, 'subExercises item comment id');
                 }
             } catch (e) {
                 throw `index ${i} threw exception: ` + e;
