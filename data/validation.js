@@ -53,6 +53,22 @@ function verifyKeys(obj, keys){
     return obj;
 }
 
+function verifyDate(obj, variableName = undefined){
+    /**
+     * Verify a date object is of type date
+     * @param {Date} obj Date Object
+     * @param variableName (optional) If an error is thrown, adds name of variable to error message
+     * @return {Date} Date Object
+     * @throws Will throw an exception if object is not type Date
+     */
+    if (variableName === "undefind") {
+        variableName = "Date";
+    }
+    if (typeof obj === "undefined") throw "Object must be provided";
+    if (Object.prototype.toString.call(obj) !== '[object Date]') throw `${variableName} must be a date object`;
+    return obj
+}
+
 module.exports = {
     verifyUser(user){
         /**
@@ -439,6 +455,81 @@ module.exports = {
          */
         return verifyString(message);
     },
+    verifyPassword(password){
+        /**
+         * Verifies password is a string.
+         * @param {String} password a non-empty string
+         * @return {String} trimmed string
+         * @throws Will throw an exception if password is invalid
+         */
+        return verifyString(password, "Password");
+    },
+    verifyFirstName(firstName){
+        /**
+         * Verifies first name is a string.
+         * @param {String} firstName a non-empty string
+         * @return {String} trimmed string
+         * @throws Will throw an exception if firstName is invalid
+         */
+        return verifyString(firstName, "First Name");
+    },
+    verifyFirstName(lastName){
+        /**
+         * Verifies first name is a string.
+         * @param {String} lastName a non-empty string
+         * @return {String} trimmed string
+         * @throws Will throw an exception if lastName is invalid
+         */
+        return verifyString(lastName, "Last Name");
+    },
+    verifyBirthDate(birthDate){
+        /**
+         * Verifies birthDate is a date object.
+         * @param {Date} birthDate a date object
+         * @return {Date} date object
+         * @throws Will throw an exception if birthDate is invalid
+         */
+        
+        return verifyDate(birthDate, "Birth Date");
+    },
+    verifyBio(bio){
+        /**
+         * Verifies bio is a string.
+         * @param {String} bio a non-empty string
+         * @return {String} trimmed string
+         * @throws Will throw an exception if bio is invalid
+         */
+        return verifyString(bio, "Bio");
+    },
+    verifyWeight(weight){
+        /**
+         * Verifies weight is an integer.
+         * @param {Integer} weight a non-empty integer
+         * @return {Integer} integer
+         * @throws Will throw an exception if weight is invalid
+         */
+        return verifyNumber(weight, "Weight", "int", 0, 500);
+    },
+    verifyHeight(height){
+        /**
+         * Verifies height is an integer.
+         * @param {Integer} height a non-empty integer
+         * @return {Integer} integer
+         * @throws Will throw an exception if height is invalid
+         */
+        return verifyNumber(height, "Height", "int", 0, 500);
+    },
+    verifyFrequencyOfWorkingOut(frequencyOfWorkingOut){
+        /**
+         * Verifies frequencyOfWorkingOut is an integer.
+         * @param {Integer} frequencyOfWorkingOut a non-empty integer
+         * @return {Integer} integer
+         * @throws Will throw an exception if frequencyOfWorkingOut is invalid
+         */
+        return verifyNumber(frequencyOfWorkingOut, "frequencyOfWorkingOut", "int", 0, 7);
+    },
+    
+    
     MUSCLE_GROUPS,
     MAX_HEIGHT,
     MAX_WORKOUT_LENGTH,
