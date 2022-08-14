@@ -4,6 +4,7 @@ const workoutData = require('./workouts');
 const workoutSearchData = require('./workoutSearch');
 const workoutLogData = require('./workoutLogs');
 const validation = require('./validation');
+const commentData = require('./comments');
 
 module.exports = {
     exercises: exerciseData,
@@ -11,5 +12,6 @@ module.exports = {
     workouts: workoutData,
     workoutSearch: workoutSearchData,
     workoutLogs: workoutLogData,
-    validation: validation
+    validation: validation,
+    comments: commentData
 }

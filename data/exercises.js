@@ -3,6 +3,7 @@ const validation = require('./validation');
 const exercises = mongoCollections.exercises;
 const { v4 : uuidv4} = require('uuid');
 const MUSCLE_GROUPS = validation.MUSCLE_GROUPS;
+const users = require('./users');
 
 function checkArgumentCount(functionName, numOfArgumentsPassed, numOfArgumentsExpected) {
     if (numOfArgumentsPassed !== numOfArgumentsExpected) {
@@ -62,7 +63,7 @@ function isValidMuscleGroups(arr) {
 
 /**
  * Get exercise by a given ID
- * @param {*} _id 
+ * @param {String} _id 
  * @returns 
  */
  const getExercise = async function getExercise(_id) {
@@ -82,16 +83,18 @@ function isValidMuscleGroups(arr) {
 
 /**
  * Persists exercise into database
- * @param {String} user 
+ * @param {Object} user 
+ * @param {String} userPassword password from cookie
  * @param {String} name 
  * @param {Array<String>} muscles
  * @param {Array<String>} equipment 
  * @param {String} note 
  * @returns 
  */
-const createExercise = async function createExercise(user, name, muscles, equipment, note) {
+const createExercise = async function createExercise(user, userPassword, name, muscles, equipment, note) {
+    user = validation.verifyUser(user);
+    user = await users.checkUser(user.email, userPassword);
     checkArgumentCount('createExercise', arguments.length, createExercise.length);
-    validation.verifyUUID(user, 'Provided value of user id');
     validation.verifyMessage(name, 'Provided value of exercise name');
 
     const exerciseList = await getAllExercise();
@@ -111,7 +114,7 @@ const createExercise = async function createExercise(user, name, muscles, equipm
 
     let newExercise = {
         _id : uuidv4(),
-        user : user,
+        user : user._id,
         name : name,
         muscles : Array.from(new Set(muscles))
     };
@@ -139,6 +142,8 @@ const createExercise = async function createExercise(user, name, muscles, equipm
 
 /**
  * Updates exercise by a given ID
+ * @param {Object} user 
+ * @param {String} userPassword password from cookie
  * @param {String} _id 
  * @param {String} name 
  * @param {Array<String>} muscles 
@@ -146,7 +151,9 @@ const createExercise = async function createExercise(user, name, muscles, equipm
  * @param {String} note 
  * @returns 
  */
-const editExercise = async function editExercise(_id, name, muscles, equipment, note) {
+const editExercise = async function editExercise(user, userPassword, _id, name, muscles, equipment, note) {
+    user = validation.verifyUser(user);
+    user = await users.checkUser(user.email, userPassword);
     checkArgumentCount('editExercise', arguments.length, editExercise.length);
     validation.verifyUUID(_id, 'Provided value of exercise id');
 
@@ -156,6 +163,8 @@ const editExercise = async function editExercise(_id, name, muscles, equipment, 
     if(exerciseToUpdate === null) {
         throw `No exercise was found for the given ID`;
     }
+
+    if (exerciseToUpdate.user !== user._id) throw "User cannot edit other user's exercise";
 
     const updatedExercise = {};
     
