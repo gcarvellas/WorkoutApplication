@@ -6,8 +6,8 @@ const UUID_V4_REGEX = /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-
 const USER_OBJECT_KEYS = Object.freeze(["_id", "userInfo", "email", "hashedPassword", "userMadeWorkouts", "userLikedWorkouts", "totalLikesReceived", "totalCommentsReceived", "workoutLogs"]);
 const USER_INFO_OBJECT_KEYS = Object.freeze(["firstName", "lastName", "birthDate", "bio", "weight", "height", "frequencyOfWorkingOut"]);
 const WORKOUT_OBJECT_KEYS = Object.freeze(["_id", "name", "author", "intensity", "length", "exercises", "comments", "usersLiked"]);
-const EXERCISES_OBJECT_KEYS = Object.freeze(["_id", "user", "name", "muscles"]);
-const SUBEXERCISES_OBJECT_KEYS = Object.freeze(["exerciseId", "sets", "repititions", "rest", "note"]);
+const EXERCISES_OBJECT_KEYS = Object.freeze(["_id", "user", "name", "muscles", "equipment", "comment"]);
+const SUBEXERCISES_OBJECT_KEYS = Object.freeze(["exerciseId", "sets", "repetitions", "rest", "weight", "comment"]);
 const MUSCLE_GROUPS = Object.freeze(['chest', 'back', 'arms', 'abs', 'legs', 'shoulders']);
 const MAX_HEIGHT = 108;
 const MAX_WORKOUT_LENGTH = 240;
@@ -53,6 +53,22 @@ function verifyKeys(obj, keys){
     return obj;
 }
 
+function verifyDate(obj, variableName = undefined){
+    /**
+     * Verify a date object is of type date
+     * @param {Date} obj Date Object
+     * @param variableName (optional) If an error is thrown, adds name of variable to error message
+     * @return {Date} Date Object
+     * @throws Will throw an exception if object is not type Date
+     */
+    if (variableName === "undefind") {
+        variableName = "Date";
+    }
+    if (typeof obj === "undefined") throw "Object must be provided";
+    if (Object.prototype.toString.call(obj) !== '[object Date]') throw `${variableName} must be a date object`;
+    return obj
+}
+
 module.exports = {
     verifyUser(user){
         /**
@@ -77,26 +93,25 @@ module.exports = {
         user.email = this.verifyEmail(user.email);
 
         //Verify hashed password
-        user.hashedPassword = verifyString(user.hashedPassword, "Hashed password");
+        try{
+            user.hashedPassword = verifyString(user.hashedPassword, "Hashed password");
+        }
+        catch (e) {
+            if (user.hashedPassword !== null) throw "Password must be a string or null";
+        }
 
         //Verify user made workouts
         if (typeof user.userMadeWorkouts === 'undefined') throw "User made workouts must be provided";
         if (!Array.isArray(user.userMadeWorkouts)) throw "User made workouts must be an array of ids";
-        user.userMadeWorkouts.forEach(function (val, i){
-            if (typeof val !== "string") throw "User made workout ID must be a string";
-            user.userMadeWorkouts[i] = val.trim();
-            val = val.trim();
-            if (!ObjectId.isValid(val)) throw "User made workout ID must be valid";
+        user.userMadeWorkouts.forEach((userMadeWorkout) => {
+            this.verifyUUID(userMadeWorkout, "User made workout ID");
         });
 
         //Verify user liked workouts
         if (typeof user.userLikedWorkouts === 'undefined') throw "User liked workouts must be provided";
         if (!Array.isArray(user.userLikedWorkouts)) throw "User liked workouts must be an array of ids";
-        user.userLikedWorkouts.forEach(function (val, i){
-            if (typeof val !== "string") throw "User liked workout ID must be a string";
-            user.userLikedWorkouts[i] = val.trim();
-            val = val.trim();
-            if (!ObjectId.isValid(val)) throw "User liked workout ID must be valid";
+        user.userLikedWorkouts.forEach((userLikedWorkout) => {
+            this.verifyUUID(userLikedWorkout, "User liked workout ID");
         });
 
         //Verify total likes received
@@ -112,11 +127,8 @@ module.exports = {
         //Verify workout logs
         if (typeof user.workoutLogs === 'undefined') throw "Workout logs must be provided";
         if (!Array.isArray(user.workoutLogs)) throw "Workout logs must be an array of ids";
-        user.workoutLogs.forEach(function (val, i) {
-            if (typeof val !== "string") throw "Workout log ID must be a string";
-            user.workoutLogs[i] = val.trim();
-            val = val.trim();
-            if (!ObjectId.isValid(val)) throw "Workout log ID must be valid";
+        user.workoutLogs.forEach((workoutLog) => {
+            this.verifyUUID(workoutLog, "Workout Log ID");
         });
 
         return user;
@@ -177,19 +189,6 @@ module.exports = {
 
         return userInfo;
 
-    },
-    verifyWeight(weight){
-        /**
-         * Verifies a valid weight. A weight is a positive integer.
-         * @param {int} weight valid weight
-         * @return {int} valid weight
-         * @throws Will throw an exception if weight is invalid
-         */
-        if (typeof weight === 'undefined') throw "Weight must be provided";
-        if (!Number.isInteger(weight)) throw "Weight must be an integer";
-        if (weight < 0) throw "Weight must be a positive value";
-        if (weight > MAX_WEIGHT) throw `Weight must be less than ${MAX_WEIGHT}`;
-        return weight;
     },
     /**
      * Verifies number
@@ -260,26 +259,26 @@ module.exports = {
         //verify name
         workout.name = verifyString(workout.name, "Workout name");
         //verify author
-        workout.author = verifyUUID(workout.author, "Workout author id");
+        workout.author = this.verifyUUID(workout.author, "Workout author id");
         //verify intensity
-        workout.intensity = verifyWorkoutIntensity(workout.intensity);
+        workout.intensity = this.verifyWorkoutIntensity(workout.intensity);
         //verify length
-        workout.length = verifyWorkoutLength(workout.length);
+        workout.length = this.verifyWorkoutLength(workout.length);
         //verify exercises
-        workout.exercises = verifySubExercise(workout.exercises); 
+        workout.exercises = this.verifySubExercise(workout.exercises); 
         //verify comments
         if (typeof workout.comments === 'undefined') throw "comments must be provided";
         if (!Array.isArray(workout.comments)) throw "comments must be an array of comment ids";
         workout.comments.forEach((val, i) => {
             //TODO: verify if these exceptions are caught correctly for a forEach
-            workout.comments[i] = verifyUUID(workout.comments[i], "Comment id");
+            workout.comments[i] = this.verifyUUID(workout.comments[i], "Comment id");
         });
         //verify usersLiked
         if (typeof workout.usersLiked === 'undefined') throw 'usersLiked must be provided';
         if (!Array.isArray(workout.usersLiked)) throw 'usersLiked must be an array of user ids';
         workout.usersLiked.forEach((val, i) => {
             //TODO: verify if these exceptions are caught correctly for a forEach
-            workout.usersLiked[i] = verifyUUID(workout.usersLiked[i], "User id");
+            workout.usersLiked[i] = this.verifyUUID(workout.usersLiked[i], "User id");
         });
 
         return workout;
@@ -287,8 +286,37 @@ module.exports = {
     /**
      * Verifies a valid exercise (object from exercise collection)
     */
-    verifyExercises(exercises) {
-        //TODO
+    verifyExercise(exercise) {
+        if (typeof exercise === 'undefined') throw "workout must be provided";
+        if (typeof exercise !== "object") throw "workout must be an object";
+        verifyKeys(exercise, EXERCISES_OBJECT_KEYS);
+
+        // verify _id
+        exercise._id = this.verifyUUID(exercise._id, "Exercise id");
+        // verify user
+        exercise.user = this.verifyUUID(exercise.user, "Exercise user id");
+        // verify name
+        exercise.name = verifyString(exercise.name, "Exercise name");
+        // verify muscles
+        if (typeof exercise.muscles === 'undefined') throw 'muscles must be provided';
+        if (!Array.isArray(exercise.muscles)) throw 'muscles must be an array of strings';
+        exercise.muscles.forEach((muscle_group) => {
+            verifyString(muscle_group);
+            if(!MUSCLE_GROUPS.includes(muscle_group.toLowerCase())) throw `The input "${muscle_group}" is not a valid muscle group`;
+        }); 
+
+        if (typeof exercise.equipment !== 'undefined') {
+            if(!Array.isArray(exercise.equipment)) throw 'equipment must be an array of strings';
+            exercise.equipment.forEach((single_equipment) => {
+                verifyString(single_equipment);
+            });
+        }
+
+        if (typeof exercise.note !== 'undefined') {
+            exercise.note = verifyString(exercise.note, "Exercise note");
+        }
+
+        return exercise;
     },
     /**
      * Verifies subExercises (which is contained in workout object and workoutLog object)
@@ -304,29 +332,30 @@ module.exports = {
     */
     verifySubExercise(subExercises) {
         if (typeof subExercises === 'undefined') throw 'subExercises must be provided';
-        if (!Array.isArray(exercises)) throw 'subExercises must be an array';
+        if (!Array.isArray(subExercises)) throw 'subExercises must be an array';
 
         //verify that each object in subExercises is a valid subExercise
+        
         subExercises.forEach((val, i) => {
             try {
                 //TODO: verify if these exceptions are caught correctly for a forEach
                 if (typeof val !== 'object') throw 'subExercises item must be an object';
                 val = verifyKeys(val, SUBEXERCISES_OBJECT_KEYS)
                 //verify exerciseId
-                subExercises[i].exerciseId = verifyUUID(subExercises[i].exerciseId, 'subExercises item exerciseId');
+                subExercises[i].exerciseId = this.verifyUUID(subExercises[i].exerciseId, 'subExercises item exerciseId');
                 //verify sets
-                subExercises[i].sets = verifyNumber(subExercises[i].sets, 'subExercises item sets', 'int', 1, 500);
+                subExercises[i].sets = this.verifyNumber(subExercises[i].sets, 'subExercises item sets', 'int', 1, 500);
                 //verify repetitions
-                subExercises[i].repetitions = verifyNumber(subExercises[i].repetitions, 'subExercises item repetitions', 'int', 1, 500);
+                subExercises[i].repetitions = this.verifyNumber(subExercises[i].repetitions, 'subExercises item repetitions', 'int', 1, 500);
                 //verify rest
-                subExercises[i].rest = verifyNumber(subExericses[i].rest, 'subExercises item rest', 'int', 0, 500);
+                subExercises[i].rest = this.verifyNumber(subExercises[i].rest, 'subExercises item rest', 'int', 0, 500);
                 //verify weight (optional field)
                 if (typeof subExercises[i].weight !== 'undefined') {
-                    subExercises[i].weight = verifyNumber(subExercises[i].weight, 'subExercises item weight', undefined, 0, 500);
+                    subExercises[i].weight = this.verifyNumber(subExercises[i].weight, 'subExercises item weight', undefined, 0, 500);
                 }
                 //verify note (optional field)
                 if (typeof subExercises[i].note !== 'undefined') {
-                    subExercises[i].note = verifyString(subExercises[i].note, 'subExercises item comment id');
+                    subExercises[i].note = this.verifyString(subExercises[i].note, 'subExercises item comment id');
                 }
             } catch (e) {
                 throw `index ${i} threw exception: ` + e;
@@ -341,7 +370,7 @@ module.exports = {
      * @param {Date} logInfo.date
      * @param {Integer} logInfo.intensity bounds [0,5]
      * @param {Integer} logInfo.length bounds [0, inf]
-     * @param {Object} logInfo.subExercises valid subExcerises object (contained in workout object and workoutLog object)
+     * @param {Object} logInfo.exercises valid subExcerises object (contained in workout object and workoutLog object)
      * @param {String=} logInfo.comment (optional)
      * @return {Object} logInfo
      * @throws Will throw an exception if logInfo is invalid
@@ -352,9 +381,9 @@ module.exports = {
         if (typeof logInfo.date === 'undefined') throw 'logInfo date must be provided';
         if (Object.prototype.toString.call(logInfo.date) !== '[object Date]' || isNaN(logInfo.date)) throw 'logInfo date must be a date';
         //verify intensity
-        logInfo.intensity = verifyNumber(logInfo.intensity, 'logInfo intensity', 'int', 0, 5);
+        logInfo.intensity = this.verifyNumber(logInfo.intensity, 'logInfo intensity', 'int', 0, 5);
         //verify length
-        logInfo.length = verifyNumber(logInfo.length, 'logInfo length', 'int', 1, 500);
+        logInfo.length = this.verifyNumber(logInfo.length, 'logInfo length', 'int', 1, 500);
         //verify subExercises
         logInfo.exercises = this.verifySubExercise(logInfo.exercises);
         //verify comment
@@ -418,9 +447,84 @@ module.exports = {
          */
         return verifyString(message);
     },
+    verifyPassword(password){
+        /**
+         * Verifies password is a string.
+         * @param {String} password a non-empty string
+         * @return {String} trimmed string
+         * @throws Will throw an exception if password is invalid
+         */
+        return verifyString(password, "Password");
+    },
+    verifyFirstName(firstName){
+        /**
+         * Verifies first name is a string.
+         * @param {String} firstName a non-empty string
+         * @return {String} trimmed string
+         * @throws Will throw an exception if firstName is invalid
+         */
+        return verifyString(firstName, "First Name");
+    },
+    verifyLastName(lastName){
+        /**
+         * Verifies last name is a string.
+         * @param {String} lastName a non-empty string
+         * @return {String} trimmed string
+         * @throws Will throw an exception if lastName is invalid
+         */
+        return verifyString(lastName, "Last Name");
+    },
+    verifyBirthDate(birthDate){
+        /**
+         * Verifies birthDate is a date object.
+         * @param {Date} birthDate a date object
+         * @return {Date} date object
+         * @throws Will throw an exception if birthDate is invalid
+         */
+        
+        return verifyDate(birthDate, "Birth Date");
+    },
+    verifyBio(bio){
+        /**
+         * Verifies bio is a string.
+         * @param {String} bio a non-empty string
+         * @return {String} trimmed string
+         * @throws Will throw an exception if bio is invalid
+         */
+        return verifyString(bio, "Bio");
+    },
+    verifyWeight(weight){
+        /**
+         * Verifies weight is an integer.
+         * @param {Integer} weight a non-empty integer
+         * @return {Integer} integer
+         * @throws Will throw an exception if weight is invalid
+         */
+        return this.verifyNumber(weight, "Weight", "int", 0, MAX_WEIGHT);
+    },
+    verifyHeight(height){
+        /**
+         * Verifies height is an integer.
+         * @param {Integer} height a non-empty integer
+         * @return {Integer} integer
+         * @throws Will throw an exception if height is invalid
+         */
+        return this.verifyNumber(height, "Height", "int", 0, MAX_HEIGHT);
+    },
+    verifyFrequencyOfWorkingOut(frequencyOfWorkingOut){
+        /**
+         * Verifies frequencyOfWorkingOut is an integer.
+         * @param {Integer} frequencyOfWorkingOut a non-empty integer
+         * @return {Integer} integer
+         * @throws Will throw an exception if frequencyOfWorkingOut is invalid
+         */
+        return this.verifyNumber(frequencyOfWorkingOut, "frequencyOfWorkingOut", "int", 0, 7);
+    },
+    
+    
     MUSCLE_GROUPS,
     MAX_HEIGHT,
     MAX_WORKOUT_LENGTH,
     MAX_WORKOUT_INTENSITY,
-    MAX_HEIGHT
+    MAX_WEIGHT
 }
