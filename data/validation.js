@@ -6,7 +6,7 @@ const UUID_V4_REGEX = /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-
 const USER_OBJECT_KEYS = Object.freeze(["_id", "userInfo", "email", "hashedPassword", "userMadeWorkouts", "userLikedWorkouts", "totalLikesReceived", "totalCommentsReceived", "workoutLogs"]);
 const USER_INFO_OBJECT_KEYS = Object.freeze(["firstName", "lastName", "birthDate", "bio", "weight", "height", "frequencyOfWorkingOut"]);
 const WORKOUT_OBJECT_KEYS = Object.freeze(["_id", "name", "author", "intensity", "length", "exercises", "comments", "usersLiked"]);
-const EXERCISES_OBJECT_KEYS = Object.freeze(["_id", "user", "name", "muscles", "equipment", "note"]);
+const EXERCISES_OBJECT_KEYS = Object.freeze(["_id", "user", "name", "muscles", "equipment", "comment"]);
 const SUBEXERCISES_OBJECT_KEYS = Object.freeze(["exerciseId", "sets", "repetitions", "rest", "weight", "comment"]);
 const MUSCLE_GROUPS = Object.freeze(['chest', 'back', 'arms', 'abs', 'legs', 'shoulders']);
 const MAX_HEIGHT = 108;
@@ -53,6 +53,22 @@ function verifyKeys(obj, keys){
     return obj;
 }
 
+function verifyDate(obj, variableName = undefined){
+    /**
+     * Verify a date object is of type date
+     * @param {Date} obj Date Object
+     * @param variableName (optional) If an error is thrown, adds name of variable to error message
+     * @return {Date} Date Object
+     * @throws Will throw an exception if object is not type Date
+     */
+    if (variableName === "undefind") {
+        variableName = "Date";
+    }
+    if (typeof obj === "undefined") throw "Object must be provided";
+    if (Object.prototype.toString.call(obj) !== '[object Date]') throw `${variableName} must be a date object`;
+    return obj
+}
+
 module.exports = {
     verifyUser(user){
         /**
@@ -77,7 +93,12 @@ module.exports = {
         user.email = this.verifyEmail(user.email);
 
         //Verify hashed password
-        user.hashedPassword = verifyString(user.hashedPassword, "Hashed password");
+        try{
+            user.hashedPassword = verifyString(user.hashedPassword, "Hashed password");
+        }
+        catch (e) {
+            if (user.hashedPassword !== null) throw "Password must be a string or null";
+        }
 
         //Verify user made workouts
         if (typeof user.userMadeWorkouts === 'undefined') throw "User made workouts must be provided";
@@ -168,19 +189,6 @@ module.exports = {
 
         return userInfo;
 
-    },
-    verifyWeight(weight){
-        /**
-         * Verifies a valid weight. A weight is a positive integer.
-         * @param {int} weight valid weight
-         * @return {int} valid weight
-         * @throws Will throw an exception if weight is invalid
-         */
-        if (typeof weight === 'undefined') throw "Weight must be provided";
-        if (!Number.isInteger(weight)) throw "Weight must be an integer";
-        if (weight < 0) throw "Weight must be a positive value";
-        if (weight > MAX_WEIGHT) throw `Weight must be less than ${MAX_WEIGHT}`;
-        return weight;
     },
     /**
      * Verifies number
@@ -362,7 +370,7 @@ module.exports = {
      * @param {Date} logInfo.date
      * @param {Integer} logInfo.intensity bounds [0,5]
      * @param {Integer} logInfo.length bounds [0, inf]
-     * @param {Object} logInfo.subExercises valid subExcerises object (contained in workout object and workoutLog object)
+     * @param {Object} logInfo.exercises valid subExcerises object (contained in workout object and workoutLog object)
      * @param {String=} logInfo.comment (optional)
      * @return {Object} logInfo
      * @throws Will throw an exception if logInfo is invalid
@@ -373,9 +381,9 @@ module.exports = {
         if (typeof logInfo.date === 'undefined') throw 'logInfo date must be provided';
         if (Object.prototype.toString.call(logInfo.date) !== '[object Date]' || isNaN(logInfo.date)) throw 'logInfo date must be a date';
         //verify intensity
-        logInfo.intensity = verifyNumber(logInfo.intensity, 'logInfo intensity', 'int', 0, 5);
+        logInfo.intensity = this.verifyNumber(logInfo.intensity, 'logInfo intensity', 'int', 0, 5);
         //verify length
-        logInfo.length = verifyNumber(logInfo.length, 'logInfo length', 'int', 1, 500);
+        logInfo.length = this.verifyNumber(logInfo.length, 'logInfo length', 'int', 1, 500);
         //verify subExercises
         logInfo.exercises = this.verifySubExercise(logInfo.exercises);
         //verify comment
@@ -439,9 +447,84 @@ module.exports = {
          */
         return verifyString(message);
     },
+    verifyPassword(password){
+        /**
+         * Verifies password is a string.
+         * @param {String} password a non-empty string
+         * @return {String} trimmed string
+         * @throws Will throw an exception if password is invalid
+         */
+        return verifyString(password, "Password");
+    },
+    verifyFirstName(firstName){
+        /**
+         * Verifies first name is a string.
+         * @param {String} firstName a non-empty string
+         * @return {String} trimmed string
+         * @throws Will throw an exception if firstName is invalid
+         */
+        return verifyString(firstName, "First Name");
+    },
+    verifyLastName(lastName){
+        /**
+         * Verifies last name is a string.
+         * @param {String} lastName a non-empty string
+         * @return {String} trimmed string
+         * @throws Will throw an exception if lastName is invalid
+         */
+        return verifyString(lastName, "Last Name");
+    },
+    verifyBirthDate(birthDate){
+        /**
+         * Verifies birthDate is a date object.
+         * @param {Date} birthDate a date object
+         * @return {Date} date object
+         * @throws Will throw an exception if birthDate is invalid
+         */
+        
+        return verifyDate(birthDate, "Birth Date");
+    },
+    verifyBio(bio){
+        /**
+         * Verifies bio is a string.
+         * @param {String} bio a non-empty string
+         * @return {String} trimmed string
+         * @throws Will throw an exception if bio is invalid
+         */
+        return verifyString(bio, "Bio");
+    },
+    verifyWeight(weight){
+        /**
+         * Verifies weight is an integer.
+         * @param {Integer} weight a non-empty integer
+         * @return {Integer} integer
+         * @throws Will throw an exception if weight is invalid
+         */
+        return this.verifyNumber(weight, "Weight", "int", 0, MAX_WEIGHT);
+    },
+    verifyHeight(height){
+        /**
+         * Verifies height is an integer.
+         * @param {Integer} height a non-empty integer
+         * @return {Integer} integer
+         * @throws Will throw an exception if height is invalid
+         */
+        return this.verifyNumber(height, "Height", "int", 0, MAX_HEIGHT);
+    },
+    verifyFrequencyOfWorkingOut(frequencyOfWorkingOut){
+        /**
+         * Verifies frequencyOfWorkingOut is an integer.
+         * @param {Integer} frequencyOfWorkingOut a non-empty integer
+         * @return {Integer} integer
+         * @throws Will throw an exception if frequencyOfWorkingOut is invalid
+         */
+        return this.verifyNumber(frequencyOfWorkingOut, "frequencyOfWorkingOut", "int", 0, 7);
+    },
+    
+    
     MUSCLE_GROUPS,
     MAX_HEIGHT,
     MAX_WORKOUT_LENGTH,
     MAX_WORKOUT_INTENSITY,
-    MAX_HEIGHT
+    MAX_WEIGHT
 }
