@@ -6,7 +6,7 @@ const workoutRoutes = require('./workouts');
 const workoutSearchRoutes = require('./workoutSearch');
 
 const constructorMethod = (app) => {
-    app.use('/signup', userRoutes);
+    app.use('/', userRoutes);
     // app.use('/', exerciseRoutes);
     // app.use('/', commentRoutes);
     app.use('/', workoutLogRoutes);

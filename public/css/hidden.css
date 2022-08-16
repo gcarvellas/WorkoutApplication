@@ -26,8 +26,18 @@ li.signup-btn  {
     padding-right: 8px;
 }
 
-.signup-container {
+.signup-container,
+.signin-container,
+.profile-container {
     padding-top: 5rem;
+}
+
+.form-signup,
+.form-signin {
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
 }
 
 .viewWorkouts-container {
