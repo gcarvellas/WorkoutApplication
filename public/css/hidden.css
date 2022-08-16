@@ -40,6 +40,10 @@ li.signup-btn  {
     margin: 0 auto;
 }
 
+.profile-card {
+    min-width: 228px;
+}
+
 .viewWorkouts-container {
     padding-top: 5rem;
 }

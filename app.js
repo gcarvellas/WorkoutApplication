@@ -3,6 +3,7 @@ const app = express();
 const session = require('express-session');
 const configRoutes = require('./routes');
 const exphbs = require('express-handlebars');
+const helpers = require('./config/handlebars-helpers');
 const static = express.static(__dirname + '/public');
 
 app.use('/public', static);
@@ -10,7 +11,10 @@ app.use('/public', static);
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.engine('handlebars', exphbs.engine({"defaultLayout": 'navbar'}));
+app.engine('handlebars', exphbs.engine({
+    "defaultLayout": 'navbar',
+    helpers: helpers
+}));
 app.set('view engine', 'handlebars');
 
 app.use(session({
