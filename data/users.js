@@ -3,7 +3,6 @@ const validation = require('./validation');
 const { v4 : uuidv4, validate} = require('uuid');
 const workoutUser = mongoCollections.users;
 const bcrypt = require('bcryptjs');
-const { users } = require('.');
 const SALT_ROUNDS = 10;
 
 module.exports = {
