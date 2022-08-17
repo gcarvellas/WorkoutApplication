@@ -482,7 +482,22 @@ module.exports = {
          * @throws Will throw an exception if birthDate is invalid
          */
         
-        return verifyDate(birthDate, "Birth Date");
+        birthDate = verifyDate(birthDate, "Birth Date");
+        //see if user is at least 13 years old and not above 120
+        let today = new Date();
+        let years = today.getFullYear() - birthDate.getFullYear();
+        let months = today.getMonth() - birthDate.getMonth();
+        if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) {
+            years--;
+        }
+        if (years < 13) {
+            throw 'user\'s birthdate is below 13 years of age';
+        }
+        if (years > 120) {
+            throw 'user\'s birthdate is above 120 years of age';
+        }
+
+        return birthDate;
     },
     verifyBio(bio){
         /**

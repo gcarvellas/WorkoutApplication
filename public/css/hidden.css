@@ -26,6 +26,11 @@ li.signup-btn  {
     padding-right: 8px;
 }
 
+.logout-btn {
+    padding-right: 8px;
+    padding-top: 6px;
+}
+
 .signup-container,
 .signin-container,
 .profile-container {
@@ -41,11 +46,19 @@ li.signup-btn  {
 }
 
 .birthDateInput {
-    min-width: 190px;
+    width: 190px;
 }
 
 .profile-card {
     min-width: 228px;
+}
+
+.errorBtn {
+    padding-top: 10px !important;
+}
+
+.errorContainer {
+    max-width: 370px;
 }
 
 .viewWorkouts-container,
