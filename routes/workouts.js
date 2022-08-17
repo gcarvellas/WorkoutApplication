@@ -12,6 +12,13 @@ router
     .route('/workout/:id')
     .get(async (req, res) => {
         try{
+            const USER_EMAIL = "dbSanityTest@test.com"; //TODO REMOVE
+            const USER_PASSWORD = "test123456"; //TODO REMOVE
+            const users = require('../data/users'); //TODO REMOVE
+            let user = await users.checkUser(USER_EMAIL, USER_PASSWORD); //TODO REMOVE
+            req.session.user = user; //TODO REMOVE
+            req.session.password = USER_PASSWORD; //TODO REMOVE
+
             const workoutId = validation.verifyUUID(req.params.id, "Workout id");
             const workout = await workouts.getWorkout(workoutId);
             
@@ -20,18 +27,18 @@ router
              * Each exercise wil contain: exerciseId, name, sets, repetitions, rest, weight, comment
              */
             let exerciseResults = [];
-            workout.exercises.forEach((exercise) => {
+            for (const exercise of workout.exercises){
                 const exerciseResult = await exercises.getExercise(exercise.exerciseId);
                 exercise.name = exerciseResult.name;
                 exerciseResults.push(exercise);
-            });
+            }
 
             /**
              * Render each comment
              * Each comment will contain: currentTime(), name, comment, author
              */
             let commentResults = [];
-            workout.comments.forEach((commentId) => {
+            for (const commentId of workout.comments){
                 const commentResult = await comments.getComment(commentId);
                 const userInfo = await users.getUser(commentResult.author);
                 if (userInfo.userInfo.lastName){
@@ -42,14 +49,31 @@ router
                 }
                 delete commentResult.workout;
                 commentResults.push(commentResult);
-            })
+            }
 
-            res.status(200).render('workout', {workout: workout, exercises: exerciseResults, comments: commentResults});
+            let hasLike = await workouts.checkIfUserLikedWorkout(req.session.user, workoutId);
+
+            res.status(200).render('workouts/workout', {workout: workout, exercises: exerciseResults, comments: commentResults, user: req.session.user, isAuthor: (req.session.user._id === workout.author)});
         }
         catch (e) {
             console.log(e);
-            res.status(400).json('workout', {error: e}); //TODO make error page
+            res.status(400).render('workouts/workout', {error: e}); //TODO make error page
         }
     });
+
+router
+    .route('/workout/:id/delete')
+    .post(async (req, res) => {
+        const workoutId = validation.verifyUUID(req.body.workoutId, "Workout id");
+        if (!req.session.user) return res.status(403).render('workouts/deleteWorkout', {error: "Forbidden"});
+        try{
+            await workouts.deleteWorkout(user, userPassword, workoutId);
+            return res.status(200).render('workouts/deleteWorkout');
+        } catch (e) {
+            return res.status(400).render('workouts/deleteWorkout', {error: e});
+        }
+    });
+
+
 
 module.exports = router;
