@@ -1,0 +1,160 @@
+<div class="container profile-container">
+  <h1>My Profile</h1>
+  <div class="row gutters-sm">
+    <div class="col-md-5 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex flex-column align-items-center text-center">
+            <div class="mt-3 profile-card">
+              <h4>{{user.userInfo.firstName}} {{user.userInfo.lastName}}</h4>
+              <p class="text-secondary">{{user.userInfo.bio}}</p>
+              <div class="d-flex flex-row align-items-center text-center">
+                <div class="flex-fill">
+                  <h6 class="mb-0">Likes:</h6>
+                  <span class="text-secondary">{{user.totalLikesReceived}}</span>
+                </div>
+                <div class="flex-fill">
+                  <h6 class="mb-0">Comments:</h6>
+                  <span class="text-secondary">{{user.totalCommentsReceived}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-7">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-5">
+              Full Name
+            </div>
+            <div class="col-sm-7 text-secondary">
+              {{user.userInfo.firstName}} {{user.userInfo.lastName}}
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm-5">
+              Email
+            </div>
+            <div class="col-sm-7 text-secondary">
+              {{user.email}}
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm-5">
+              Birthday
+            </div>
+            <div class="col-sm-7 text-secondary">
+              {{dateFormat user.userInfo.birthDate "MM/DD/YYYY"}}
+            </div>
+          </div> 
+          <hr>
+          <div class="row">
+            <div class="col-sm-5">
+              Weight
+            </div>
+            <div class="col-sm-7 text-secondary">
+              {{check user.userInfo.weight 0 ' lbs'}}
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm-5">
+              Height
+            </div>
+            <div class="col-sm-7 text-secondary">
+              {{heightFormat user.userInfo.height}}
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm-5">
+              Frequency
+            </div>
+            <div class="col-sm-7 text-secondary">
+              {{check user.userInfo.frequencyOfWorkingOut 0 ' times a week'}}
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm-12">
+              {{!-- need to make it where it just lets the fields be editable (ajax request) --}}
+              <a class="btn btn-info" href="/">Edit</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <h5>Created Workouts</h5>
+      {{!-- this is made for each workout card--}}
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <h4 class="card-title">My Chest-day Workout</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <h5>Logged Workouts</h5>
+      {{!-- this is made for each workout log card --}}
+      {{#if workoutLogs.length}}
+        {{#each workoutLogs}}
+          <div class="card border-5 pb-0 px-3">
+            <div class="card-body">
+              <div class="row">
+                {{!-- figure out if we want to get the parentWorkout name here --}}
+                <div class="col-12">
+                  <h4 class="card-title">{{workout}}</h4>
+                </div>
+                <div class="col">
+                  <div class="card-subtitle mb-2 text-muted">
+                    Logged on  {{dateFormat logInfo.date "dddd, MMMM Do, YYYY"}}
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex flex-row flex-wrap justify-content-between align-items-center text-center">
+                <div class="d-flex flex-row">
+                  <div class="d-flex flex-column mr-4">
+                    <h6 class="mb-0">Intensity:</h6>
+                    <span class="text-secondary">{{logInfo.intensity}}</span>
+                  </div>
+                  <div class="d-flex flex-column mr-4">
+                    <h6 class="mb-0">Length:</h6>
+                    <span class="text-secondary">{{logInfo.length}}</span>
+                  </div>
+                  <div class="d-flex flex-column mr-4">
+                    <h6 class="mb-0">Exercises:</h6>
+                    <span class="text-secondary">{{logInfo.exercises.length}}</span>
+                  </div>
+                </div>
+                
+                <div>
+                  <button class="btn btn-primary" href="/workoutLog/{{logInfo.workout}}">View</button>
+                  <button class="btn btn-outline-primary" href="/workoutLog/edit/{{logInfo.workout}}">Edit</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          {{#if @last}}
+          {{else}}
+            <hr>
+          {{/if}}
+        {{/each}}
+      {{else}}
+      {{!-- TODO: what to show when there are no workoutLogs --}}
+      {{/if}}
+    </div>
+  </div>
+  <script src="../../public/js/profile.js"></script>
+</div>

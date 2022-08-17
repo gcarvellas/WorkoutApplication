@@ -12,13 +12,6 @@ router
     .route('/workout/:id')
     .get(async (req, res) => {
         try{
-            const USER_EMAIL = "dbSanityTest@test.com"; //TODO REMOVE
-            const USER_PASSWORD = "test123456"; //TODO REMOVE
-            const users = require('../data/users'); //TODO REMOVE
-            let user = await users.checkUser(USER_EMAIL, USER_PASSWORD); //TODO REMOVE
-            req.session.user = user; //TODO REMOVE
-            req.session.password = USER_PASSWORD; //TODO REMOVE
-
             const workoutId = validation.verifyUUID(req.params.id, "Workout id");
             const workout = await workouts.getWorkout(workoutId);
             
@@ -51,9 +44,14 @@ router
                 commentResults.push(commentResult);
             }
 
-            let hasLike = await workouts.checkIfUserLikedWorkout(req.session.user, workoutId);
+            let user = undefined;
+            let isAuthor = undefined;
+            if (req.session.user){
+                user = await users.getUser(req.session.user);
+                isAuthor = (user._id === workout.author);
+            }
 
-            res.status(200).render('workouts/workout', {workout: workout, exercises: exerciseResults, comments: commentResults, user: req.session.user, isAuthor: (req.session.user._id === workout.author)});
+            res.status(200).render('workouts/workout', {workout: workout, exercises: exerciseResults, comments: commentResults, user: user, isAuthor: isAuthor});
         }
         catch (e) {
             console.log(e);
@@ -67,7 +65,8 @@ router
         const workoutId = validation.verifyUUID(req.body.workoutId, "Workout id");
         if (!req.session.user) return res.status(403).render('workouts/deleteWorkout', {error: "Forbidden"});
         try{
-            await workouts.deleteWorkout(user, userPassword, workoutId);
+            const user = await users.checkUser(req.session.user, req.session.password);
+            await workouts.deleteWorkout(user, req.session.password, workoutId);
             return res.status(200).render('workouts/deleteWorkout');
         } catch (e) {
             return res.status(400).render('workouts/deleteWorkout', {error: e});

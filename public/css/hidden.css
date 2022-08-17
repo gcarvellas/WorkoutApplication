@@ -7,3 +7,50 @@
 .success {
     color: greenyellow;
 }
+.navBarImage {
+    height: 50px;
+    width: auto;
+}
+
+.navbar {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.nav-item {
+    font-size: 1.5rem;
+}
+
+/* targeting the signup-btn in navbar for when collapse menu is opened */
+.navbar-collapse.show > ul > li.signup-btn, .navbar-collapse.collapsing > ul > li.signup-btn {
+    padding-right: 0px;
+    padding-bottom: 16px;
+}
+
+li.signup-btn  {
+    padding-right: 8px;
+}
+
+.signup-container,
+.signin-container,
+.profile-container {
+    padding-top: 5rem;
+}
+
+.form-signup,
+.form-signin {
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.profile-card {
+    min-width: 228px;
+}
+
+.viewWorkouts-container,
+.logout-container {
+    padding-top: 5rem;
+>>>>>>> workoutLogs-routes
+}
