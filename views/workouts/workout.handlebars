@@ -1,38 +1,68 @@
 {{#if workout}}
-    <h1>{{workout.name}}</h1>         <!-- TODO add like button. Waiting for user auth. -->
-    <ul>
-        <li><a href="/user/{{workout.author}}">Author</a></li>
-        <li>Likes: {{workout.usersLiked.length}}</li>
-        <li>Intensity: {{workout.intensity}}/5</li>
-        <li>Length: {{workout.length}} minutes</li>
-        {{#if exercises.length}}
-            <li><h2>Exercises</h2><ul>
+    <h1>{{workout.name}}</h1>        
+    <section id="workoutInfo">
+        <ul>
+            <li><a href="/user/{{workout.author}}">Author</a></li>
+            <li>Likes: {{workout.usersLiked.length}}</li>
+            <li>Intensity: {{workout.intensity}}/5</li>
+            <li>Length: {{workout.length}} minutes</li>
+        </ul>
+    </section>
+    {{#if user}}
+        {{#if isAuthor}}
+        <section id="workoutAuthorOptions">
+            <form action="/workout/{{workout._id}}/delete" method="POST">
+                <input type="hidden" id="workoutId" name="workoutId" value="{{workout._id}}">
+                <button type="submit">Delete Workout</button>
+            </form>
+            <a href="/workout/{{workout._id}}/edit">Edit Workout</a>
+        </section>
+         {{/if}}
+        <section id="userOptions">
+            <a href="/workout/{{workout._id}}/copy">Copy Workout</a>  <!-- TODO Add like button -->
+        </section>
+    {{/if}}            
+    {{#if exercises.length}}
+    <section id="exercises">
+        <h2>Exercises</h2>
+        <ul>
             {{#each exercises}}
-                <li><h3><a href="/exercise/{{this.exerciseId}}">{{this.name}}</a></h3></li>
-                <li>Sets: {{this.sets}}</li>
-                <li>Rest: {{this.repetitions}}</li>
-                {{#if this.weight}}
-                    <li>Weight: {{this.weight}}lbs</li>
-                {{/if}}
-                {{#if this.comment}}
-                    <li>Comment: {{this.comment}}</li>
-                {{/if}}
+            <li>
+                <section class="exercise" id="this.exerciseId">
+                    <h3><a href="/exercise/{{this.exerciseId}}">{{this.name}}</a></h3>
+                    <ul>
+                        <li>Sets: {{this.sets}}</li>
+                        <li>Rest: {{this.repetitions}}</li>
+                        {{#if this.weight}}
+                            <li>Weight: {{this.weight}}lbs</li>
+                        {{/if}}
+                        {{#if this.comment}}
+                            <li>Comment: {{this.comment}}</li>
+                        {{/if}}
+                    </ul>
+                </section>
+            </li>
             {{/each}}
-            </ul></li>
-        {{/if}}
-        {{#if comments.length}}
-            <li><h2>Comments</h2><ul>
-            {{#each comments}} <!-- Implement delete and edit comments. Waiting for user auth -->
-                <li>
+        </ul>
+    </section>
+    {{/if}}
+    {{#if comments.length}}
+    <section id="comments">
+        <h2>Comments</h2>
+        <ul>
+        {{#each comments}} <!-- TODO Implement delete and edit comments. Waiting for user auth -->
+            <li>
+                <section class="comment" id="{{this._id}}">
                     <a href="/user/{{this.author}}">{{this.name}}</a>
                     <p>{{this.currentTime}}</p>
                     <p>{{this.comment}}</p>
-                </li>
-            {{/each}}
-            </ul></li>
-        {{/if}}
-    </ul>
+                </section>
+            </li>
+        {{/each}}
+        </ul>
+    </section>
+    {{/if}}
 {{/if}}
 {{#if error}}
-    <p>{{error}}</p>
+    <p class="error">{{error}}</p>
 {{/if}}
