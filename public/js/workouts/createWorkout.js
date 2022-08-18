@@ -26,12 +26,21 @@ function createExerciseListElement(exerciseName, exerciseId, toRemoveElement){
     a.textContent = exerciseName;
     a.href = `exercise/${exerciseId}`;
 
+    var deleteButton = document.createElement('button');
+    deleteButton.type = 'click';
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', function(event){
+        event.target.parentNode.remove();
+        exercisesHiddenInput.classList.remove(exerciseId);
+    });
+
     exerciseList.appendChild(insertElement);
     insertElement.appendChild(h2);
+    insertElement.appendChild(deleteButton);
     h2.appendChild(a);
 
     for (const subExercise of SUB_EXERCISE_DATA){
-        var exerciseSection = document.createElement("section"); //TODO need to work on this
+        var exerciseSection = document.createElement("section"); 
         insertElement.appendChild(exerciseSection);
         var exerciseInput = document.createElement("input");
         var exerciseLabel = document.createElement("label");
@@ -58,7 +67,7 @@ function searchResultListener(event){
         var curElement = event.target;
     
         createExerciseListElement(curElement.textContent, curElement.href, curElement.parentElement);
-    } catch (e) {
+    } catch (e) {t
         setError(e);
     }
 }
@@ -75,7 +84,8 @@ function searchListener(){
             method: "GET",
             url: "/exercise/exercisesByName",
             dataType: "json",
-            data: {input: exerciseSearchBar.value, limit: 5}
+            data: {input: exerciseSearchBar.value, limit: 5},
+            error: function(xhr, ajaxOptions, thrownError) {setError(xhr.responseJSON['error'])}
         };
         $.ajax(requestConfig).then(function (result) {
             if ("error" in result) {

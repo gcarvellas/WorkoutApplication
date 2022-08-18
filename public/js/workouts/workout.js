@@ -50,6 +50,8 @@ function renderTotalLikes(value){
                 method: "GET",
                 url: `/workout/${workoutId}/isUserLiked`
               }
+
+            requestConfig.error = function(xhr, ajaxOptions, thrownError) {throw xhr.responseJSON['error']};
         
             $.ajax(requestConfig).then(function (result) {
                 if ("error" in result) throw result.error;
@@ -78,6 +80,7 @@ function renderTotalLikes(value){
                     else{
                         throw "Undefined state in like button";
                     }
+                    requestConfig.error = function(xhr, ajaxOptions, thrownError){ throw xhr.responseJSON['error'] };
                     $.ajax(requestConfig).then(function (result) {
                         if ("error" in result) throw result.error;
                         if (!("hasLike") in result) throw "Cannot like workout";

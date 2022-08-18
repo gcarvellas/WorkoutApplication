@@ -1,5 +1,10 @@
+{{#if errors}}
+    {{#each errors}}
+    <p class="error">{{this}}</p>
+    {{/each}}
+{{/if}}    
 {{#if workout}}
-    <h1>{{workout.name}}</h1>        
+    <h1>{{workout.name}}</h1>    
     <section id="workoutInfo">
         <ul>
             <li><a href="/user/{{workout.author}}">Author</a></li>
@@ -29,9 +34,9 @@
             <p class="hidden" id="likeResult"></p>
         </section>
     {{/if}}            
-    {{#if exercises.length}}
     <section id="exercises">
         <h2>Exercises</h2>
+        {{#if exercises.length}}
         <ul>
             {{#each exercises}}
             <li>
@@ -51,28 +56,34 @@
             </li>
             {{/each}}
         </ul>
+        {{/if}}
     </section>
-    {{/if}}
-    {{#if comments.length}}
     <section id="comments">
         <h2>Comments</h2>
+        {{#if user}}
+            <button type="click" id="addComment">+</button>
+        {{/if}}
+        {{#if comments.length}}
         <ul>
         {{#each comments}} <!-- TODO Implement delete and edit comments. Waiting for user auth -->
             <li>
                 <section class="comment" id="{{this._id}}">
                     <a href="/user/{{this.author}}">{{this.name}}</a>
-                    <p>{{this.currentTime}}</p>
-                    <p>{{this.comment}}</p>
+                    {{#if this.isAuthor}}
+                        <button type='click' class="editComment">Edit</button>
+                        <button type="click" class="deleteComment">Delete</button>
+                    {{/if}}
+                    <p class="workoutDate">{{this.currentTime}}</p>
+                    <p class="workoutMessage">{{this.comment}}</p>
                 </section>
             </li>
         {{/each}}
         </ul>
-    </section>
     {{/if}}
-{{/if}}
-{{#if error}}
-    <p class="error">{{error}}</p>
-{{/if}}
-{{#if user}}
-    <script src="/public/js/workouts/workout.js"></script>
+    </section>   
+    {{#if user}}
+        <script src="/public/js/workouts/workout.js"></script>
+        <script src="/public/js/workouts/workoutCommentsLoggedIn.js"></script>
+    {{/if}}
+    <script src="/public/js/workouts/workoutComments.js"></script>
 {{/if}}
