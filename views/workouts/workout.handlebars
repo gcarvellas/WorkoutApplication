@@ -3,7 +3,7 @@
     <section id="workoutInfo">
         <ul>
             <li><a href="/user/{{workout.author}}">Author</a></li>
-            <li>Likes: {{workout.usersLiked.length}}</li>
+            <li id="totalLikes">Likes: {{workout.usersLiked.length}}</li>
             <li>Intensity: {{workout.intensity}}/5</li>
             <li>Length: {{workout.length}} minutes</li>
         </ul>
@@ -19,7 +19,14 @@
         </section>
          {{/if}}
         <section id="userOptions">
-            <a href="/workout/{{workout._id}}/copy">Copy Workout</a>  <!-- TODO Add like button -->
+            {{#if workoutLog}}
+                <a href="/workoutLog/{{workoutLog}}">My Workout Log</a>
+            {{else}}
+                <a href="/workout/{{workout._id}}/log">Create Workout Log</a>
+            {{/if}}
+            <a href="/workout/{{workout._id}}/copy">Copy Workout</a>
+            <button type="checkbox" id="likeButton">Like</button>
+            <p class="hidden" id="likeResult"></p>
         </section>
     {{/if}}            
     {{#if exercises.length}}
@@ -65,4 +72,7 @@
 {{/if}}
 {{#if error}}
     <p class="error">{{error}}</p>
+{{/if}}
+{{#if user}}
+    <script src="/public/js/workouts/workout.js"></script>
 {{/if}}

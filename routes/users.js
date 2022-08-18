@@ -56,7 +56,7 @@ router.post('/signin', async (req, res) => {
     try {
       let loginUser = await usersDB.checkUser(req.body.inputEmail, req.body.inputPassword);
       req.session.user = loginUser._id;
-      req.session.password = loginUser.hashedPassword;
+      req.session.password = req.body.inputPassword;
       res.redirect('/');
     } catch (e) {
       res.status(400).render('layouts/signin', {hasError: true, errors: e});

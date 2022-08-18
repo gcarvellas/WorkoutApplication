@@ -1,0 +1,26 @@
+<form action="/workout/create" method="POST">
+    <section>
+        <label for="workoutName">Workout Name</label>
+        <input type="text" id="workoutName" name="workoutName">
+    </section>
+    <section>
+        <label for="intensity">Intensity (1-5)</label>
+        <input type="text" id="intensity" name="intensity">
+    </section>
+    <section>
+        <label for="length">Length (Minutes)</label>
+        <input type="text" id="intensity" name="intensity">
+    </section>
+    <section>
+        <button type="button" id="addExercise"></button>
+        <input type="text" id="exerciseSearchBar" class="hidden" placeholder="Search exercises...">
+        <ul id="exerciseSearchResults"></ul>
+    </section>
+    <section>
+        <ul id="exercises">
+
+        </ul>
+    </section>
+    <button type="Submit">Create Workout</button>
+</form>
+<script src="/public/js/workouts/createWorkout.js"></script>
