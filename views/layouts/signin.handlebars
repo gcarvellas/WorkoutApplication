@@ -1,13 +1,31 @@
 <div class="container signin-container text-center">
   <h1>Sign In</h1>
-  <form class="form-signin" method="POST" action="/signin">
+  {{#if errors}}
+  {{#each errors}}
+  <div class="container text-center errorContainer">
+    <div class="alert alert-danger alert-dismissible row" role="alert">
+      <div>{{error}}</div>
+      <button type="button" class="close errorBtn" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  {{/each}}
+  {{/if}}
+  <form id="form-signup" class="form-signin" method="POST" action="/signin" novalidate>
     <div class="form-group">
       <label for="inputEmail" class="sr-only">Email address</label>
-      <input name="inputEmail" type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Email address">
+      <input name="inputEmail" type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Email address" required>
+      <div class="invalid-feedback">
+        Email must be provided and be valid
+      </div>
     </div>
     <div class="form-group">
       <label for="inputPassword" class="sr-only">Password</label>
-      <input name="inputPassword" type="password" class="form-control" id="inputPassword" placeholder="Password">
+      <input name="inputPassword" type="password" class="form-control" id="inputPassword" placeholder="Password" required>
+      <div class="invalid-feedback">
+        Password must be provided
+      </div>
     </div>
     <button type="submit" class="btn btn-lg btn-primary btn-block">Sign in</button>
   </form>
@@ -15,4 +33,5 @@
       <span class="mb-2">Don't have an account?</span>
       <a class="btn btn-primary w-50" href="/signup">Sign up</a>
     </div>
+    <script src="../../public/js/signin.js"></script>
 </div>

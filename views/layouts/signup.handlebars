@@ -1,19 +1,95 @@
 <div class="container signup-container text-center">
   <h1>Sign Up</h1>
-  <form class="form-signup" method="POST" action="/signup">
-    <div class="form-group">
-      <label for="inputEmail" class="sr-only">Email address</label>
-      <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Email address">
-      <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+  {{#if errors}}
+  {{#each errors}}
+  <div class="container text-center errorContainer">
+    <div class="alert alert-danger alert-dismissible row" role="alert">
+      <div>{{error}}</div>
+      <button type="button" class="close errorBtn" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
-    <div class="form-group">
-      <label for="inputPassword" class="sr-only">Password</label>
-      <input type="password" class="form-control" id="inputPassword" placeholder="Password">
-    </div>
+  </div>
+  {{/each}}
+  {{/if}}
+  <form id="signup-form" class="form-signup" method="POST" action="/signup" novalidate>
+      <div class="form-group">
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input value="{{inputEmail}}" name="inputEmail" type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Email address" required>
+        <div class="invalid-feedback">
+          Email must be provided and be valid
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input name="inputPassword" type="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" class="form-control" id="inputPassword" aria-describedby="passwordHelpBlock" placeholder="Password" required>
+        <small id="passwordHelpBlock" class="form-text text-muted">
+          Password must be at at least eight characters, containing at least one uppercase letter, one lowercase letter, one number, and one special character
+        </small>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputFirstName" class="sr-only">First Name</label>
+          <input value="{{inputFirstName}}" name="inputFirstName" type="text" pattern="^[a-zA-Z]+(?:\s+[a-zA-Z]+)*$" class="form-control" id="inputFirstName" placeholder="First Name" required>
+          <div class="invalid-feedback">
+            First name cannot be empty or just spaces
+          </div>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputLastName" class="sr-only">Last Name</label>
+          <input value="{{inputLastName}}" name="inputLastName" type="text" pattern="^[a-zA-Z]+(?:\s+[a-zA-Z]+)*$" class="form-control" id="inputLastName" placeholder="Last Name">
+          <div class="invalid-feedback">
+            If provided, last name cannot be just spaces
+          </div>
+        </div> 
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputWeight" class="sr-only">Weight</label>
+          <input value="{{inputWeight}}" name="inputWeight" type="number" class="form-control" id="inputWeight" placeholder="Weight (lbs)">
+          <div class="invalid-feedback">
+            If provided, weight needs to be between [0, 1400] 
+          </div>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputHeight" class="sr-only">Height</label>
+          <input value="{{inputHeight}}" name="inputHeight" type="number" class="form-control" id="inputHeight" placeholder="Height (in)">
+          <div class="invalid-feedback">
+            If provided, height needs to be between [0, 108]
+          </div>
+        </div> 
+      </div>
+      <div class="form-row justify-content-between">
+        <div class="form-group col-auto text-left">
+          <label for="inputBirthDate" class="col-form-label">Birth Date</label>
+        </div>
+        <div class="form-group col-auto birthDateInput">
+          <input value="{{inputBirthDate}}" name="inputBirthDate" type="date" class="form-control" id="inputBirthDate" required>
+          <div class="invalid-feedback">
+            Birthdate must be provided
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputFrequency" class="sr-only">Frequency of working out per week</label>
+        <input value="{{inputFrequency}}" name="inputFrequency" type="number" class="form-control" id="inputFrequency" aria-describedby="emailHelp" placeholder="Frequency of working out per week">
+        <div class="invalid-feedback">
+            If provided, frequency needs to be between [0, 7]
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputBio" class="sr-only">Biography</label>
+        <textarea name="inputBio" rows="3" class="form-control" id="inputBio" placeholder="Biography">{{inputBio}}</textarea>
+        <div class="invalid-feedback">
+            If provided, biography cannot be just spaces
+        </div>
+      </div>
     <button type="submit" class="btn btn-lg btn-primary btn-block">Sign up</button>
+    <small class="form-text text-muted mt-1">We'll never share your personal information with anyone else.</small>
   </form>
     <div class="d-flex flex-column mt-3 align-items-center text-center form-signup">
       <span class="mb-2">Already have an account?</span>
       <a class="btn btn-primary w-50" href="/signin">Sign in</a>
     </div>
+    <script src="../../public/js/signup.js"></script>
 </div>
