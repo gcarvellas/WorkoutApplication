@@ -11,6 +11,69 @@ const users = data.users;
 const workoutLogs = data.workoutLogs;
 
 router
+    .route('/workout/create')
+    .get(async (req, res) => {
+        if (!req.session.user) return res.redirect('/signin');
+        return res.status(200).render('workouts/createWorkout');
+    })
+    .post(async (req, res) => {
+        if (!req.session.user) return res.status(403).redirect('/signin');
+        try{
+            let intensity,length,workoutName;
+            let exercises = [];
+            const ID_REGEX = "(.*)_([a-z]*)";
+            for (const [key, val] of Object.entries(req.body)){
+                const result = key.match(ID_REGEX);
+                if (key === "intensity") {
+                    intensity = parseInt(val);
+                }
+                else if (key === "length") { 
+                    length = parseInt(val);
+                }
+                else if (key === 'workoutName') {
+                    workoutName = val;
+                }
+                else if (key.match(ID_REGEX)){
+                    let exerciseId = result[1];
+                    let subExerciseKey = result[2];
+                    let exerciseFound = false;
+                    for (let i=0; i<exercises.length; i++){
+                        if (exercises[i].exerciseId === exerciseId){
+                            exerciseFound = true;
+                            if (subExerciseKey !== "comment"){
+                                exercises[i][subExerciseKey] = parseInt(val);
+                            } else{
+                                exercises[i][subExerciseKey] = val;
+                            }
+                            break;
+                        }
+                    }
+                    if (!exerciseFound || exercises.length === 0){
+                        let temp = {};
+                        if (subExerciseKey !== "comment"){
+                            temp[subExerciseKey] = parseInt(val);
+                        } else{
+                            temp[subExerciseKey] = val;
+                        }
+                        temp["exerciseId"] = exerciseId;
+                        exercises.push(temp);
+                    }
+                }
+                else{
+                    return res.status(400).render('workouts/createWorkout', {error: "Bad Request"});
+                }
+            }
+            let user = await users.getUser(req.session.user);
+            user = await users.checkUser(user.email, req.session.password);
+            let workout = await workouts.createWorkout(user, req.session.password, workoutName, intensity, length, exercises);
+            return res.status(200).redirect(`${workout._id}`);
+        } catch (e) {
+            return res.status(400).render('workouts/createWorkout', {error: e});
+        }
+        //TODO everything's a string. need to validate and convert.
+    });
+
+router
     .route('/workout/:id')
     .get(async (req, res) => {
         try{
@@ -48,12 +111,12 @@ router
 
             let user = undefined;
             let isAuthor = undefined;
+            let workoutLog;
             if (req.session.user){
                 user = await users.getUser(req.session.user);
                 isAuthor = (user._id === workout.author);
 
                 let userWorkoutLogs = await users.getWorkoutLogs(user._id);
-                let workoutLog;
                 for (const logId of userWorkoutLogs){
                     const currentLog = await workoutLogs.getWorkoutLog(user, logId);
                     const currentWorkout = await workouts.getWorkout(currentLog.workout);
@@ -127,13 +190,5 @@ router
             res.status(400).json({"error": e});
         }
     });
-
-router
-    .route('/workout/create')
-    .get(async (req, res) => {
-        if (!req.session.user) return res.redirect('/signin');
-        return res.status(200).render('createWorkout');
-    })
-
 
 module.exports = router;

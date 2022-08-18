@@ -9,18 +9,23 @@
     </section>
     <section>
         <label for="length">Length (Minutes)</label>
-        <input type="text" id="intensity" name="intensity">
+        <input type="text" id="length" name="length">
     </section>
     <section>
-        <button type="button" id="addExercise"></button>
-        <input type="text" id="exerciseSearchBar" class="hidden" placeholder="Search exercises...">
-        <ul id="exerciseSearchResults"></ul>
+        <h2>Exercises</h2>
+        <ul id="exerciseList"></ul>
     </section>
-    <section>
-        <ul id="exercises">
-
-        </ul>
-    </section>
+     <input type="hidden" id="exercises">
     <button type="Submit">Create Workout</button>
 </form>
+<section>
+    <button type="button" id="addExercise">Add Exercise</button>
+    <input type="text" id="exerciseSearchBar" class="hidden" placeholder="Search exercises...">
+    <ul id="exerciseSearchResults"></ul>
+</section>
+{{#if error}}
+    <p class="error" id="error">{{error}}</p>
+{{else}}
+    <p class="error,hidden" id="error"></p>
+{{/if}}
 <script src="/public/js/workouts/createWorkout.js"></script>
