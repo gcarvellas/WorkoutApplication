@@ -60,11 +60,9 @@ router.post('/signup', async (req, res) => {
     if (!req.body.inputFirstName.trim().length) {
       errors.push({error: 'First name can\'t have numbers, be an empty string, or just spaces.'});
     }
-    //verify last name if provided
-    if (req.body.inputLastName) {
-      if (!req.body.inputLastName.trim().length) {
-        errors.push({error: 'If last name is provided, it can\'t have numbers or be just spaces.'});
-      }
+    //verify last name
+    if (!req.body.inputLastName.trim().length) {
+      errors.push({error: 'Last name can\'t have numbers or be just spaces.'});
     }
     //verify weight if provided
     if (req.body.inputWeight) {
@@ -124,7 +122,7 @@ router.post('/signup', async (req, res) => {
           xss(req.body.inputEmail.toLowerCase()), 
           req.body.inputPassword,
           xss(req.body.inputFirstName),
-          (req.body.inputLastName) ? xss(req.body.inputLastName) : "",
+          xss(req.body.inputLastName),
           (req.body.inputBirthDate) ? new Date(req.body.inputBirthDate + 'T00:00') : new Date(),
           (req.body.inputBio) ? xss(req.body.inputBio) : "",
           (req.body.inputWeight) ? parseInt(req.body.inputWeight) : 0,
