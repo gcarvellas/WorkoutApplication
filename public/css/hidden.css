@@ -1,7 +1,12 @@
 .hidden {
     display: none;
 }
-
+.error {
+    color: red;
+}
+.success {
+    color: greenyellow;
+}
 .navBarImage {
     height: 50px;
     width: auto;
