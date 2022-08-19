@@ -53,7 +53,7 @@ function addButtonClickListener(){
     open_form = true;
     let form = document.createElement('form');
     let commentText = createCommentTextArea();
-    let submitButton = createClickButton("create");
+    let submitButton = createClickButton("Create");
     let commentError = createEmptyErrorElement();
 
     if (commentElement.firstChild){
@@ -62,8 +62,15 @@ function addButtonClickListener(){
     else{
         commentElement.appendChild(form);
     }
+    form.classList.add("card");
+    form.classList.add("border-5");
+    form.classList.add("pb-0");
+    form.classList.add("px-3");
     form.appendChild(commentText);
     form.appendChild(submitButton);
+    submitButton.classList.add("btn");
+    submitButton.classList.add("btn-block");
+    submitButton.classList.add("btn-primary");
     form.appendChild(commentError);
     submitButton.addEventListener("click", function(event) {
         event.preventDefault();
@@ -73,7 +80,7 @@ function addButtonClickListener(){
             url: `${getWorkoutIdFromURL()}/comments`,
             dataType: "json",
             data: {message: commentText.value},
-            error: function(xhr, ajaxOptions, thrownError) {setErrorToErrorElement(editCommentError, xhr.responseJSON['error'])}
+            error: function(xhr, ajaxOptions, thrownError) {setErrorToErrorElement(commentError, xhr.responseJSON['error'])}
         }
         $.ajax(requestConfig).then(function (result) {
             if ("error" in result || !result["comment"]){
@@ -89,7 +96,7 @@ function addButtonClickListener(){
 }
 
 function deleteCommentClickListener(event){
-    let commentElement = event.target.parentNode;
+    let commentElement = event.target.parentNode.parentNode;
     let commentId = commentElement.id;
     
     let commentError = createEmptyErrorElement();
@@ -101,7 +108,7 @@ function deleteCommentClickListener(event){
         url: `${getWorkoutIdFromURL()}/comments`,
         dataType: "json",
         data: {commentId: commentId},
-        error: function(xhr, ajaxOptions, thrownError) {setErrorToErrorElement(editCommentError, xhr.responseJSON['error'])}
+        error: function(xhr, ajaxOptions, thrownError) {setErrorToErrorElement(commentError, xhr.responseJSON['error'])}
     }
     $.ajax(requestConfig).then(function (result) {
         if ("error" in result || !result["result"]){
@@ -129,13 +136,19 @@ function editCommentClickListener(event){
     let textbox = createCommentTextArea();
     textbox.value = oldMessage.textContent;
     textbox.classList.add("message");
+    textbox.classList.add("row");
+    textbox.type="text";
     let submitButton = createClickButton("Edit");
+    submitButton.classList.add("btn");
+    submitButton.classList.add("btn-block");
+    submitButton.classList.add("btn-primary");
+    submitButton.classList.add("row");
 
     commentElement.appendChild(textbox);
     commentElement.appendChild(submitButton);
 
     submitButton.addEventListener('click', function(event) {
-        let commentElement = event.target.parentNode;
+        let commentElement = event.target.parentNode.parentNode;
         let commentId = commentElement.id;
 
         let messageTextbox = commentElement.querySelector(".message");

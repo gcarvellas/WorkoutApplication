@@ -2,15 +2,16 @@ const express = require('express');
 const data = require('../data');
 const validation = data.validation;
 const workouts = data.workouts;
-const users = data.users;
 const comments = data.comments;
 const router = express.Router();
+const util = require('./utilities');
 
 //TODO
 
 router
     .route('/workout/:id/comments')
     .put(async (req, res) => {
+        let user,password;
         try{
             if (!req.session.user) { 
                 return res.status(403).json({error: "Forbidden"});
@@ -21,10 +22,7 @@ router
             let id = req.params.id;
             id = validation.verifyUUID(id, "Workout ID");
 
-            let user = validation.verifyUUID(req.session.user, "User ID");
-            user = await users.getUser(req.session.user);
-            let password = validation.verifyPassword(req.session.password);
-            user = await users.checkUser(user.email, password);
+            [user, password] = await util.getAuthUsernameAndPasswordFromSession(req);
 
             let commentResult = await workouts.addCommentToWorkout(user, password, id, comment);
             return res.status(200).json({comment: commentResult});
@@ -33,6 +31,7 @@ router
         }
     })
     .delete(async (req, res) => {
+        let user,password;
         try{
             if (!req.session.user) {
                 return res.status(403).json({error: "Forbidden"});
@@ -43,10 +42,7 @@ router
             let id = req.params.id;
             id = validation.verifyUUID(id, "Workout ID");
 
-            let user = validation.verifyUUID(req.session.user, "User ID");
-            user = await users.getUser(req.session.user);
-            let password = validation.verifyPassword(req.session.password);
-            user = await users.checkUser(user.email, password);
+            [user, password] = await util.getAuthUsernameAndPasswordFromSession(req);
 
             let commentResult = await workouts.removeCommentFromWorkout(user, password, id, commentId);
             return res.status(200).json({result: commentResult});
@@ -55,6 +51,7 @@ router
         }
     })
     .patch(async (req, res) => {
+        let user, password;
         try{
             if (!req.session.user) {
                 return res.status(403).json({error: "Forbidden"});
@@ -65,10 +62,7 @@ router
             let message = req.body.message;
             message = validation.verifyMessage(message);
 
-            let user = validation.verifyUUID(req.session.user, "User ID");
-            user = await users.getUser(req.session.user);
-            let password = validation.verifyPassword(req.session.password);
-            user = await users.checkUser(user.email, password);
+            [user, password] = await util.getAuthUsernameAndPasswordFromSession(req);
 
             await comments.editComment(user, password, commentId, message);
             return res.status(200).json({result: true});

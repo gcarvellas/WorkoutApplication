@@ -1,5 +1,3 @@
-const LIKE_REGEX = "Likes: ([0-9]*)";
-
 function getWorkoutIdFromURL(){
     let url = window.location.href;
     const REGEX = "\/workout\/(.*)";
@@ -18,6 +16,7 @@ function renderLikeResult(strFunction){
     likeResult.textContent = `Successfully ${strFunction} workout`;
     likeResult.classList.remove("hidden");
     likeResult.classList.add("success");
+    likeResult.classList.add("font-weight-bold");
 }
 
 function renderLikeError(e){
@@ -27,19 +26,46 @@ function renderLikeError(e){
     likeResult.classList.add("error");
 }
 
+function setError(message){
+    let errorElement = document.getElementById("error");
+    errorElement.classList.remove("hidden");
+    errorElement.classList.add('error');
+    errorElement.textContent = message;
+}
+
 function getTotalLikes(){
     let totalLikes = document.getElementById("totalLikes").textContent;  
-    let likes = parseInt(totalLikes.match(LIKE_REGEX)[1]);  
-    return likes;
+    return parseInt(totalLikes);
 
 }
 
 function renderTotalLikes(value){
     let totalLikes = document.getElementById("totalLikes");  
-    totalLikes.textContent = `Likes: ${value}`;
+    totalLikes.textContent = `${value}`;
 }
 
+
 (function ($) {
+    function copyButtonListener(){
+        let copyButton = document.getElementById("copyWorkout");
+        copyButton.addEventListener('click', function(event) {
+            try{
+                var requestConfig = {
+                    method: "POST",
+                    url: `/workout/${getWorkoutIdFromURL()}/copy`,
+                    error: function(xhr, ajaxOptions, thrownError) {setError(xhr.responseJSON['error'])}
+                  }
+                $.ajax(requestConfig).then(function (result) {
+                    if ("error" in result) throw result.error;
+                    if (!("href" in result)) throw "Cannot copy workout";
+                    window.location.href = result["href"];
+
+                });
+            } catch (e) {
+                setError(e);
+            }
+        });
+    }
     function likeButtonListener(){
         let likeButton = document.getElementById("likeButton");
         let workoutId = getWorkoutIdFromURL();
@@ -102,4 +128,5 @@ function renderTotalLikes(value){
         }
     }
     likeButtonListener();
+    copyButtonListener();
 })(window.jQuery);

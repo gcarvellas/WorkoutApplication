@@ -10,12 +10,8 @@ router
     .route('/exercise/exercisesByName')
     .get(async (req, res) => {
         try{
-            if (!req.session.user) return res.status(403).json({"error": "forbidden"});
             let searchValue = req.query.input;
-            if (typeof searchValue !== 'string') throw "Search Value must be a string";
-            if (searchValue.trim() === ""){
-                return res.status(200).json({"exercises": []});
-            }
+            searchValue = validation.verifyMessage(searchValue, 'Provided value of exercise name');
             let results = await exercises.getExercisesByName(searchValue, 5);
             return res.status(200).json({"exercises": results});
         }
