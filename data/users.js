@@ -50,16 +50,16 @@ module.exports = {
         const user = await this.checkUser(newUser.email, password);
         return user;
     },
-    async editUser(_id, oldEmail, oldPassword, email, password, firstName, lastName, birthDate, bio, weight, height, frequencyOfWorkingOut){
+    async editUser(_id, oldEmail, oldPassword, email, password, firstName, lastName="", birthDate=new Date(), bio="", weight=0, height=0, frequencyOfWorkingOut=0){
         _id = validation.verifyUUID(_id, "User ID");
         old_email = validation.verifyEmail(oldEmail);
         old_password = validation.verifyPassword(oldPassword);
         email = validation.verifyEmail(email);
         password = validation.verifyPassword(password);
         firstName = validation.verifyFirstName(firstName);
-        lastName = validation.verifyLastName(lastName);
+        if (lastName !== '') lastName = validation.verifyLastName(lastName);
         birthDate = validation.verifyBirthDate(birthDate);
-        bio = validation.verifyBio(bio);
+        if (bio !== '') bio = validation.verifyBio(bio);
         weight = validation.verifyWeight(weight);
         height = validation.verifyHeight(height);
         frequencyOfWorkingOut = validation.verifyFrequencyOfWorkingOut(frequencyOfWorkingOut);

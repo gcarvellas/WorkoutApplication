@@ -86,7 +86,7 @@ if (myForm) {
     emailInput.required = 'true';
     passwordInput.required = 'true';
     firstNameInput.required = 'true';
-    birthDateInput.requierd = 'true';
+    birthDateInput.required = 'true';
 
     if (myForm.checkValidity() === false) {
       event.preventDefault();
