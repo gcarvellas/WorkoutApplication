@@ -9,8 +9,8 @@ const constructorMethod = (app) => {
     app.use('/', userRoutes);
     app.use('/', exerciseRoutes);
     app.use('/', commentRoutes);
+    app.use('/', workoutRoutes);
     app.use('/', workoutLogRoutes);
-    app.use(workoutSearchRoutes);
     app.use('/', workoutSearchRoutes);
     app.use('*', (req, res) => {
         res.sendStatus(404); //TODO render "not found" page
