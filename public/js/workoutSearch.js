@@ -67,7 +67,7 @@ function addPagination(uri, currentPage, totalPages, hasNextPage, pageSize) {
 }
 
 function addErrorMessage(errorTitle, errorMessage) {
-    $('#error').append(`<div class="alert alert-danger" role="alert">
+    $('#workout-search-error').append(`<div class="alert alert-danger" role="alert">
                             <h4 class="alert-heading">${errorTitle}</h4>
                             <p>${errorMessage}</p>
                         </div>`);
@@ -78,7 +78,7 @@ function addErrorMessage(errorTitle, errorMessage) {
         searchResults = $('#search-results'),
         pagination = $('#pagination'),
         nameValue = $('#search-name-value'),
-        errorField = $('#error');
+        errorField = $('#workout-search-error');
 
     $('#user-workout-search').click(function() {
         searchResults.empty();
