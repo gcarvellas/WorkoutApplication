@@ -70,3 +70,12 @@ li.signup-btn  {
 .logout-container {
     padding-top: 5rem;
 }
+
+.pagination-pages {
+    padding: 10px;
+}
+
+#user-workout-search {
+    margin-left: auto; 
+    margin-right: 0;
+}
