@@ -3,7 +3,6 @@ const validation = require('./validation');
 const { v4 : uuidv4, validate} = require('uuid');
 const workoutUser = mongoCollections.users;
 const bcrypt = require('bcryptjs');
-const { users } = require('.');
 const SALT_ROUNDS = 10;
 
 module.exports = {
@@ -11,9 +10,11 @@ module.exports = {
         email = validation.verifyEmail(email);
         password = validation.verifyPassword(password);
         firstName = validation.verifyFirstName(firstName);
-        lastName = validation.verifyLastName(lastName);
+        if (lastName !== '')
+            lastName = validation.verifyLastName(lastName);
         birthDate = validation.verifyBirthDate(birthDate);
-        bio = validation.verifyBio(bio);
+        if (bio !== '')
+            bio = validation.verifyBio(bio);
         weight = validation.verifyWeight(weight);
         height = validation.verifyHeight(height);
         frequencyOfWorkingOut = validation.verifyFrequencyOfWorkingOut(frequencyOfWorkingOut);

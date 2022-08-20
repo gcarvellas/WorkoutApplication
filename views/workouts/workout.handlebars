@@ -1,0 +1,139 @@
+{{#if errors}}
+    {{#each errors}}
+    <p class="error font-weight-bold">{{this}}</p>
+    {{/each}}
+{{/if}}
+<p class="font-weight-bold hidden" id="error"></p>
+{{#if workout}}
+    <div class="container profile-container">
+        <div class="row gutters-sm">
+            <div class="col-md-7">  
+                <section id="workoutInfo" class="card mb-2">
+                    <h1 class="card-title">{{workout.name}}</h1>  
+                    <div class="col-md-7">
+                        <ul class="card-body">
+                            <li class="row">
+                                <div class="col-sm-5"><a href="/user/{{workout.author}}">Author</a></div>
+                            </li>
+                            <li class="row">
+                                <h6 class="col-sm-5">Likes: </h6>
+                                <div class="col-sm-7 text-secondary" id="totalLikes">{{workout.usersLiked.length}}</div>
+                            </li>
+                            <li class="row">
+                                <h6 class="col-sm-5">Intensity: </h6>
+                                <div class="col-sm-7 text-secondary">{{workout.intensity}}/5</div>
+                            </li>
+                            <li class="row">
+                                <h6 class="col-sm-5">Length: </h6>
+                                <div class="col-sm-7 text-secondary">{{workout.length}} minutes</div>
+                            </li>
+                            {{#if user}}
+                                {{#if workoutLogs}}
+                                    {{#each workoutLogs}}
+                                        <li class="row">
+                                            <a class="log btn btn-success mb-2" href="/workoutLog/{{this._id}}">{{this.logInfo.date}}</a>
+                                        </li>
+                                    {{/each}}
+                                    <script src="/public/js/workouts/workoutLogs.js"></script>
+                                {{/if}}
+                                {{#if isAuthor}}
+                                    <li class="row">
+                                        <form action="/workout/{{workout._id}}/delete" method="POST">
+                                            <input type="hidden" id="workoutId" name="workoutId" value="{{workout._id}}">
+                                            <button class="btn btn-danger mb-2" type="submit">Delete Workout</button>
+                                        </form>
+                                    </li>
+                                    <div>
+                                        <li class="row md-2">
+                                            <a class="btn btn-info" href="/workout/{{workout._id}}/edit">Edit Workout</a>
+                                        </li>
+                                        <li class="row md-2">
+                                            <a class="btn btn-info" href="/workout/{{workout._id}}/log">Create Workout Log</a>
+                                        </li>
+                                {{else}}
+                                    <div class="d-flex justify-content-between">
+                                    {{/if}}
+                                    <li class="row md-2">
+                                        <button class="btn btn-info" type="click" id="copyWorkout">Copy Workout</button>
+                                    </li>
+                                </div>
+                                <li class="row">
+                                    <button class="btn btn-block btn-primary" type="checkbox" id="likeButton">Like</button>
+                                </li>
+                                <li class="row">
+                                    <p class="hidden" id="likeResult"></p>
+                                </li>
+                            {{/if}}
+                        </ul>
+                    </div>
+                </section>
+            </div>
+        </div>            
+        <section id="exercises" class="card mb-2">
+            <h2 class="card-title">Exercises</h2>
+            {{#if exercises.length}}
+            <ul class="card-body">
+                {{#each exercises}}
+                <li class="card border-5 pb-0 px-3">
+                    <section class="exercise col-md-7" id="this.exerciseId">
+                        <h3 class="card-title"><a href="/exercise/{{this.exerciseId}}">{{this.name}}</a></h3>
+                        <ul>
+                            <li class="row">
+                                <h6 class="col-sm-5">Sets: </h6>
+                                <div class="col-sm-7 text-secondary">{{this.sets}}</div>
+                            </li>
+                            <li class="row">
+                                <h6 class="col-sm-5">Repetitions: </h6>
+                                <div class="col-sm-7 text-secondary">{{this.repetitions}}</div>
+                            </li>
+                            {{#if this.weight}}
+                                <li class="row">
+                                    <h6 class="col-sm-5">Weight: </h6>
+                                    <div class="col-sm-7 text-secondary">{{this.weight}}</div>
+                                </li>
+                            {{/if}}
+                            {{#if this.comment}}
+                                <li class="row">
+                                    <h6 class="col-sm-5">Comment: </h6>
+                                    <div class="col-sm-7 text-secondary">{{this.comment}}</div>
+                                </li>
+                            {{/if}}
+                        </ul>
+                    </section>
+                </li>
+                {{/each}}
+            </ul>
+            {{/if}}
+        </section>
+        <section id="comments" class="card mb-2">
+            <h2 class="card-title">Comments</h2>
+            {{#if user}}
+                <button type="click" id="addComment" class="btn btn-primary btn-sm" style="width: 50px">+</button>
+            {{/if}}
+            {{#if comments.length}}
+            <ul>
+            {{#each comments}} <!-- TODO Implement delete and edit comments. Waiting for user auth -->
+                <li class="row">
+                    <section class="comment card border-5 pb-0 px-3" id="{{this._id}}">
+                        <div class="card-body">
+                            <a href="/user/{{this.author}}">{{this.name}}</a>
+                            {{#if this.isAuthor}}
+                                <button type='click' class="editComment btn btn-info btn-sm">Edit</button>
+                                <button type="click" class="deleteComment btn btn-danger btn-sm">Delete</button>
+                            {{/if}}
+                            <p class="workoutDate text-secondary">{{this.currentTime}}</p>
+                            <p class="workoutMessage">{{this.comment}}</p>
+                        </div>
+                    </section>
+                </li>
+            {{/each}}
+            </ul>
+        {{/if}}
+        </section>   
+        {{#if user}}
+            <script src="/public/js/workouts/workout.js"></script>
+            <script src="/public/js/workouts/workoutCommentsLoggedIn.js"></script>
+        {{/if}}
+        <script src="/public/js/workouts/workoutComments.js"></script>
+    </div>
+{{/if}}
