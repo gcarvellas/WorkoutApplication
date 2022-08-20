@@ -400,7 +400,7 @@ module.exports = {
          * @return {String} valid email
          * @throws Will throw an exception if email is invalid
          */
-        email = verifyString(email, "Email");
+        email = verifyString(email, "Email").toLowerCase();
         if (email.match(EMAIL_REGEX)) return email;
         else throw "Email is invalid";
     },

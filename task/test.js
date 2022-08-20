@@ -6,7 +6,9 @@ const exercise = data.exercises;
 const users = data.users;
 const commentData = data.comments;
 const { v4 : uuidv4} = require('uuid');
-const { workoutSearch, workouts } = require('../data');
+const mongoCollections = require("../config/mongoCollections");
+const workouts = data.workouts;
+const { workoutSearch } = require('../data');
 const { verifyUser } = require('../data/validation');
 const assert = require('assert');
 const { comments } = require('../config/mongoCollections');
@@ -211,6 +213,10 @@ function testGetWorkoutLog() {
         console.log('failed to getWorkoutLog, error:', e);
     }
 }
+
+//running validation tests
+//testUserValidation();
+//testVerifyNumber();
 
 async function testExercise() {
     // valid _id, name, muscles

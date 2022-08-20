@@ -226,10 +226,32 @@ const deleteExercise = async function deleteExercise(_id) {
     return true;
 }
 
+const getExercisesByName = async function getExercisesByName(exerciseName, limit = 10) {
+    validation.verifyMessage(exerciseName, 'Provided value of exercise name');
+    validation.verifyNumber(limit, 'Provided value of limit', 'int', 1, 500);
+
+    const workoutsCollection = await exercises();
+    const exercisesFound = await workoutsCollection.aggregate([
+        {
+            '$match': {
+              'name': {
+                '$regex': exerciseName.trim(), 
+                '$options': 'i'
+              }
+            }
+          }, {
+            '$limit': limit
+          }
+    ]).toArray();
+
+    return exercisesFound;
+}
+
 module.exports = {
     createExercise,
     getExercise,
     getAllExercise,
     editExercise,
-    deleteExercise
+    deleteExercise,
+    getExercisesByName
 }

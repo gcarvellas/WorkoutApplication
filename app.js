@@ -3,11 +3,12 @@ const app = express();
 const session = require('express-session');
 const configRoutes = require('./routes');
 const exphbs = require('express-handlebars');
-const helpers = require('./config/handlebars-helpers');
 const static = express.static(__dirname + '/public');
+const helpers = require('./config/handlebars-helpers');
+
+var hbs = exphbs.create({});
 
 app.use('/public', static);
-
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
