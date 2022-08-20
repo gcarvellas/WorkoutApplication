@@ -1,17 +1,28 @@
 <div class="container viewWorkouts-container">
   <h1>Search Workouts</h1>
   <div class="container border">
-    <form class="form-inline" method="GET" action="/workoutSearch">
+    <form class="form-inline" id="nameSearch">
       <label class="my-1 mr-2" for="selection">Sort by:</label>
       <select class="custom-select my-1 mr-sm-2" id="selection">
-        <option selected>Most Popular</option>
+        <option value="popular">Most Popular</option>
         {{#each muscleGroup}}
-          <option value="{{muscleGroup}}">{{muscleGroup}}</option>
+          <option value="{{this}}">{{this}}</option>
         {{/each}}
       </select>
       <label class="my-1 mr-2" for="search">Search Workout:</label>
-      <input type="text" class="my-sm-3 my-1 mr-2" placeholder="Workout Name">
+      <input id="search-name-value" type="text" class="my-sm-3 my-1 mr-2" placeholder="Workout Name">
       <button type="submit" class="btn btn-primary">Submit</button>
+      {{#if loggedIn}}
+        <button id="user-workout-search" type="button" class="btn btn-outline-primary">My Workouts</button>
+      {{/if}}
+      </div>
     </form>
+    <div id="error"></div>
+    <div id="search-results" class="list-group"></div>
+    <div class="pagination-pages" id="pagination"></div>
+  </div>
+
+  
+    
   </div>
 </div>
