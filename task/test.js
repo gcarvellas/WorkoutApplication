@@ -6,7 +6,9 @@ const exercise = data.exercises;
 const users = data.users;
 const commentData = data.comments;
 const { v4 : uuidv4} = require('uuid');
-const { workoutSearch, workouts } = require('../data');
+const mongoCollections = require("../config/mongoCollections");
+const workouts = data.workouts;
+const { workoutSearch } = require('../data');
 const { verifyUser } = require('../data/validation');
 const assert = require('assert');
 const { comments } = require('../config/mongoCollections');
@@ -29,7 +31,7 @@ const USER_OBJECT = {
     _id: UUID,
     userInfo: USER_INFO_OBJECT,
     email: "   test123@gmail.com",
-    hashedPassword: "     TESTHASH$@!)SHF)AH*SHA)*",
+    hashedPassword: "$2a$10$gSjufo8eFSCPkpV9QdkQQ.MMJp2ERAvQ.YrO4dznOZaNTANLtlYte",
     userMadeWorkouts: [UUID, UUID],
     userLikedWorkouts: [UUID, UUID],
     totalLikesReceived: 0,
@@ -212,6 +214,10 @@ function testGetWorkoutLog() {
     }
 }
 
+//running validation tests
+//testUserValidation();
+//testVerifyNumber();
+
 async function testExercise() {
     // valid _id, name, muscles
     try {
@@ -243,10 +249,19 @@ async function testExercise() {
 }
 
 async function testWorkoutSearch() {
+    let newUser = null;
+    let newExercise = null;
+    let newWorkout = null;
+
+    const USER_EMAIL = "dbWorkoutSearch@test.com";
+    const USER_PASSWORD = "Test123!";
+
     try {
         console.log("-----WORKOUT SEARCH TEST START-----");
+        newUser = await users.createUser(USER_EMAIL, USER_PASSWORD, "firstName", "lastName", new Date("June 30, 1998"), "testbio", 120, 70, 5);
+        console.log(`Added user to test workout search with _id of ${newUser._id}`);
 
-        let newExercise = await exercise.createExercise(EXERCISE_OBJECT.user, EXERCISE_OBJECT.name, EXERCISE_OBJECT.muscles, undefined, undefined);
+        newExercise = await exercise.createExercise(newUser, USER_PASSWORD, EXERCISE_OBJECT.name, EXERCISE_OBJECT.muscles, undefined, undefined);
         console.log(`Added exercise to test workout search with _id of ${EXERCISE_OBJECT._id}`);
 
         let TEST_WORKOUT_OBJECT = WORKOUT_OBJECT;
@@ -257,26 +272,36 @@ async function testWorkoutSearch() {
             rest: WORKOUT_EXERCISES.rest
         }];
         
-        await workout.createWorkout(USER_OBJECT, TEST_WORKOUT_OBJECT.name, TEST_WORKOUT_OBJECT.intensity, TEST_WORKOUT_OBJECT.length, TEST_WORKOUT_OBJECT.exercises);
+        newWorkout = await workout.createWorkout(newUser, USER_PASSWORD, TEST_WORKOUT_OBJECT.name, TEST_WORKOUT_OBJECT.intensity, TEST_WORKOUT_OBJECT.length, TEST_WORKOUT_OBJECT.exercises);
         console.log(`Added workout to test workout search with _id of ${TEST_WORKOUT_OBJECT._id}`);
 
         console.log(`Searching workouts by most popular:`);
-        console.log(await workoutSearch.getMostPopularWorkouts(2));
+        console.log(await workoutSearch.getMostPopularWorkouts(1));
 
         console.log(`Searching workouts by author where the author is "${TEST_WORKOUT_OBJECT.author}"`);
-        console.log(await workoutSearch.getWorkoutsByAuthor(TEST_WORKOUT_OBJECT.author, 2));
+        console.log(await workoutSearch.getWorkoutsByAuthor(newUser._id, 1));
 
         console.log(`Searching workouts by name where the name is "${TEST_WORKOUT_OBJECT.name}"`);
-        console.log(await workoutSearch.getWorkoutsByName(TEST_WORKOUT_OBJECT.name, 2));
+        console.log(await workoutSearch.getWorkoutsByName(TEST_WORKOUT_OBJECT.name, 1));
 
-        console.log(`Searching workouts by muscle group where the muscle group is "chest"`);
-        console.log(await workoutSearch.getWorkoutsByMuscleGroup("chest", 2));
+        console.log(`Searching workouts by muscle group where the muscle group is "shoulders"`);
+        console.log(await workoutSearch.getWorkoutsByMuscleGroup("shoulders", 1));
 
-        await exercise.deleteExercise(newExercise._id);
-        await workout.deleteWorkout(USER_OBJECT, TEST_WORKOUT_OBJECT._id);
     } catch (e) {
         console.log('failure in testWorkoutSearch(), error:', e);
     } finally {
+        if(newExercise !== null) {
+            await exercise.deleteExercise(newExercise._id);
+        }
+
+        if(newWorkout !== null) {
+            await workout.deleteWorkout(newUser, USER_PASSWORD, newWorkout._id);
+        }
+
+        if(newUser !== null) {
+            await users.deleteUser(newUser, USER_PASSWORD, newUser._id);
+        }
+        
         console.log("-----WORKOUT SEARCH TEST END-----");
     }
 }
@@ -490,31 +515,31 @@ async function dbSanityTest(){
     let workoutLog = myWorkoutLogs[0];
     let workoutLog2 = myWorkoutLogs[1];
 
-    await workoutLogs.deleteWorkoutLog(user, USER_PASSWORD, workoutLog._id);
-    await workoutLogs.deleteWorkoutLog(user, USER_PASSWORD, workoutLog2._id);
-    console.log("Workout Logs: Verified deleteWorkoutLog()");
+    //await workoutLogs.deleteWorkoutLog(user, USER_PASSWORD, workoutLog._id);
+    //await workoutLogs.deleteWorkoutLog(user, USER_PASSWORD, workoutLog2._id);
+    //console.log("Workout Logs: Verified deleteWorkoutLog()");
 
     await workouts.removeCommentFromWorkout(user, USER_PASSWORD, workout1._id, comment._id);
     console.log("Workouts: Verified removeCommentFromWorkout()");
 
-    for (const currentExercise of exercises){
-        await exercise.deleteExercise(currentExercise._id);
-    }
-    console.log("Exercises: Verified deleteExercise()");
+    // for (const currentExercise of exercises){
+    //     await exercise.deleteExercise(currentExercise._id);
+    // }
+    // console.log("Exercises: Verified deleteExercise()");
 
     workout1 = await workouts.getWorkout(workout1._id);
-    await workouts.deleteWorkout(user, USER_PASSWORD, workout1._id);
-    console.log("Workouts: Verified deleteWorkout()");
+    // await workouts.deleteWorkout(user, USER_PASSWORD, workout1._id);
+    // console.log("Workouts: Verified deleteWorkout()");
 
-    await users.deleteUser(user, USER_PASSWORD);
-    let copiedUser = await users.checkUser(SECOND_USER_EMAIL, SECOND_USER_PASSWORD);
-    await users.deleteUser(copiedUser, SECOND_USER_PASSWORD);
-    console.log("Users: Verified deleteUser()");
+    // await users.deleteUser(user, USER_PASSWORD);
+    // let copiedUser = await users.checkUser(SECOND_USER_EMAIL, SECOND_USER_PASSWORD);
+    // await users.deleteUser(copiedUser, SECOND_USER_PASSWORD);
+    // console.log("Users: Verified deleteUser()");
 
     console.log("SANITY TEST COMPLETE! SUCCESS!");
 }
 
-dbSanityTest();
+//dbSanityTest();
 
 //running validation tests
 //testUserValidation();
