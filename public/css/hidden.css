@@ -38,7 +38,8 @@ li.signup-btn  {
 
 .signup-container,
 .signin-container,
-.profile-container {
+.profile-container,
+.createWorkoutlog {
     padding-top: 5rem;
 }
 

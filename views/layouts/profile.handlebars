@@ -90,7 +90,7 @@
       </div>
     </div>
   </div>
-  <div class="card">
+  <div class="card mb-3">
     <div class="card-body">
       <h5>Created Workouts</h5>
       {{!-- this is made for each workout card--}}
@@ -114,7 +114,7 @@
               <div class="row">
                 {{!-- figure out if we want to get the parentWorkout name here --}}
                 <div class="col-12">
-                  <h4 class="card-title">{{workout}}</h4>
+                  <h4 class="card-title">{{name}}</h4>
                 </div>
                 <div class="col">
                   <div class="card-subtitle mb-2 text-muted">
@@ -139,8 +139,7 @@
                 </div>
                 
                 <div>
-                  <button class="btn btn-primary" href="/workoutLog/{{logInfo.workout}}">View</button>
-                  <button class="btn btn-outline-primary" href="/workoutLog/edit/{{logInfo.workout}}">Edit</button>
+                  <a class="btn btn-primary" href="/workoutLog/{{_id}}">View</a>
                 </div>
               </div>
 

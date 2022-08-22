@@ -539,7 +539,7 @@ async function dbSanityTest(){
     console.log("SANITY TEST COMPLETE! SUCCESS!");
 }
 
-//dbSanityTest();
+dbSanityTest();
 
 //running validation tests
 //testUserValidation();

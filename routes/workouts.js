@@ -15,7 +15,7 @@ router
         let user;
         try{
             if (!req.session.user) return res.status(403).redirect('/signin');
-            user = validation.verifyUser(req.session.user);
+            user = validation.verifyUUID(req.session.user);
             let formAction, exerciseIdString, submitButtonText, workout;
             [formAction, submitButtonText, exerciseIdString, workout] = util.getWorkoutCreateData();
             return res.status(200).render('workouts/workoutForm', {loggedIn: (user ? true : false), formAction: formAction, submitButtonText: submitButtonText, exerciseIdString: exerciseIdString, workout: workout});

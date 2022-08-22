@@ -5,6 +5,7 @@ const xss = require('xss');
 const data = require('../data');
 const validation = data.validation;
 const workoutLogsDB = data.workoutLogs;
+const workouts = data.workouts;
 const usersDB = data.users;
 
 //TODO
@@ -212,9 +213,12 @@ router.get('/profile', async (req, res) => {
     //get user workout logs from user
     let userWorkoutoutLogs = []; 
     let workoutLogs = await usersDB.getWorkoutLogs(userId);
-    //get the actual workoutLog from each workoutLogId
+    //get the actual workoutLog from each workoutLogId and the workout name
     for (let workoutLogId of workoutLogs) {
       let workoutLog = await workoutLogsDB.getWorkoutLog(user, userPassword, workoutLogId);
+      let workout = await workouts.getWorkout(workoutLog.workout);
+      console.log(workout);
+      workoutLog['name'] = workout.name;
       userWorkoutoutLogs.push(workoutLog);
     }
     //get 
