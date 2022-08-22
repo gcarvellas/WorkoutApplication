@@ -21,6 +21,7 @@
   </div>
   {{/each}}
   {{/if}}
+  {{#if user}}
   <h1>My Profile</h1>
   <div class="row gutters-sm">
     <div class="col-md-5 mb-3">
@@ -209,59 +210,61 @@
       {{/if}}
     </div>
   </div>
-  <div class="card p-card">
-    <h5 class="card-header">Logged Workouts</h5>
-      <div class="card-body bg-light">
-      {{!-- this is made for each workout log card --}}
-      {{#if workoutLogs.length}}
-        {{#each workoutLogs}}
-          <div class="card border-5 pb-0 px-3">
-            <div class="card-body">
-              <div class="row">
-                {{!-- figure out if we want to get the parentWorkout name here --}}
-                <div class="col-12">
-                  <h4 class="card-title">{{workout}}</h4>
-                </div>
-                <div class="col">
-                  <div class="card-subtitle mb-2 text-muted">
-                    Logged on  {{dateFormat logInfo.date "dddd, MMMM Do, YYYY"}}
+  {{#if isUser}}
+    <div class="card p-card">
+      <h5 class="card-header">Logged Workouts</h5>
+        <div class="card-body bg-light">
+        {{!-- this is made for each workout log card --}}
+        {{#if workoutLogs.length}}
+          {{#each workoutLogs}}
+            <div class="card border-5 pb-0 px-3">
+              <div class="card-body">
+                <div class="row">
+                  {{!-- figure out if we want to get the parentWorkout name here --}}
+                  <div class="col-12">
+                    <h4 class="card-title">{{workout}}</h4>
+                  </div>
+                  <div class="col">
+                    <div class="card-subtitle mb-2 text-muted">
+                      Logged on  {{dateFormat logInfo.date "dddd, MMMM Do, YYYY"}}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="d-flex flex-row flex-wrap justify-content-between align-items-center text-center">
-                <div class="d-flex flex-row">
-                  <div class="d-flex flex-column mr-4">
-                    <h6 class="mb-0">Intensity:</h6>
-                    <span class="text-secondary">{{logInfo.intensity}}</span>
+                <div class="d-flex flex-row flex-wrap justify-content-between align-items-center text-center">
+                  <div class="d-flex flex-row">
+                    <div class="d-flex flex-column mr-4">
+                      <h6 class="mb-0">Intensity:</h6>
+                      <span class="text-secondary">{{logInfo.intensity}}</span>
+                    </div>
+                    <div class="d-flex flex-column mr-4">
+                      <h6 class="mb-0">Length:</h6>
+                      <span class="text-secondary">{{logInfo.length}}</span>
+                    </div>
+                    <div class="d-flex flex-column mr-4">
+                      <h6 class="mb-0">Exercises:</h6>
+                      <span class="text-secondary">{{logInfo.exercises.length}}</span>
+                    </div>
                   </div>
-                  <div class="d-flex flex-column mr-4">
-                    <h6 class="mb-0">Length:</h6>
-                    <span class="text-secondary">{{logInfo.length}}</span>
-                  </div>
-                  <div class="d-flex flex-column mr-4">
-                    <h6 class="mb-0">Exercises:</h6>
-                    <span class="text-secondary">{{logInfo.exercises.length}}</span>
+                  
+                  <div>
+                    <button class="btn btn-primary" href="/workoutLog/{{logInfo.workout}}">View</button>
+                    <button class="btn btn-outline-primary" href="/workoutLog/edit/{{logInfo.workout}}">Edit Workout Log</button>
                   </div>
                 </div>
-                
-                <div>
-                  <button class="btn btn-primary" href="/workoutLog/{{logInfo.workout}}">View</button>
-                  <button class="btn btn-outline-primary" href="/workoutLog/edit/{{logInfo.workout}}">Edit Workout Log</button>
-                </div>
-              </div>
 
+              </div>
             </div>
-          </div>
-          {{#if @last}}
-          {{else}}
-            <hr>
-          {{/if}}
-        {{/each}}
-      {{else}}
-      <h4 class="card-title">No workout logs available</h4>
-      {{/if}}
+            {{#if @last}}
+            {{else}}
+              <hr>
+            {{/if}}
+          {{/each}}
+        {{else}}
+        <h4 class="card-title">No workout logs available</h4>
+        {{/if}}
+      </div>
     </div>
-  </div>
+  {{/if}}
   <div class="card p-card">
     <h5 class="card-header">Most Recent Liked Workouts</h5>
       <div class="card-body bg-light">
@@ -294,3 +297,4 @@
   </div>
   <script src="../../public/js/profile.js"></script>
 </div>
+{{/if}}

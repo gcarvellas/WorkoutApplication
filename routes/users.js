@@ -202,10 +202,14 @@ router.use('/profile', (req, res, next) => {
 
 //profile page
 router.get('/profile', async (req, res) => {
+  let user;
+  try{
     //get user information
-    let userId = req.session.user;
-    let user = await usersDB.getUser(userId);
-    let userPassword = req.session.password;
+    let userId = validation.verifyUUID(req.session.user, "User ID");
+    let userPassword = validation.verifyPassword(req.session.password);
+    user = await usersDB.getUser(userId);
+    user = await usersDB.checkUser(user, userPassword);
+
     //get user workouts
     let userWorkouts = [];
     let workouts = user.userMadeWorkouts;
@@ -234,54 +238,66 @@ router.get('/profile', async (req, res) => {
       }
       i+=1;
     }
-    res.render('layouts/profile', { loggedIn: true, user: user, likedWorkouts: userLikedWorkouts, workouts: userWorkouts, workoutLogs: userWorkoutoutLogs, password: userPassword });
-  //}
+  res.render('layouts/profile', { loggedIn: (user ? true : false), user: user, likedWorkouts: userLikedWorkouts, workouts: userWorkouts, workoutLogs: userWorkoutoutLogs, password: userPassword });
+  } catch (e) {
+    res.render('layouts/profile', {loggedIn: (req.session.user ? true : false), error: e});
+  }
 });
 
 //profile page
 router.get('/user/:id', async (req, res) => {
-    //get user information
-    let sessionUserId = req.session.user;
-    let userId = req.params.id;
-    let isUser = sessionUserId == userId;
-    let user = await usersDB.getUser(userId);
-    let userPassword = req.session.password;
-    //get user workouts
-    let userWorkouts = [];
-    let workouts = user.userMadeWorkouts;
-    for (let workoutID of workouts) {
-      let workout = await workoutDB.getWorkout(workoutID);
-      userWorkouts.push(workout);
-    }
-    //get user workout logs from user
-    let userWorkoutoutLogs = []; 
-    let workoutLogs = await usersDB.getWorkoutLogs(userId);
-    //get the actual workoutLog from each workoutLogId
-    for (let workoutLogId of workoutLogs) {
-      let workoutLog = await workoutLogsDB.getWorkoutLog(user, userPassword, workoutLogId);
-      userWorkoutoutLogs.push(workoutLog);
-    }
-    //get liked workouts
-    let userLikedWorkouts = [];
-    let likedWorkouts = user.userLikedWorkouts.reverse();
-    let i =0;
-    for (let likedWorkoutId of likedWorkouts) {
-      if (i<5) {
-        let workout = await workoutDB.getWorkout(likedWorkoutId);
-        userLikedWorkouts.push(workout);
-      } else {
-        break;
+  let user, userPassword;
+  let isUser = false;
+  let userWorkoutLogs = [];
+  try{
+      //get user information
+      let userId = validation.verifyUUID(req.params.id, "User ID");
+      if (req.session.user){
+        let sessionUserId = req.session.user;
+        isUser = sessionUserId === userId;
       }
-      i+=1;
-    }
-    res.render('layouts/profile', { loggedIn: true, isUser: isUser, user: user, likedWorkouts: userLikedWorkouts, workouts: userWorkouts, workoutLogs: userWorkoutoutLogs, password: userPassword });
-});
+      user = await usersDB.getUser(userId);
+      //get user workouts
+      let userWorkouts = [];
+      let workouts = user.userMadeWorkouts;
+      for (let workoutID of workouts) {
+        let workout = await workoutDB.getWorkout(workoutID);
+        userWorkouts.push(workout);
+      }
+      //get user workout logs from user
+      //get the actual workoutLog from each workoutLogId
+      if (req.session.user){
+        let workoutLogs = await usersDB.getWorkoutLogs(userId);
+        userPassword = validation.verifyPassword(req.session.password);
+        for (let workoutLogId of workoutLogs) {
+          let workoutLog = await workoutLogsDB.getWorkoutLog(user, userPassword, workoutLogId);
+          userWorkoutoutLogs.push(workoutLog);
+        }
+      }
+      //get liked workouts
+      let userLikedWorkouts = [];
+      let likedWorkouts = user.userLikedWorkouts.reverse();
+      let i =0;
+      for (let likedWorkoutId of likedWorkouts) {
+        if (i<5) {
+          let workout = await workoutDB.getWorkout(likedWorkoutId);
+          userLikedWorkouts.push(workout);
+        } else {
+          break;
+        }
+        i+=1;
+      }
+      res.render('layouts/profile', { loggedIn: true, isUser: isUser, user: user, likedWorkouts: userLikedWorkouts, workouts: userWorkouts, workoutLogs: userWorkoutLogs, password: userPassword });
+  
+  } catch (e) {
+    res.render('layouts/profile', {loggedIn: (req.session.user ? true : false), error: e});
+  }
+  });
 
 //edit profile page
 router.get('/profile_edit', async (req, res) => {
-  const id = req.session.user;
-  
   try {
+    const id = validation.verifyUUID(req.session.user, "User ID");
     let user = await usersDB.getUser(id);
     res.render('layouts/profile_edit', { loggedIn: true, user: user, password: req.session.password });
   } catch (e) {
