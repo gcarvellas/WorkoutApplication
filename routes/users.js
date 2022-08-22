@@ -216,7 +216,7 @@ router.get('/profile', async (req, res) => {
       userWorkoutoutLogs.push(workoutLog);
     }
     //get 
-    res.render('layouts/profile', {loggedIn: true, user: user, workoutLogs: userWorkoutoutLogs});
+    res.render('layouts/profile', { loggedIn: true, user: user, workoutLogs: userWorkoutoutLogs, password: userPassword });
   //}
 });
 
@@ -234,6 +234,17 @@ router.get('/profile_edit', async (req, res) => {
 });
 
 router.post('/profile_edit', async (req, res) => {
+  let userId = req.session.user;
+  let user = await usersDB.getUser(userId);
+  let password = req.session.password;
+  //get user workout logs from user
+  let userWorkoutoutLogs = []; 
+  let workoutLogs = await usersDB.getWorkoutLogs(userId);
+  //get the actual workoutLog from each workoutLogId
+  for (let workoutLogId of workoutLogs) {
+    let workoutLog = await workoutLogsDB.getWorkoutLog(user, password, workoutLogId);
+    userWorkoutoutLogs.push(workoutLog);
+  }
   //verify email
   if (!req.body.inputEmail) {
     errors.push({error: 'Email must be provided.'});
@@ -244,6 +255,7 @@ router.post('/profile_edit', async (req, res) => {
   }
   let passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
   if (!req.body.inputPassword.match(passwordRegex)) {
+    console.log(req.body.inputPassword);
     errors.push({error: 'Password must be valid.'});
   }
   //verify first name
@@ -305,15 +317,19 @@ router.post('/profile_edit', async (req, res) => {
     inputBio: (req.body.inputBio) ? xss(req.body.inputBio) : "",
     inputWeight: (req.body.inputWeight) ? parseInt(req.body.inputWeight) : 0,
     inputHeight: (req.body.inputHeight) ? parseInt(req.body.inputHeight) : 0,
-    inputFrequency: (req.body.inputFrequency) ? parseInt(req.body.inputFrequency) : 0
+    inputFrequency: (req.body.inputFrequency) ? parseInt(req.body.inputFrequency) : 0,
+    loggedIn: true, 
+    errors: errors, 
+    user: user, 
+    workoutLogs: userWorkoutoutLogs,
+    password: password,
+    checkInputs: true,
   }
   if (errors.length > 0) {
     inputHandlebars.errors = errors;
-    res.status(400).render('layouts/profile_edit', inputHandlebars);
+    res.locals.post = user;
+    res.status(400).render('layouts/profile', inputHandlebars);
   } else {
-    let userId = req.session.user;
-    let user = await usersDB.getUser(userId);
-    let password = req.session.password;
     try {
       let editUser = await usersDB.editUser(
         userId,
@@ -333,13 +349,29 @@ router.post('/profile_edit', async (req, res) => {
           res.redirect('/profile');
         } else {
           inputHandlebars.errors = [{error: 'Something went wrong, try again.'}];
-          res.status(400).render('layouts/profile_edit', inputHandlebars);
+          res.status(400).render('layouts/profile', inputHandlebars);
         }
     } catch (e) {
       inputHandlebars.errors = [{error: e}];
-      res.status(400).render('layouts/profile_edit', inputHandlebars);
+      res.status(400).render('layouts/profile', inputHandlebars);
     }
   }
-})
+});
+
+router.get('/profile_delete', async (req, res) => {
+  try {
+    let userId = req.session.user;
+    let password = req.session.password;
+    let user = await usersDB.getUser(userId);
+    let del = await usersDB.deleteUser(user, password);
+    req.session.destroy();
+    res.status(400).render('layouts/profile_delete', { loggedIn: false })
+
+  } catch (e) {
+    res.status(400).render('layouts/profile', { error: e });
+  }
+
+
+});
 
 module.exports = router;

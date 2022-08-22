@@ -1,4 +1,26 @@
 <div class="container profile-container">
+  {{#if error}}
+    <div class="container text-center errorContainer">
+      <div class="alert alert-danger alert-dismissible row" role="alert">
+        <div>{{error}}</div>
+        <button type="button" class="close errorBtn" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+  {{/if}}
+  {{#if errors}}
+  {{#each errors}}
+  <div class="container text-center errorContainer">
+    <div class="alert alert-danger alert-dismissible row" role="alert">
+      <div>{{error}}</div>
+      <button type="button" class="close errorBtn" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  {{/each}}
+  {{/if}}
   <h1>My Profile</h1>
   <div class="row gutters-sm">
     <div class="col-md-5 mb-3">
@@ -26,76 +48,132 @@
     <div class="col-md-7">
       <div class="card mb-3">
         <div class="card-body">
+          <form id="profile_edit-form" method="POST" action="/profile_edit" novalidate>
           <div class="row">
-            <div class="col-sm-5">
+            <div id="fnLabel" class="col-sm-5">
               Full Name
             </div>
-            <div class="col-sm-7 text-secondary">
+            <div id="fnText" class="col-sm-7 text-secondary">
               {{user.userInfo.firstName}} {{user.userInfo.lastName}}
             </div>
+            <div id="editFn" hidden class="form-group col-md-6">
+              <label for="inputFirstName">First Name</label>
+              <input value="{{user.userInfo.firstName}}" name="inputFirstName" type="text" pattern="^[a-zA-Z]+(?:\s+[a-zA-Z]+)*$" class="form-control" id="inputFirstName" placeholder="First Name" required>
+              <div class="invalid-feedback">
+                First name cannot have numbers, be empty, or just spaces
+              </div>
+            </div>
+            <div id="editLn" hidden class="form-group col-md-6">
+              <label for="inputLastName">Last Name</label>
+              <input value="{{user.userInfo.lastName}}" name="inputLastName" type="text" pattern="^[a-zA-Z]+(?:\s+[a-zA-Z]+)*$" class="form-control" id="inputLastName" placeholder="Last Name">
+              <div class="invalid-feedback">
+                If provided, last name cannot have numbers or be just spaces
+              </div>
+            </div> 
           </div>
           <hr>
           <div class="row">
-            <div class="col-sm-5">
+            <div id="emailLabel" class="col-sm-5">
               Email
             </div>
-            <div class="col-sm-7 text-secondary">
+            <div id="emailText" class="col-sm-7 text-secondary">
               {{user.email}}
             </div>
+            <label id="editEmailLabel" hidden class="col-sm-5" for="inputEmail">Email address</label>
+            <input hidden value="{{user.email}}" name="inputEmail" type="email" class="form-control col-sm-6 text-secondary" id="inputEmail" aria-describedby="emailHelp" placeholder="Email address" required>
+            <div class="invalid-feedback">
+              Email must be provided and be valid
+            </div>
+          </div>
+          <div hidden id="hr"><hr></div>
+          <div id="editPassword" hidden class="row">
+            <label class="col-sm-5" for="inputPassword">Password</label>
+            <input value="{{password}}" name="inputPassword" type="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" class="form-control col-sm-6" id="inputPassword" aria-describedby="passwordHelpBlock" placeholder="Password" required>
+            <small id="passwordHelpBlock" class="form-text text-muted col-sm-5">
+              Password must be at at least eight characters, containing at least one uppercase letter, one lowercase letter, one number, and one special character
+            </small>
           </div>
           <hr>
           <div class="row">
-            <div class="col-sm-5">
+            <div id="dateLabel" class="col-sm-5">
               Birthday
             </div>
-            <div class="col-sm-7 text-secondary">
+            <div id="dateText"class="col-sm-7 text-secondary">
               {{dateFormat user.userInfo.birthDate "MM/DD/YYYY"}}
+            </div>
+            <label id="editDateLabel" hidden for="inputBirthDate" class="col-sm-5">Birth Date</label>
+            <input hidden value="{{dateFormat user.userInfo.birthDate "YYYY-MM-DD"}}" name="inputBirthDate" type="date" class="form-control col-sm-6 text-seocndary" id="inputBirthDate" required>
+            <div class="invalid-feedback">
+              Birthdate must be provided
             </div>
           </div> 
           <hr>
           <div class="row">
-            <div class="col-sm-5">
+            <div id="weightLabel" class="col-sm-5">
               Weight
             </div>
-            <div class="col-sm-7 text-secondary">
+            <div id="weightText" class="col-sm-7 text-secondary">
               {{check user.userInfo.weight 0 ' lbs'}}
             </div>
+            <label id="editWeightLabel" hidden class="col-sm-5" for="inputWeight">Weight</label>
+            <input hidden value="{{user.userInfo.weight}}" min=0 name="inputWeight" type="number" class="form-control col-sm-6 text-secondary" id="inputWeight" placeholder="Weight (lbs)">
+            <div class="invalid-feedback">
+              If provided, weight needs to be between [0, 1400] 
+            </div>
           </div>
           <hr>
           <div class="row">
-            <div class="col-sm-5">
+            <div id="heightLabel" class="col-sm-5">
               Height
             </div>
-            <div class="col-sm-7 text-secondary">
+            <div id="heightText" class="col-sm-7 text-secondary">
               {{heightFormat user.userInfo.height}}
             </div>
+            <label id="editHeightLabel" hidden class="col-sm-5" for="inputHeight">Height</label>
+            <input hidden value="{{user.userInfo.height}}" min=0 name="inputHeight" type="number" class="form-control col-sm-6 text-secondary" id="inputHeight" placeholder="Height (in)">
+            <div class="invalid-feedback">
+              If provided, height needs to be between [0, 108]
+            </div>
           </div>
           <hr>
           <div class="row">
-            <div class="col-sm-5">
+            <div id="fLabel" class="col-sm-5">
               Frequency
             </div>
-            <div class="col-sm-7 text-secondary">
+            <div id="fText" class="col-sm-7 text-secondary">
               {{check user.userInfo.frequencyOfWorkingOut 0 ' times a week'}}
+            </div>
+            <label id="editFLabel" hidden class="col-sm-5" for="inputFrequency">Frequency</label>
+            <input hidden value="{{user.userInfo.frequencyOfWorkingOut}}" min=0 max=7 name="inputFrequency" type="number" class="form-control col-sm-6 text-secondary" id="inputFrequency" aria-describedby="emailHelp" placeholder="Frequency of working out per week">
+            <div class="invalid-feedback">
+              If provided, frequency needs to be between [0, 7]
             </div>
           </div>
           <hr>
           <div class="row">
-            <div class="col-sm-5">
+            <div id="bioLabel" class="col-sm-5">
               Bio
             </div>
-            <div class="col-sm-7 text-secondary">
+            <div id="bioText" class="col-sm-7 text-secondary">
               {{check user.userInfo.bio "" ""}}
+            </div>
+            <label id="editBioLabel" hidden class="col-sm-5" for="inputBio">Bio</label>
+            <textarea hidden name="inputBio" rows="3" class="form-control col-sm-6 text-secondary" id="inputBio" placeholder="Biography">{{user.userInfo.bio}}</textarea>
+            <div class="invalid-feedback">
+              If provided, biography cannot be just spaces
             </div>
           </div>
           <hr>
           <div class="row">
             <div class="col-sm-12">
               {{!-- need to make it where it just lets the fields be editable (ajax request) --}}
-              <a class="btn btn-info" href="/profile_edit/{{user.id}}">Edit Profile</a>
+              <a id="editProfile" class="btn btn-info" href="#" onclick="editProfile()">Edit Profile</a>
+              <button id="saveProfile" hidden class="btn btn-primary" type="submit">Save Profile</button>
+              <a class="btn btn-danger" href="/profile_delete" onclick="return confirm('Are you sure you want to delete your account?')">Delete Account</a>
             </div>
           </div>
         </div>
+        </form>
       </div>
     </div>
   </div>
@@ -103,13 +181,19 @@
     <div class="card-body">
       <h5>Created Workouts</h5>
       {{!-- this is made for each workout card--}}
-      <div class="card">
-        <div class="card-body">
-          <div class="row">
-            <h4 class="card-title">My Chest-day Workout</h4>
+      {{#if user.userMadeWorkouts.length}}
+        {{#each user.userMadeWorkouts}}
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <h4 class="card-title">My Chest-day Workout</h4>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        {{/each}}
+      {{else}}
+      <h4 class="card-title">No workouts available</h4>
+      {{/if}}
     </div>
   </div>
   <div class="card">
@@ -162,6 +246,7 @@
         {{/each}}
       {{else}}
       {{!-- TODO: what to show when there are no workoutLogs --}}
+      <h4 class="card-title">No workout logs available</h4>
       {{/if}}
     </div>
   </div>
