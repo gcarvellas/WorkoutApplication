@@ -5,10 +5,12 @@ const validation = require('./validation');
 const workouts = mongoCollections.workouts;
 const MUSCLE_GROUPS = validation.MUSCLE_GROUPS;
 
-const getWorkoutsByAuthor = async function getWorkoutsByAuthor(author, limit = 10) {
+const getWorkoutsByAuthor = async function getWorkoutsByAuthor(author, page = 1, limit = 10) {
     validation.verifyUUID(author, 'Provided value of author');
+    validation.verifyNumber(page, 'Provided value of page', 'int', 1, 500);
     validation.verifyNumber(limit, 'Provided vaue of limit', 'int', 1, 500);
 
+    const skip = (page - 1) * limit;
     const userFound = await usersData.getUser(author);
 
     if(userFound === null) {
@@ -17,19 +19,66 @@ const getWorkoutsByAuthor = async function getWorkoutsByAuthor(author, limit = 1
 
     const workoutsCollection = await workouts();
     const workoutsFound = await workoutsCollection.aggregate([
-        {
-            '$match': {
-              'author': author
+      {
+        '$match': {
+          'author': author.trim(),
+        }
+      }, {
+        '$facet': {
+          'total': [
+            {
+              '$count': 'count'
             }
-          }, {
-            '$limit': limit
+          ], 
+          'data': [
+            {
+              '$addFields': {
+                '_id': '$_id'
+              }
+            }
+          ]
+        }
+      }, {
+        '$unwind': '$total'
+      }, {
+        '$project': {
+          'page': {
+            '$literal': skip / limit + 1
+          }, 
+          'hasNextPage': {
+            '$lt': [
+              {
+                '$multiply': [
+                  limit, page
+                ]
+              }, '$total.count'
+            ]
+          }, 
+          'totalPages': {
+            '$ceil': {
+              '$divide': [
+                '$total.count', limit
+              ]
+            }
+          }, 
+          'totalItems': '$total.count', 
+          'data': {
+            '$slice': [
+              '$data', skip, {
+                '$ifNull': [
+                  limit, '$total.count'
+                ]
+              }
+            ]
           }
+        }
+      }
     ]).toArray();
     
-    return workoutsFound;
+    return workoutsFound[0];
 }
 
-const getWorkoutsByMuscleGroup = async function getWorkoutsByMuscleGroup(muscleGroup, limit = 10) {
+const getWorkoutsByMuscleGroup = async function getWorkoutsByMuscleGroup(muscleGroup, page = 1, limit = 10) {
   validation.verifyNumber(limit, 'Provided vaue of limit', 'int', 1, 500);
 
   muscleGroup = muscleGroup.toLowerCase();
@@ -72,53 +121,162 @@ const getWorkoutsByMuscleGroup = async function getWorkoutsByMuscleGroup(muscleG
       }
   }
 
-  return resultArr;
+  const skip = (page - 1) * limit;
+  const totalPages = Math.ceil(resultArr.length / limit);
+  const data = resultArr.slice(skip, limit * page);
+  const hasNext = ((limit * page) < resultArr.length) ? true : false;
+  return {
+    page: page,
+    hasNextPage: hasNext,
+    totalPages : totalPages,
+    totalItems: resultArr.length,
+    data: data
+  };
 }
 
-const getWorkoutsByName = async function getWorkoutsByName(workoutName, limit = 10) {
+const getWorkoutsByName = async function getWorkoutsByName(workoutName, page = 1, limit = 10) {
     validation.verifyMessage(workoutName, 'Provided value of workout name');
+    validation.verifyNumber(page, 'Provided value of page', 'int', 1, 500);
     validation.verifyNumber(limit, 'Provided vaue of limit', 'int', 1, 500);
+
+    const skip = (page - 1) * limit;
 
     const workoutsCollection = await workouts();
     const workoutsFound = await workoutsCollection.aggregate([
-        {
-            '$match': {
-              'name': {
+      {
+        '$match': {
+          'name': {
                 '$regex': workoutName.trim(), 
                 '$options': 'i'
+              }        }
+      }, {
+        '$facet': {
+          'total': [
+            {
+              '$count': 'count'
+            }
+          ], 
+          'data': [
+            {
+              '$addFields': {
+                '_id': '$_id'
               }
             }
-          }, {
-            '$limit': limit
+          ]
+        }
+      }, {
+        '$unwind': '$total'
+      }, {
+        '$project': {
+          'page': {
+            '$literal': skip / limit + 1
+          }, 
+          'hasNextPage': {
+            '$lt': [
+              {
+                '$multiply': [
+                  limit, page
+                ]
+              }, '$total.count'
+            ]
+          }, 
+          'totalPages': {
+            '$ceil': {
+              '$divide': [
+                '$total.count', limit
+              ]
+            }
+          }, 
+          'totalItems': '$total.count', 
+          'data': {
+            '$slice': [
+              '$data', skip, {
+                '$ifNull': [
+                  limit, '$total.count'
+                ]
+              }
+            ]
           }
+        }
+      }
     ]).toArray();
 
-    return workoutsFound;
+    return workoutsFound[0];
 }
 
-const getMostPopularWorkouts = async function getMostPopularWorkouts(limit = 10) {
-    validation.verifyNumber(limit, 'Provided vaue of limit', 'int', 1, 500);
+const getMostPopularWorkouts = async function getMostPopularWorkouts(page = 1, limit = 10) {
+    validation.verifyNumber(page, 'Provided value of page', 'int', 1, 500);
+    validation.verifyNumber(limit, 'Provided value of limit', 'int', 1, 500);
+
+    const skip = (page - 1) * limit;
 
     const workoutsCollection = await workouts();
     const workoutsList = await workoutsCollection.aggregate([
-        {
-          '$addFields': {
-            'numberOfLikes': {
-              '$size': '$usersLiked'
-            }
+      {
+        '$addFields': {
+          'numberOfLikes': {
+            '$size': '$usersLiked'
           }
-        }, {
-          '$sort': {
-            'numberOfLikes': -1
-          }
-        }, {
-          '$limit': limit
-        }, {
-          '$unset': 'numberOfLikes'
         }
+      }, {
+        '$sort': {
+          'numberOfLikes': -1
+        }
+      }, {
+        '$unset': 'numberOfLikes'
+      }, {
+        '$facet': {
+          'total': [
+            {
+              '$count': 'count'
+            }
+          ], 
+          'data': [
+            {
+              '$addFields': {
+                '_id': '$_id'
+              }
+            }
+          ]
+        }
+      }, {
+        '$unwind': '$total'
+      }, {
+        '$project': { 
+          'page': {
+            '$literal': skip / limit + 1
+          }, 
+          'hasNextPage': {
+            '$lt': [
+              {
+                '$multiply': [
+                  limit, page
+                ]
+              }, '$total.count'
+            ]
+          }, 
+          'totalPages': {
+            '$ceil': {
+              '$divide': [
+                '$total.count', limit
+              ]
+            }
+          }, 
+          'totalItems': '$total.count',
+          'data': {
+            '$slice': [
+              '$data', skip, {
+                '$ifNull': [
+                  limit, '$total.count'
+                ]
+              }
+            ]
+          }
+        }
+      }
       ]).toArray();
     
-      return workoutsList;
+      return workoutsList[0];
 }
 
 module.exports = {

@@ -12,8 +12,7 @@ module.exports = {
         firstName = validation.verifyFirstName(firstName);
         lastName = validation.verifyLastName(lastName);
         birthDate = validation.verifyBirthDate(birthDate);
-        if (bio !== '')
-            bio = validation.verifyBio(bio);
+        bio = validation.verifyBio(bio);
         weight = validation.verifyWeight(weight);
         height = validation.verifyHeight(height);
         frequencyOfWorkingOut = validation.verifyFrequencyOfWorkingOut(frequencyOfWorkingOut);

@@ -11,6 +11,53 @@ async function getAuthUsernameAndPasswordFromSession(req){
     return [user, password];
 }
 
+async function parseExerciseForm(req) {
+    let name, note;
+    let muscles = [];
+    let equipment = [];
+
+    for (const [key, val] of Object.entries(req.body)) {
+        if (key === "exercise-title") {
+            name = val;
+        }
+
+        if(key === "muscle-group"){
+            if(val !== '') {
+                if(typeof val === 'string'){
+                    muscles.push(val);
+                } else {
+                    muscles = val;
+                }
+            }
+        } else if(key === "exercise-equipment"){
+            if(val !== '') {
+                if(typeof val === 'string'){
+                    equipment.push(val);
+                } else {
+                    equipment = val;
+                }
+            }
+        } else if (key === "exercise-note") {
+            if(val !== '') {
+                note = val;
+            }
+        }
+    }
+
+    name = validation.verifyMessage(name, 'Provided value of name');
+    muscles = validation.verifyMuscleGroups(muscles, 'Provided list of muscle groups');
+
+    if(note){
+        note = validation.verifyMessage(note, 'Provided value of note');
+    }
+    
+    if(equipment.length !== 0){
+        equipment = validation.verifyEquipment(equipment, 'Provided list of equipment');
+    }
+    
+    return [name, muscles, note, equipment];
+}
+
 async function parseWorkoutForm(req){
     let intensity,length,workoutName;
     let exercises = [];
@@ -97,4 +144,4 @@ function getWorkoutCreateData(){
     return [formAction, submitButtonText, exerciseIdString, emptyWorkout];
 }
 
-module.exports = {getAuthUsernameAndPasswordFromSession, parseWorkoutForm, getWorkoutEditData, getWorkoutCreateData};
+module.exports = {getAuthUsernameAndPasswordFromSession, parseWorkoutForm, getWorkoutEditData, getWorkoutCreateData, parseExerciseForm};
