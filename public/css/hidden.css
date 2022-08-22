@@ -36,18 +36,25 @@ li.signup-btn  {
     padding-top: 6px;
 }
 
+.profile_edit-container,
 .signup-container,
 .signin-container,
 .profile-container {
     padding-top: 5rem;
 }
 
+.profile_edit-container {
+    padding-top: 2rem;
+}
+
+.form-profile_edit,
 .form-signup,
 .form-signin {
     width: 100%;
     max-width: 400px;
     padding: 15px;
     margin: 0 auto;
+    text-align: left;
 }
 
 .birthDateInput {
@@ -69,4 +76,32 @@ li.signup-btn  {
 .viewWorkouts-container,
 .logout-container {
     padding-top: 5rem;
+}
+
+.pagination-pages {
+    padding: 10px;
+}
+
+#user-workout-search {
+    margin-left: auto; 
+    margin-right: 0;
+}
+
+#exercise-display {
+    padding-top: 20px;
+    text-align: center;
+    margin: auto;
+}
+
+#exercise-value-label {
+    font-weight: bold;
+}
+
+#exercise-error {
+    max-width: 80%;
+    margin: auto;
+}
+
+#pill-badge {
+    padding: 12px;
 }

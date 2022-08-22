@@ -1,4 +1,4 @@
-const myForm = document.getElementById('signup-form');
+const myForm = document.getElementById('profile_edit-form');
 const emailInput = document.getElementById('inputEmail');
 const passwordInput = document.getElementById('inputPassword');
 const firstNameInput = document.getElementById('inputFirstName');
@@ -86,7 +86,6 @@ if (myForm) {
     emailInput.required = 'true';
     passwordInput.required = 'true';
     firstNameInput.required = 'true';
-    lastNameInput.required = 'true';
     birthDateInput.required = 'true';
 
     if (myForm.checkValidity() === false) {

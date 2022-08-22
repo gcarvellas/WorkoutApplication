@@ -182,13 +182,19 @@ const editExercise = async function editExercise(user, userPassword, _id, name, 
     }
 
     if(equipment) {
-        isValidStringArray(equipment, 'Provided value of equipment', 'equipment');
+        if(equipment.length === 0) {
+            updatedExercise.equipment = [];
+        } else {
+            isValidStringArray(equipment, 'Provided value of equipment', 'equipment');
         updatedExercise.equipment = equipment;
-    }
+        }    
+    } 
 
     if(note) {
         validation.verifyMessage(note, 'Provided value of exercise note');
         updatedExercise.note = note;
+    } else {
+        updatedExercise.note = [];
     }
 
     await exerciseCollection.updateOne(

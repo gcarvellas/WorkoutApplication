@@ -4,8 +4,10 @@
   "description": "CS-546-A Final Project: Workout Application",
   "main": "app.js",
   "scripts": {
+    "seed": "node ./task/seed.js",
     "test": "node task/test.js",
-    "start": "node app.js"
+    "start": "node app.js", 
+    "seed": "node task/seed.js"
   },
   "repository": {
     "type": "git",
@@ -27,4 +29,4 @@
     "uuid": "^8.3.2",
     "xss": "^1.0.14"
   }
-}
+} 
