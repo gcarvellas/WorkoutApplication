@@ -163,6 +163,7 @@
               If provided, biography cannot be just spaces
             </div>
           </div>
+          {{#if isUser}}
           <hr>
           <div class="row">
             <div class="col-sm-12">
@@ -172,6 +173,7 @@
               <a class="btn btn-danger" href="/profile_delete" onclick="return confirm('Are you sure you want to delete your account?')">Delete Account</a>
             </div>
           </div>
+          {{/if}}
         </div>
         </form>
       </div>
@@ -182,11 +184,11 @@
       <h5>Created Workouts</h5>
       {{!-- this is made for each workout card--}}
       {{#if user.userMadeWorkouts.length}}
-        {{#each user.userMadeWorkouts}}
+        {{#each workouts}}
           <div class="card">
             <div class="card-body">
               <div class="row">
-                <h4 class="card-title">My Chest-day Workout</h4>
+                <a href="/workout/{{this._id}}"><h4 class="card-title">{{this.name}}</h4></a>
               </div>
             </div>
           </div>
@@ -245,8 +247,26 @@
           {{/if}}
         {{/each}}
       {{else}}
-      {{!-- TODO: what to show when there are no workoutLogs --}}
       <h4 class="card-title">No workout logs available</h4>
+      {{/if}}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <h5>Liked Workouts</h5>
+      {{!-- this is made for each workout card--}}
+      {{#if user.userLikedWorkouts.length}}
+        {{#each likedWorkouts}}
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <a href="/workout/{{this._id}}"><h4 class="card-title">{{this.name}}</h4></a>
+              </div>
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+      <h4 class="card-title">No liked workouts available</h4>
       {{/if}}
     </div>
   </div>
