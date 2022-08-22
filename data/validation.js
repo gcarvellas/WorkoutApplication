@@ -166,9 +166,7 @@ module.exports = {
         }
         
         //Verify bio (optional arg)
-        if (typeof userInfo.bio !== 'undefined'){
-            userInfo.bio = verifyString(userInfo.bio, "Bio");
-        }
+        userInfo.bio = this.verifyBio(userInfo.bio);
 
         //Verify weight (optional arg)
         if (typeof userInfo.weight !== 'undefined') this.verifyWeight(userInfo.weight);
@@ -481,6 +479,7 @@ module.exports = {
          * @return {Date} date object
          * @throws Will throw an exception if birthDate is invalid
          */
+        if (typeof birthDate !== "object") throw "Birth Date must be a Date object";
         
         birthDate = verifyDate(birthDate, "Birth Date");
         //see if user is at least 13 years old and not above 120
@@ -506,7 +505,9 @@ module.exports = {
          * @return {String} trimmed string
          * @throws Will throw an exception if bio is invalid
          */
+        if (typeof bio === "string" && bio.trim() === '') return bio;
         return verifyString(bio, "Bio");
+
     },
     verifyWeight(weight){
         /**
