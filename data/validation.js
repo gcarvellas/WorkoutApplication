@@ -147,9 +147,7 @@ module.exports = {
         }
         
         //Verify bio (optional arg)
-        if (typeof userInfo.bio !== 'undefined'){
-            userInfo.bio = this.verifyString(userInfo.bio, "Bio");
-        }
+        userInfo.bio = this.verifyBio(userInfo.bio);
 
         //Verify weight (optional arg)
         if (typeof userInfo.weight !== 'undefined') this.verifyWeight(userInfo.weight);
