@@ -72,6 +72,12 @@ router.get('/workout/:workoutId/logcopy/:workoutLogId', async (req, res) => {
       if (errors.length > 0) {
         res.status(400).render('layouts/notloggedin', {reason: errors[0]});
       } else {
+        //add exercise name for each exercise
+        for (let exercise of workoutLog.logInfo.exercises) {
+          let innerExercise = await exercises.getExercise(exercise.exerciseId);
+          exercise['name'] = innerExercise.name;
+        }
+
         workout = {
           name: workout.name,
           intensity: workoutLog.logInfo.intensity,
@@ -111,6 +117,12 @@ router.get('/workout/:workoutId/logedit/:workoutLogId', async (req, res) => {
       if (errors.length > 0) {
         res.status(400).render('layouts/notloggedin', {reason: errors[0]});
       } else {
+        //add exercise name for each exercise
+        for (let exercise of workoutLog.logInfo.exercises) {
+          let innerExercise = await exercises.getExercise(exercise.exerciseId);
+          exercise['name'] = innerExercise.name;
+        }
+
         workout = {
           name: workout.name,
           intensity: workoutLog.logInfo.intensity,

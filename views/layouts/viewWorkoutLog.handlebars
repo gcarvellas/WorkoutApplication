@@ -39,25 +39,25 @@
       <div class="form-group row">
         <div class="col-sm-4 col-form-label">Intensity (0-5)</div>
         <div class="col-sm-8">
-          <div id="intensity" name="intensity">{{workoutLog.logInfo.intensity}}</div>
+          <div id="intensity">{{workoutLog.logInfo.intensity}}</div>
         </div>
       </div>
       <div class="form-group row">
         <div class="col-sm-4 col-form-label">Length (Minutes)</div>
         <div class="col-sm-8">
-          <div id="length" name="length">{{workoutLog.logInfo.length}} minutes</div>
+          <div id="length">{{workoutLog.logInfo.length}} minutes</div>
         </div>
       </div>
       <div class="form-group row">
         <div class="col-sm-4 col-form-label">Date of logged workout</div>
         <div class="col-sm-8">
-          <div id="date" name="date">{{dateFormat workoutLog.logInfo.date "dddd, MMMM Do YYYY, h:mm a"}}</div>
+          <div id="date">{{dateFormat workoutLog.logInfo.date "dddd, MMMM Do YYYY, h:mm a"}}</div>
         </div>
       </div>
       <div class="form-group row">
         <div class="col-sm-4 col-form-label">Comment</div>
         <div class="col-sm-8">
-          <div id="comment" name="comment">{{workoutLog.logInfo.comment}}</div>
+          <div id="comment">{{workoutLog.logInfo.comment}}</div>
         </div>
       </div>
     </div>
@@ -70,40 +70,40 @@
         {{#each exercises}} 
         <div class="card mb-2" id="workoutlog-exerice">
           <div class="card-body">
-            <h4 class="card-title">{{innerExercise.name}}</h4>
+            <h4><a target="_blank" rel="noopener noreferrer" href="/exercise/{{exerciseId}}">{{innerExercise.name}}</a></h4>
 
             <div class="form-group row">
               <div class="col-sm-4 col-form-label">Sets</div>
               <div class="col-sm-8">
-                <div id="exerciseSet" name="exerciseSet">{{sets}}</div>
+                <div id="exerciseSet">{{sets}}</div>
               </div>
             </div>
 
             <div class="form-group row">
               <div class="col-sm-4 col-form-label">Reps</div>
               <div class="col-sm-8">
-                <div id="exerciseReps" name="exerciseReps">{{repetitions}}</div>
+                <div id="exerciseReps">{{repetitions}}</div>
               </div>
             </div>
 
             <div class="form-group row">
               <div class="col-sm-4 col-form-label">Rest</div>
               <div class="col-sm-8">
-                <div id="exerciseRest" name="exerciseRest">{{rest}} sec.</div>
+                <div id="exerciseRest">{{rest}} sec.</div>
               </div>
             </div>
 
             <div class="form-group row">
               <div class="col-sm-4 col-form-label">Weight</div>
               <div class="col-sm-8">
-                <div id="exerciseWeight" name="exerciseWeight">{{weight}} lbs</div>
+                <div id="exerciseWeight">{{weight}} lbs</div>
               </div>
             </div>
 
             <div class="form-group row">
               <div class="col-sm-4 col-form-label">Note</div>
               <div class="col-sm-8">
-                <div id="exerciseNote" name="exerciseNote">{{comment}}</div>
+                <div id="exerciseNote">{{comment}}</div>
               </div>
             </div>
 

@@ -248,7 +248,7 @@ function addToExerciseList(exercise) {
       <div class="form-group row">
         <label for="inputExerciseRest${time}" class="col-sm-4 col-form-label">Rest</label>
         <div class="col-sm-8">
-          <input id="inputExerciseRes${time}" name="inputExerciseRest" type="number" class="form-control" placeholder="Rest" required>
+          <input id="inputExerciseRest${time}" name="inputExerciseRest" type="number" class="form-control" placeholder="Rest" required>
           <div class="invalid-feedback">
             Exercise rest must be provided and between 0 and 500
           </div>
