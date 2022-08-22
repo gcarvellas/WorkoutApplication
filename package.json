@@ -4,6 +4,7 @@
   "description": "CS-546-A Final Project: Workout Application",
   "main": "app.js",
   "scripts": {
+    "seed": "node ./task/seed.js",
     "test": "node task/test.js",
     "start": "node app.js", 
     "seed": "node task/seed.js"
