@@ -6,6 +6,7 @@ const users = data.users;
 const validation = data.validation;
 const workouts = data.workouts;
 const exercises = data.exercises;
+const xss = require('xss');
 
 router.get('/workoutLogs/:id', (req, res) => {
   //given a user id, get all the workoutLogs and return them
@@ -56,7 +57,6 @@ router.post('/workout/:workoutId/log', async (req, res) => {
       res.status(400).render('layouts/notloggedin', {reason: 'The workout id specified can\'t be found.'});
     } else {
       //workout exists, verify all the inputs from the workoutlog
-      //console.log("here", req.body.requestElems)
       let newSubExercise = {}
       let subExercises = []
       let workoutIntensity, workoutLength, workoutDate, workoutComment;
@@ -77,7 +77,7 @@ router.post('/workout/:workoutId/log', async (req, res) => {
           }
           if ('inputComment' in elem) {
             if (elem.inputComment !== '') {
-              workoutComment = validation.verifyString(elem.inputComment, 'workout comment');
+              workoutComment = xss(validation.verifyString(elem.inputComment, 'workout comment'));
             }
           }
 
@@ -94,15 +94,15 @@ router.post('/workout/:workoutId/log', async (req, res) => {
             newSubExercise['rest'] = parseInt(elem.inputExerciseRest);
           }
           if ('inputExerciseWeight' in elem) {
-            if (elem.inputeExerciseWeight !== '') {
-              newSubExercise['weight'] = parseInt(elem.inputeExerciseWeight);
+            if (elem.inputExerciseWeight !== '') {
+              newSubExercise['weight'] = parseInt(elem.inputExerciseWeight);
             } else {
               newSubExercise['weight'] = undefined;
             }
           }
           if ('inputExerciseNote' in elem) {
             if (elem.inputExerciseNote !== '') {
-              newSubExercise['comment'] = elem.inputExerciseNote;
+              newSubExercise['comment'] = xss(elem.inputExerciseNote);
             } else {
               newSubExercise['comment'] = undefined;
             }
@@ -113,36 +113,38 @@ router.post('/workout/:workoutId/log', async (req, res) => {
           }
         } catch (e) {
           console.log('validation error', e);
+          errors.push(e);
         }
       }
 
-      //verified all fields
-      try {
-        let user = await users.getUser(req.session.user, req.session.password);
-        let workout = await workouts.getWorkout(workoutId);
+      if (errors.length > 0) {
+        res.status(400).send({fail: true, errors: errors});
+      } else {
+        //verified all fields
+        try {
+          let user = await users.getUser(req.session.user, req.session.password);
+          let workout = await workouts.getWorkout(workoutId);
 
-        let logInfo = {
-          date: workoutDate,
-          intensity: workoutIntensity,
-          length: workoutLength,
-          exercises: subExercises,
-          comment: workoutComment
+          let logInfo = {
+            date: workoutDate,
+            intensity: workoutIntensity,
+            length: workoutLength,
+            exercises: subExercises,
+            comment: workoutComment
+          }
+
+          let workoutLog = await workoutLogs.createWorkoutLogFromWorkout(user, req.session.password, workout, logInfo);
+          if (workoutLog) {
+            res.status(201).send({success: true});
+          } else {
+            res.status(400).send({fail: true, errors: ['Something went wrong, try again.']});
+          }
+        } catch (e) {
+          console.log('creation error', e);
+          res.status(400).send({fail: true, errors: [e]});
         }
-
-        // console.log("workout:", workout);
-        // console.log("loginfo:", logInfo);
-        // console.log('subexercise', subExercises);
-
-        let workoutLog = await workoutLogs.createWorkoutLogFromWorkout(user, req.session.password, workout, logInfo);
-        if (workoutLog) {
-          // console.log('sending back success');
-          res.status(201).send({success: true});
-        }
-      } catch (e) {
-        console.log('creation error', e);
       }
     }
-
   } else {
     res.render('layouts/notloggedin', {reason: 'You must log in to create a workout log!'});
   }
@@ -168,7 +170,6 @@ router.get('/workoutLog/:workoutLogId', async (req, res) => {
         //in user's workoutlogs
         //get the workoutLog
         let workoutLog = await workoutLogs.getWorkoutLog(user, req.session.password, workoutLogId);
-        // console.log("workoutLog:", workoutLog);
         //from this workout, get all the exercise names
         for (let exercise of workoutLog.logInfo.exercises) {
           //get exercise based on exerciseId
