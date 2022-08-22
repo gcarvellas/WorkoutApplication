@@ -5,6 +5,7 @@ const xss = require('xss');
 const data = require('../data');
 const validation = data.validation;
 const workoutLogsDB = data.workoutLogs;
+const workouts = data.workouts;
 const usersDB = data.users;
 
 //TODO
@@ -210,9 +211,11 @@ router.get('/profile', async (req, res) => {
     //get user workout logs from user
     let userWorkoutoutLogs = []; 
     let workoutLogs = await usersDB.getWorkoutLogs(userId);
-    //get the actual workoutLog from each workoutLogId
+    //get the actual workoutLog from each workoutLogId and the workout name
     for (let workoutLogId of workoutLogs) {
       let workoutLog = await workoutLogsDB.getWorkoutLog(user, userPassword, workoutLogId);
+      let workout = await workouts.getWorkout(workoutLog.workout);
+      workoutLog['name'] = workout.name;
       userWorkoutoutLogs.push(workoutLog);
     }
     //get 
@@ -252,11 +255,6 @@ router.post('/profile_edit', async (req, res) => {
   //verify password
   if (!req.body.inputPassword) {
     errors.push({error: 'Password must be provided.'});
-  }
-  let passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-  if (!req.body.inputPassword.match(passwordRegex)) {
-    console.log(req.body.inputPassword);
-    errors.push({error: 'Password must be valid.'});
   }
   //verify first name
   if (!req.body.inputFirstName) {

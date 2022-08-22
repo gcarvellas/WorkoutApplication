@@ -14,24 +14,6 @@ const MAX_WORKOUT_LENGTH = 240;
 const MAX_WORKOUT_INTENSITY = 5;
 const MAX_WEIGHT = 1400;
 
-function verifyString(str, variableName = undefined){
-    /**
-     * Verifies there's content in the string
-     * @param str a string
-     * @param variableName (optional) If an error is thrown, adds name of variable to error message
-     * @return str valid string
-     * @throws Will throw a string if string is empty or undefined
-     */
-    if (typeof variableName === 'undefined'){
-        variableName = "String";
-    }
-    if (typeof str === "undefined") throw `${variableName} must be provided`;
-        if (typeof str !== "string") throw `${variableName} must be a string`;
-        str = str.trim();
-        if (str.length === 0) throw `${variableName} cannot be an empty string or just spaces`;
-        return str;
-}
-
 function verifyKeys(obj, keys){
     /**
      * Verify an object only contains a certain list of keys
@@ -51,22 +33,6 @@ function verifyKeys(obj, keys){
     });
 
     return obj;
-}
-
-function verifyDate(obj, variableName = undefined){
-    /**
-     * Verify a date object is of type date
-     * @param {Date} obj Date Object
-     * @param variableName (optional) If an error is thrown, adds name of variable to error message
-     * @return {Date} Date Object
-     * @throws Will throw an exception if object is not type Date
-     */
-    if (variableName === "undefind") {
-        variableName = "Date";
-    }
-    if (typeof obj === "undefined") throw "Object must be provided";
-    if (Object.prototype.toString.call(obj) !== '[object Date]') throw `${variableName} must be a date object`;
-    return obj
 }
 
 module.exports = {
@@ -94,7 +60,7 @@ module.exports = {
 
         //Verify hashed password
         try{
-            user.hashedPassword = verifyString(user.hashedPassword, "Hashed password");
+            user.hashedPassword = this.verifyString(user.hashedPassword, "Hashed password");
         }
         catch (e) {
             if (user.hashedPassword !== null) throw "Password must be a string or null";
@@ -134,11 +100,28 @@ module.exports = {
         return user;
 
     },
+    verifyString(str, variableName = undefined){
+        /**
+         * Verifies there's content in the string
+         * @param str a string
+         * @param variableName (optional) If an error is thrown, adds name of variable to error message
+         * @return str valid string
+         * @throws Will throw a string if string is empty or undefined
+         */
+        if (typeof variableName === 'undefined'){
+            variableName = "String";
+        }
+        if (typeof str === "undefined") throw `${variableName} must be provided`;
+            if (typeof str !== "string") throw `${variableName} must be a string`;
+            str = str.trim();
+            if (str.length === 0) throw `${variableName} cannot be an empty string or just spaces`;
+            return str;
+    },
     verifyUserInfo(userInfo){
         /**
          * Verifies a valid userInfo object. A userInfo object contains:
          * firstName {String}
-         * lastName {String} (optional)
+         * lastName {String}
          * birthDate {Date} (optional)
          * bio {String} (optional)
          * weight {int} (optional)
@@ -153,12 +136,10 @@ module.exports = {
         verifyKeys(userInfo, USER_INFO_OBJECT_KEYS);
         
         //Verify first name
-        userInfo.firstName = verifyString(userInfo.firstName, "First name");
+        userInfo.firstName = this.verifyString(userInfo.firstName, "First name");
 
-        //Verify last name (optional arg)
-        if (typeof userInfo.lastName !== 'undefined'){
-            userInfo.lastName = verifyString(userInfo.lastName, "Last name");
-        }
+        //verify last name
+        userInfo.lastName = this.verifyString(userInfo.lastName, "Last name");
 
         //Verify birth date (optional arg)
         if (typeof userInfo.birthDate !== 'undefined'){
@@ -228,7 +209,7 @@ module.exports = {
         if (typeof variableName === 'undefined') {
             variableName = 'Input';
         }
-        uuid = verifyString(uuid, variableName);
+        uuid = this.verifyString(uuid, variableName);
         if (!uuid.match(UUID_V4_REGEX)) throw variableName + ' is not a valid v4 UUID';
 
         return uuid
@@ -255,7 +236,7 @@ module.exports = {
         //verify _id 
         workout._id = this.verifyWorkoutName(workout._id);
         //verify name
-        workout.name = verifyString(workout.name, "Workout name");
+        workout.name = this.verifyString(workout.name, "Workout name");
         //verify author
         workout.author = this.verifyUUID(workout.author, "Workout author id");
         //verify intensity
@@ -294,24 +275,24 @@ module.exports = {
         // verify user
         exercise.user = this.verifyUUID(exercise.user, "Exercise user id");
         // verify name
-        exercise.name = verifyString(exercise.name, "Exercise name");
+        exercise.name = this.verifyString(exercise.name, "Exercise name");
         // verify muscles
         if (typeof exercise.muscles === 'undefined') throw 'muscles must be provided';
         if (!Array.isArray(exercise.muscles)) throw 'muscles must be an array of strings';
         exercise.muscles.forEach((muscle_group) => {
-            verifyString(muscle_group);
+            this.verifyString(muscle_group);
             if(!MUSCLE_GROUPS.includes(muscle_group.toLowerCase())) throw `The input "${muscle_group}" is not a valid muscle group`;
         }); 
 
         if (typeof exercise.equipment !== 'undefined') {
             if(!Array.isArray(exercise.equipment)) throw 'equipment must be an array of strings';
             exercise.equipment.forEach((single_equipment) => {
-                verifyString(single_equipment);
+                this.verifyString(single_equipment);
             });
         }
 
         if (typeof exercise.note !== 'undefined') {
-            exercise.note = verifyString(exercise.note, "Exercise note");
+            exercise.note = this.verifyString(exercise.note, "Exercise note");
         }
 
         return exercise;
@@ -352,8 +333,8 @@ module.exports = {
                     subExercises[i].weight = this.verifyNumber(subExercises[i].weight, 'subExercises item weight', undefined, 0, 500);
                 }
                 //verify note (optional field)
-                if (typeof subExercises[i].note !== 'undefined') {
-                    subExercises[i].note = this.verifyString(subExercises[i].note, 'subExercises item comment id');
+                if (typeof subExercises[i].comment !== 'undefined') {
+                    subExercises[i].comment = this.verifyString(subExercises[i].comment, 'subExercises comment');
                 }
             } catch (e) {
                 throw `index ${i} threw exception: ` + e;
@@ -386,7 +367,7 @@ module.exports = {
         logInfo.exercises = this.verifySubExercise(logInfo.exercises);
         //verify comment
         if (typeof logInfo.comment !== 'undefined') {
-            logInfo.comment = verifyString(logInfo.comment, 'logInfo comment id');
+            logInfo.comment = this.verifyString(logInfo.comment, 'logInfo comment id');
         }
         
         return logInfo;
@@ -398,7 +379,7 @@ module.exports = {
          * @return {String} valid email
          * @throws Will throw an exception if email is invalid
          */
-        email = verifyString(email, "Email").toLowerCase();
+        email = this.verifyString(email, "Email").toLowerCase();
         if (email.match(EMAIL_REGEX)) return email;
         else throw "Email is invalid";
     },
@@ -409,7 +390,7 @@ module.exports = {
          * @return {String} valid workout name
          * @throws Will throw an exception if workout name is invalid
          */
-        return verifyString(workoutName, "Workout Name");
+        return this.verifyString(workoutName, "Workout Name");
     },
     verifyWorkoutIntensity(workoutIntensity){
         /**
@@ -443,7 +424,7 @@ module.exports = {
          * @return {String} trimmed string
          * @throws Will throw an exception if message is invalid
          */
-        return verifyString(message, variableName);
+        return this.verifyString(message);
     },
     verifyPassword(password){
         /**
@@ -452,7 +433,7 @@ module.exports = {
          * @return {String} trimmed string
          * @throws Will throw an exception if password is invalid
          */
-        return verifyString(password, "Password");
+        return this.verifyString(password, "Password");
     },
     verifyFirstName(firstName){
         /**
@@ -461,7 +442,7 @@ module.exports = {
          * @return {String} trimmed string
          * @throws Will throw an exception if firstName is invalid
          */
-        return verifyString(firstName, "First Name");
+        return this.verifyString(firstName, "First Name");
     },
     verifyLastName(lastName){
         /**
@@ -470,7 +451,27 @@ module.exports = {
          * @return {String} trimmed string
          * @throws Will throw an exception if lastName is invalid
          */
-        return verifyString(lastName, "Last Name");
+        return this.verifyString(lastName, "Last Name");
+    },
+    verifyDate(obj, variableName = undefined){
+        /**
+         * Verify a date object is of type date
+         * @param {Date} obj Date Object
+         * @param variableName (optional) If an error is thrown, adds name of variable to error message
+         * @return {Date} Date Object
+         * @throws Will throw an exception if object is not type Date
+         */
+        if (variableName === "undefind") {
+            variableName = "Date";
+        }
+        if (typeof obj === "undefined") throw "Object must be provided";
+        if (Object.prototype.toString.call(obj) !== '[object Date]') throw `${variableName} must be a date object`;
+    
+        //make sure date isn't in the future
+        let today = new Date();
+        if (obj > today) throw 'date cannot be in the future';
+    
+        return obj
     },
     verifyBirthDate(birthDate){
         /**
@@ -481,7 +482,7 @@ module.exports = {
          */
         if (typeof birthDate !== "object") throw "Birth Date must be a Date object";
         
-        birthDate = verifyDate(birthDate, "Birth Date");
+        birthDate = this.verifyDate(birthDate, "Birth Date");
         //see if user is at least 13 years old and not above 120
         let today = new Date();
         let years = today.getFullYear() - birthDate.getFullYear();
@@ -505,9 +506,8 @@ module.exports = {
          * @return {String} trimmed string
          * @throws Will throw an exception if bio is invalid
          */
-        if (typeof bio === "string" && bio.trim() === '') return bio;
-        return verifyString(bio, "Bio");
-
+         if (typeof bio === "string" && bio.trim() === '') return bio;
+         return this.verifyString(bio, "Bio");
     },
     verifyWeight(weight){
         /**
@@ -538,7 +538,7 @@ module.exports = {
     },
     verifyMuscleGroups(muscles){
         muscles.forEach((muscle_group) => {
-            verifyString(muscle_group);
+            this.verifyString(muscle_group);
             if(!MUSCLE_GROUPS.includes(muscle_group.toLowerCase())) throw `The input "${muscle_group}" is not a valid muscle group`;
         });
 
@@ -547,7 +547,7 @@ module.exports = {
     verifyEquipment(equipment){
         if(!Array.isArray(equipment)) throw 'equipment must be an array of strings';
             equipment.forEach((single_equipment) => {
-                verifyString(single_equipment);
+                this.verifyString(single_equipment);
             });
 
         return equipment;
