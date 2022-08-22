@@ -15,9 +15,9 @@ router.use(express.urlencoded({extended: true}));
 //main page
 router.get('/', (req, res) => {
   if (req.session.user) {
-    res.render('layouts/landingPage', {loggedIn: true});
+    res.render('layouts/landingPage', {loggedIn: true, muscleGroup : validation.MUSCLE_GROUPS});
   } else {
-    res.render('layouts/landingPage');
+    res.render('layouts/landingPage', {muscleGroup : validation.MUSCLE_GROUPS});
   }
   
 });
