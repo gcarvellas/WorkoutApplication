@@ -223,10 +223,16 @@ router.get('/profile', async (req, res) => {
     }
     //get liked workouts
     let userLikedWorkouts = [];
-    let likedWorkouts = user.userLikedWorkouts
+    let likedWorkouts = user.userLikedWorkouts.reverse();
+    let i =0;
     for (let likedWorkoutId of likedWorkouts) {
-      let workout = await workoutDB.getWorkout(likedWorkoutId);
-      userLikedWorkouts.push(workout);
+      if (i<5) {
+        let workout = await workoutDB.getWorkout(likedWorkoutId);
+        userLikedWorkouts.push(workout);
+      } else {
+        break;
+      }
+      i+=1;
     }
     res.render('layouts/profile', { loggedIn: true, user: user, likedWorkouts: userLikedWorkouts, workouts: userWorkouts, workoutLogs: userWorkoutoutLogs, password: userPassword });
   //}
@@ -257,13 +263,18 @@ router.get('/user/:id', async (req, res) => {
     }
     //get liked workouts
     let userLikedWorkouts = [];
-    let likedWorkouts = user.userLikedWorkouts;
+    let likedWorkouts = user.userLikedWorkouts.reverse();
+    let i =0;
     for (let likedWorkoutId of likedWorkouts) {
-      let workout = await workoutDB.getWorkout(likedWorkoutId);
-      userLikedWorkouts.push(workout);
+      if (i<5) {
+        let workout = await workoutDB.getWorkout(likedWorkoutId);
+        userLikedWorkouts.push(workout);
+      } else {
+        break;
+      }
+      i+=1;
     }
     res.render('layouts/profile', { loggedIn: true, isUser: isUser, user: user, likedWorkouts: userLikedWorkouts, workouts: userWorkouts, workoutLogs: userWorkoutoutLogs, password: userPassword });
-  //}
 });
 
 //edit profile page
