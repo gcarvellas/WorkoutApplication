@@ -10,11 +10,9 @@ module.exports = {
         email = validation.verifyEmail(email);
         password = validation.verifyPassword(password);
         firstName = validation.verifyFirstName(firstName);
-        if (lastName !== '')
-            lastName = validation.verifyLastName(lastName);
+        lastName = validation.verifyLastName(lastName);
         birthDate = validation.verifyBirthDate(birthDate);
-        if (bio !== '')
-            bio = validation.verifyBio(bio);
+        bio = validation.verifyBio(bio);
         weight = validation.verifyWeight(weight);
         height = validation.verifyHeight(height);
         frequencyOfWorkingOut = validation.verifyFrequencyOfWorkingOut(frequencyOfWorkingOut);

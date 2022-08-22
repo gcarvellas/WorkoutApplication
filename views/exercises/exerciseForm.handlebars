@@ -1,0 +1,83 @@
+<div id="exercise-display" class="card w-75">
+    <div class="card text-center">
+        <div class="card-header">
+            <h1 id="exercise-header-title">{{pageTitle}}</h1>
+            {{#if errorAfter}}
+                <div class="alert alert-danger" role="alert">{{errorAfter}}</div>
+            {{/if}}
+
+            {{#if error}}
+            <div class="card text-white bg-danger mb-3" id="exercise-error">
+                <div class="card-body">
+                    <h5 class="card-title">{{error.title}} 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-frown" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M4.285 12.433a.5.5 0 0 0 .683-.183A3.498 3.498 0 0 1 8 10.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.498 4.498 0 0 0 8 9.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z"/>
+                    </svg>
+                    </h5>
+                    <p class="card-text">{{error.message}}</p>
+                </div>
+            </div>
+            {{else}}
+            <div id="exercise-edit-form" class="card-body">
+                <form action="{{urlAfter}}" method="POST" id="exercise-form">
+                    <div class="form-group row">
+                        <label for="exercise-title" class="col-sm-3 col-form-label">Name: </label>
+                        <div class="col-sm-9">
+                            <input name="exercise-title" type="text" class="form-control" id="exercise-title" value="{{exercise.name}}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="exercise-muscle-groups" class="col-sm-3 col-form-label">Muscle Groups: </label>
+                        <div class="col-sm-9">
+                            {{#each muscleGroups}}
+                            <div class="form-check form-check-inline" id="{{this}}">
+                                <label class="form-check-label" for="muscle-group">{{this}}</label>
+                                <input class="form-check-input uncheckedBox muscleList" type="checkbox" value="{{this}}" name="muscle-group">
+                            </div>
+                            {{/each}}
+
+                            {{#each exercise.muscles}}
+                            <div class="form-check form-check-inline">
+                                <label class="form-check-label" for="muscle-group">{{this}}</label>
+                                <input class="form-check-input checkedBox muscleExisting" type="checkbox" value="{{this}}" name="muscle-group" checked>
+                            </div>
+                            {{/each}}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="exercise-note" class="col-sm-3 col-form-label">Note: </label>
+                        <div class="col-sm-9">
+                            <textarea name="exercise-note" class="form-control" id="exercise-note" value="{{exercise.note}}">{{exercise.note}}</textarea>
+                        </div>
+                    </div>    
+                    <div class="form-group row after-add-more">
+                        <div class="input-group control-group addmore[]" id="exercise-equipment-id">  
+                            <label for="exercise-equipment-add-button" class="col-sm-3 col-form-label">Equipment list: </label>
+                            <button class="btn btn-success add-more" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+                            </svg>Add</button> 
+                            <div class="input-group-btn">
+                                <button class="btn btn-danger removeEquipment" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                </svg> Remove</button>
+                            </div>
+                        </div>
+                        {{#each exercise.equipment}}
+                            <div class="input-group control-group" id="exercise-equipment-id">
+                                <label for="exercise-equipment" class="col-sm-3 col-form-label removeEquipmentLabel">Additional Equipment: </label>
+                                <input type="text" name="exercise-equipment" class="form-control col-sm-5 removeEquipmentInput" value="{{this}}">  
+                            </div>
+                        {{/each}}
+                    </div>
+                    <button class="btn btn-primary" type="submit" form="exercise-form">Save</button>
+                </form>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</div>
+
+
+
+

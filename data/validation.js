@@ -421,14 +421,14 @@ module.exports = {
         if (workoutLength > MAX_WORKOUT_LENGTH) throw `Workout length must be less than ${MAX_WORKOUT_LENGTH}`;
         return workoutLength;
     },
-    verifyMessage(message){
+    verifyMessage(message, variableName = "message"){
         /**
          * Verifies message is a string.
          * @param {String} message a non-empty string
          * @return {String} trimmed string
          * @throws Will throw an exception if message is invalid
          */
-        return this.verifyString(message);
+        return verifyString(message);
     },
     verifyPassword(password){
         /**
@@ -484,6 +484,7 @@ module.exports = {
          * @return {Date} date object
          * @throws Will throw an exception if birthDate is invalid
          */
+        if (typeof birthDate !== "object") throw "Birth Date must be a Date object";
         
         birthDate = this.verifyDate(birthDate, "Birth Date");
         //see if user is at least 13 years old and not above 120
@@ -509,7 +510,8 @@ module.exports = {
          * @return {String} trimmed string
          * @throws Will throw an exception if bio is invalid
          */
-        return this.verifyString(bio, "Bio");
+         if (typeof bio === "string" && bio.trim() === '') return bio;
+         return this.verifyString(bio, "Bio");
     },
     verifyWeight(weight){
         /**
@@ -537,6 +539,22 @@ module.exports = {
          * @throws Will throw an exception if frequencyOfWorkingOut is invalid
          */
         return this.verifyNumber(frequencyOfWorkingOut, "frequencyOfWorkingOut", "int", 0, 7);
+    },
+    verifyMuscleGroups(muscles){
+        muscles.forEach((muscle_group) => {
+            verifyString(muscle_group);
+            if(!MUSCLE_GROUPS.includes(muscle_group.toLowerCase())) throw `The input "${muscle_group}" is not a valid muscle group`;
+        });
+
+        return muscles;
+    },
+    verifyEquipment(equipment){
+        if(!Array.isArray(equipment)) throw 'equipment must be an array of strings';
+            equipment.forEach((single_equipment) => {
+                verifyString(single_equipment);
+            });
+
+        return equipment;
     },
     
     
