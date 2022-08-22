@@ -1,6 +1,6 @@
 //log creation elements
-const logButton = document.getElementById('logButton');
-const deleteLogButton = document.getElementById('deleteLogButton');
+const logButton = document.getElementById('logButton'); //save button
+const deleteLogButton = document.getElementById('deleteLogButton'); //cancel changes button
 
 //workout log input elements
 const inputIntensity = document.getElementById('inputIntensity');
@@ -83,6 +83,7 @@ function validateInputs(inputElems) {
       elem.required = 'true';
       item[elem.id] = elem.value;
       item["exerciseid"] = $(elem).data('exerciseid')
+      console.log("set item:", item)
       elems.push(item)
     }
     if (elem.id.startsWith('inputExerciseReps')) {
@@ -208,6 +209,7 @@ function searchResultListener(event) {
 
 function addToExerciseList(exercise) {
   let exerciseHref = exercise.href;
+  console.log(exerciseHref);
   let exerciseId = exerciseHref.split('/')[4];
 
   let time = Date.now().toString();
@@ -246,7 +248,7 @@ function addToExerciseList(exercise) {
       <div class="form-group row">
         <label for="inputExerciseRest${time}" class="col-sm-4 col-form-label">Rest</label>
         <div class="col-sm-8">
-          <input id="inputExerciseRest${time}" name="inputExerciseRest" type="number" class="form-control" placeholder="Rest" required>
+          <input id="inputExerciseRes${time}" name="inputExerciseRest" type="number" class="form-control" placeholder="Rest" required>
           <div class="invalid-feedback">
             Exercise rest must be provided and between 0 and 500
           </div>
@@ -298,9 +300,9 @@ function addToExerciseList(exercise) {
     inputLength.required = 'true';
     inputDate.required = 'true';
 
-
     //get all forms that need validation
     let formsToValidate = document.getElementsByClassName('needs-validation');
+    //console.log(formsToValidate);
     let formsAreValid = true;
     $(formsToValidate).each((i, form) => {
       if (form.checkValidity() === false) {
@@ -318,14 +320,16 @@ function addToExerciseList(exercise) {
       //make a post request
       try {
         let requestConfig = {
-          method: "POST",
-          url: `/workout/${parsedUrl[2]}/log`,
+          method: "PUT",
+          url: `/workout/${parsedUrl[2]}/logedit/${parsedUrl[4]}`,
           dataType: "json",
           data: {requestElems},
           success: function(msg) {
-            window.location.href=`/workout/${parsedUrl[2]}`;
+            //go to workoutlog that was just edited
+            window.location.href=`/workoutLog/${parsedUrl[4]}`;
           },
           error: function(msg) {
+            console.log("HERE:", msg);
             //msg.responseJSON is where the errors will go
             let errors = msg.responseJSON.errors;
 

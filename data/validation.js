@@ -121,7 +121,7 @@ module.exports = {
         /**
          * Verifies a valid userInfo object. A userInfo object contains:
          * firstName {String}
-         * lastName {String} (optional)
+         * lastName {String}
          * birthDate {Date} (optional)
          * bio {String} (optional)
          * weight {int} (optional)
@@ -138,10 +138,8 @@ module.exports = {
         //Verify first name
         userInfo.firstName = this.verifyString(userInfo.firstName, "First name");
 
-        //Verify last name (optional arg)
-        if (typeof userInfo.lastName !== 'undefined'){
-            userInfo.lastName = this.verifyString(userInfo.lastName, "Last name");
-        }
+        //verify last name
+        userInfo.lastName = this.verifyString(userInfo.lastName, "Last name");
 
         //Verify birth date (optional arg)
         if (typeof userInfo.birthDate !== 'undefined'){
