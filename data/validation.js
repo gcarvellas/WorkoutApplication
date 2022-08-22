@@ -428,7 +428,7 @@ module.exports = {
          * @return {String} trimmed string
          * @throws Will throw an exception if message is invalid
          */
-        return verifyString(message);
+        return this.verifyString(message);
     },
     verifyPassword(password){
         /**
@@ -542,7 +542,7 @@ module.exports = {
     },
     verifyMuscleGroups(muscles){
         muscles.forEach((muscle_group) => {
-            verifyString(muscle_group);
+            this.verifyString(muscle_group);
             if(!MUSCLE_GROUPS.includes(muscle_group.toLowerCase())) throw `The input "${muscle_group}" is not a valid muscle group`;
         });
 
@@ -551,7 +551,7 @@ module.exports = {
     verifyEquipment(equipment){
         if(!Array.isArray(equipment)) throw 'equipment must be an array of strings';
             equipment.forEach((single_equipment) => {
-                verifyString(single_equipment);
+                this.verifyString(single_equipment);
             });
 
         return equipment;
