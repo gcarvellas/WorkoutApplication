@@ -166,7 +166,7 @@ module.exports = {
         }
         
         //Verify bio (optional arg)
-        if (typeof userInfo.bio !== 'undefined'){
+        if (typeof userInfo.bio !== 'undefined' && userInfo.bio !== ""){
             userInfo.bio = verifyString(userInfo.bio, "Bio");
         }
 
@@ -506,6 +506,7 @@ module.exports = {
          * @return {String} trimmed string
          * @throws Will throw an exception if bio is invalid
          */
+        if (bio === "") return bio
         return verifyString(bio, "Bio");
     },
     verifyWeight(weight){
