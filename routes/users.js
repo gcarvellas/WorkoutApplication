@@ -209,8 +209,8 @@ router.get('/profile', async (req, res) => {
     let userId = validation.verifyUUID(req.session.user, "User ID");
     let userPassword = validation.verifyPassword(req.session.password);
     user = await usersDB.getUser(userId);
-    user = await usersDB.checkUser(user, userPassword);
-
+    user = await usersDB.checkUser(user.email, userPassword);
+    let isUser = userId === req.session.user;
     //get user workouts
     let userWorkouts = [];
     let workouts = user.userMadeWorkouts;
@@ -241,7 +241,7 @@ router.get('/profile', async (req, res) => {
       }
       i+=1;
     }
-  res.render('layouts/profile', { loggedIn: (user ? true : false), user: user, likedWorkouts: userLikedWorkouts, workouts: userWorkouts, workoutLogs: userWorkoutoutLogs, password: userPassword });
+  res.render('layouts/profile', { loggedIn: (user ? true : false), isUser: isUser, user: user, likedWorkouts: userLikedWorkouts, workouts: userWorkouts, workoutLogs: userWorkoutoutLogs, password: userPassword });
   } catch (e) {
     res.render('layouts/profile', {loggedIn: (req.session.user ? true : false), error: e});
   }
