@@ -131,4 +131,3 @@ myForm.addEventListener('submit', (event) => {
     myForm.classList.add('was-validated');
 });
 } 
-
