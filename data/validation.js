@@ -336,7 +336,9 @@ module.exports = {
                 }
                 //verify note (optional field)
                 if (typeof subExercises[i].comment !== 'undefined') {
-                    subExercises[i].comment = this.verifyString(subExercises[i].comment, 'subExercises comment');
+                    if(subExercises[i].comment !== ''){
+                        subExercises[i].comment = this.verifyString(subExercises[i].comment, 'subExercises comment');
+                    }
                 }
             } catch (e) {
                 throw `index ${i} threw exception: ` + e;

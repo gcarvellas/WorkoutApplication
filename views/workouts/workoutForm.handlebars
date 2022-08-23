@@ -44,7 +44,11 @@
                     </section>
                     <section>
                         <label>Weight: </label>
-                        <input class="form-control md-2" id="{{this.exerciseId}}_weight" name="{{this.exerciseId}}_weight" value="{{this.weight}}">
+                        {{#if this.weight}}
+                            <input class="form-control md-2" id="{{this.exerciseId}}_weight" name="{{this.exerciseId}}_weight" value="{{this.weight}}">
+                        {{else}}
+                            <input class="form-control md-2" id="{{this.exerciseId}}_weight" name="{{this.exerciseId}}_weight">
+                        {{/if}}
                     </section>
                     <section>
                         <label>Comment: </label>

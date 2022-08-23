@@ -80,7 +80,7 @@
               {{user.email}}
             </div>
             <label id="editEmailLabel" hidden class="col-sm-5" for="inputEmail">Email address</label>
-            <input hidden value="{{user.email}}" name="inputEmail" type="email" class="form-control col-sm-6 text-secondary" id="inputEmail" aria-describedby="emailHelp" placeholder="Email address" required>
+            <input hidden value="{{user.email}}" name="inputEmail" type="email" class="form-control col-sm-6 text-secondary" id="inputEmail" placeholder="Email address" required>
             <div class="invalid-feedback">
               Email must be provided and be valid
             </div>
@@ -144,7 +144,7 @@
               {{check user.userInfo.frequencyOfWorkingOut 0 ' times a week'}}
             </div>
             <label id="editFLabel" hidden class="col-sm-5" for="inputFrequency">Frequency</label>
-            <input hidden value="{{user.userInfo.frequencyOfWorkingOut}}" min=0 max=7 name="inputFrequency" type="number" class="form-control col-sm-6 text-secondary" id="inputFrequency" aria-describedby="emailHelp" placeholder="Frequency of working out per week">
+            <input hidden value="{{user.userInfo.frequencyOfWorkingOut}}" min=0 max=7 name="inputFrequency" type="number" class="form-control col-sm-6 text-secondary" id="inputFrequency" placeholder="Frequency of working out per week">
             <div class="invalid-feedback">
               If provided, frequency needs to be between [0, 7]
             </div>
