@@ -1,0 +1,168 @@
+<div class="container createWorkoutlog-container">
+
+  {{!-- modal code --}}
+  <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalLabel">Confirm?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to cancel editing this workout log?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <a class="btn btn-danger" href="/workout/{{workoutId}}">Confirm</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{!-- rest of page --}}
+  <div class="d-flex row">
+    <h1 class="mr-auto">Editing workout log for "{{workout.name}}"</h1>
+    <div class="ml-auto mt-2">
+      <button id="logButton" class="btn btn-primary mr-1">Save changes</button>
+      <button id="deleteLogButton" class="btn btn-danger" data-toggle="modal" data-target="#confirmModal">Cancel changes</button>
+    </div>
+  </div>
+  <div id="errorPlaceholder"></div>
+  <div class="card mb-2">
+    <div class="card-body">
+      <form id="form-workoutlog" class="form-workoutlog needs-validation" novalidate>
+        <div class="form-group row">
+          <label for="inputIntensity" class="col-sm-4 col-form-label">Workout Intensity (0-5)</label>
+          <div class="col-sm-8">
+            <input id="inputIntensity" name="inputIntensity" value="{{workout.intensity}}" type="number" class="form-control" placeholder="Intensity" required>
+            <div class="invalid-feedback">
+              Workout intensity must be provided and between 0 and 5
+            </div>
+          </div>
+
+        </div>
+        <div class="form-group row">
+          <label for="inputLength" class="col-sm-4 col-form-label">Length (Minutes)</label>
+          <div class="col-sm-8">
+            <input id="inputLength" name="inputLength" value="{{workout.length}}" type="number" class="form-control" placeholder="Length (Minutes)" required>
+            <div class="invalid-feedback">
+              Workout length must be provided and between 0 and 240
+            </div>
+          </div>
+
+        </div>
+        <div class="form-group row">
+          <label for="inputDate" class="col-sm-4 col-form-label">Date of workout</label>
+          <div class="col-sm-8">
+            <input id="inputDate" name="inputDate" value="{{workout.date}}" type="datetime-local" class="form-control" required>
+            <div class="invalid-feedback">
+              Workout date must be provided
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-group row">
+          <label for="inputComment" class="col-sm-4 col-form-label">Comment</label>
+          <div class="col-sm-8">
+            <textarea id="inputComment" name="inputComment" placeholder="Workout comment" class="form-control">{{workout.comment}}</textarea>
+            <div class="invalid-feedback">
+              If provided, workout comment cannot be empty or just spaces
+            </div>
+          </div>
+
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <div class="card mb-2">
+    <div class="card-body">
+      <h3>Exercises</h3>
+      <div id="loggedExercises">
+        {{#each workout.exercises}} 
+        <div class="card mb-2" id="workoutlog-exerice{{@index}}">
+
+          <div class="card-body">
+            <div class="card-title d-flex flex-row justify-content-between">
+              <h4><a target="_blank" rel="noopener noreferrer" href="/exercise/{{exerciseId}}">{{name}}</a></h4>
+              <button id="removeExerciseButton{{@index}}" class="btn btn-outline-danger">Remove Exercise</button>
+            </div>
+
+            <form id="form-workoutlog-exerice{{@index}}" class="form-workoutlog-exerice needs-validation" novalidate>
+              <div class="form-group row">
+                <label for="inputExerciseSet{{@index}}" class="col-sm-4 col-form-label">Sets</label>
+                <div class="col-sm-8">
+                  <input id="inputExerciseSet{{@index}}" data-exerciseid="{{exerciseId}}" name="inputExerciseSet" value="{{sets}}" type="number" class="form-control" placeholder="Sets" required>
+                  <div class="invalid-feedback">
+                    Exercise set count must be provided and between 1 and 500
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="form-group row">
+                <label for="inputExerciseReps{{@index}}" class="col-sm-4 col-form-label">Reps</label>
+                <div class="col-sm-8">
+                  <input id="inputExerciseReps{{@index}}" name="inputExerciseReps" value="{{repetitions}}" type="number" class="form-control" placeholder="Repetitions" required>
+                  <div class="invalid-feedback">
+                    Exercise repetition count must be provided and between 1 and 500
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="form-group row">
+                <label for="inputExerciseRest{{@index}}" class="col-sm-4 col-form-label">Rest</label>
+                <div class="col-sm-8">
+                  <input id="inputExerciseRest{{@index}}" name="inputExerciseRest" value="{{rest}}" type="number" class="form-control" placeholder="Rest" required>
+                  <div class="invalid-feedback">
+                    Exercise rest must be provided and between 0 and 500
+                  </div>  
+                </div>
+
+              </div>
+
+              <div class="form-group row">
+                <label for="inputExerciseWeight{{@index}}" class="col-sm-4 col-form-label">Weight</label>
+                <div class="col-sm-8">
+                  <input id="inputExerciseWeight{{@index}}" name="inputExerciseWeight" value="{{weight}}" type="number" class="form-control" placeholder="Weight">
+                  <div class="invalid-feedback">
+                    If provided, weight must be between 0 and 500
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <label for="inputExerciseNote{{@index}}" class="col-sm-4 col-form-label">Note</label>
+                <div class="col-sm-8">
+                  <input id="inputExerciseNote{{@index}}" name="inputExerciseNote" value="{{comment}}" type="text" class="form-control" placeholder="Note">
+                  <div class="invalid-feedback">
+                    If provided, note cannot be empty or just spaces
+                  </div>
+                </div>
+              </div>
+
+            </form>
+          </div>
+
+        </div>  
+        {{/each}} 
+      </div> 
+    </div>
+  </div>
+  <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Add Exercise</h4>
+        <div class="form-group">
+          <label for="addExerciseInput" class="sr-only">Add Exercise</label>
+          <input id="addExerciseInput" name="addExerciseInput" type="text" class="form-control" placeholder="Exercise Name">          
+        </div>
+        <div id="exerciseList-container"></div>
+      </div>
+    </div>
+  <script src="../../../public/js/editWorkoutLog.js"></script>
+</div>

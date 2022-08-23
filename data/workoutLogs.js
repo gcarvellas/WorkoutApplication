@@ -154,8 +154,9 @@ module.exports = {
         if (deleteInfo.deletedCount === 0) throw 'could not delete workoutLog';
 
         //remove workout logs from user.workoutLogs
-
-        user.workoutLogs.pop(_workoutLogId);
+        let index = user.workoutLogs.indexOf(_workoutLogId);
+        user.workoutLogs.splice(index, 1);
+        //user.workoutLogs.pop(_workoutLogId);
 
         let updatedWorkoutUser = {
             workoutLogs: user.workoutLogs
