@@ -556,8 +556,6 @@ module.exports = {
 
         return equipment;
     },
-    
-    
     MUSCLE_GROUPS,
     MAX_HEIGHT,
     MAX_WORKOUT_LENGTH,

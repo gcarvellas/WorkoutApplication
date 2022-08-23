@@ -172,7 +172,9 @@ router.post('/signin', async (req, res) => {
     res.status(400).render('layouts/signin', inputHandlebars);
   } else {
     try {
-      let loginUser = await usersDB.checkUser(req.body.inputEmail.toLowerCase(), req.body.inputPassword);
+      let email = validation.verifyEmail(req.body.inputEmail);
+      let password = validation.verifyPassword(req.body.inputPassword);
+      let loginUser = await usersDB.checkUser(email, password);
       req.session.user = loginUser._id;
       req.session.password = req.body.inputPassword;
       res.redirect('/');
@@ -209,7 +211,7 @@ router.get('/profile', async (req, res) => {
     let userId = validation.verifyUUID(req.session.user, "User ID");
     let userPassword = validation.verifyPassword(req.session.password);
     user = await usersDB.getUser(userId);
-    user = await usersDB.checkUser(user, userPassword);
+    user = await usersDB.checkUser(user.email, userPassword);
 
     //get user workouts
     let userWorkouts = [];
@@ -224,7 +226,7 @@ router.get('/profile', async (req, res) => {
     //get the actual workoutLog from each workoutLogId and the workout name
     for (let workoutLogId of workoutLogs) {
       let workoutLog = await workoutLogsDB.getWorkoutLog(user, userPassword, workoutLogId);
-      let workout = await workouts.getWorkout(workoutLog.workout);
+      let workout = await workoutDB.getWorkout(workoutLog.workout);
       workoutLog['name'] = workout.name;
       userWorkoutoutLogs.push(workoutLog);
     }
