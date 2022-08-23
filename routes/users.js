@@ -301,8 +301,9 @@ router.get('/user/:id', async (req, res) => {
 router.get('/profile_edit', async (req, res) => {
   try {
     const id = validation.verifyUUID(req.session.user, "User ID");
+    let isUser = id===req.session.user;
     let user = await usersDB.getUser(id);
-    res.render('layouts/profile_edit', { loggedIn: true, user: user, password: req.session.password });
+    res.render('layouts/profile', { loggedIn: true, isUser: isUser, user: user, password: req.session.password });
   } catch (e) {
     res.status(404).render('layouts/errors', { class: "error", message: "User not found for given ID." });
   }
@@ -310,16 +311,40 @@ router.get('/profile_edit', async (req, res) => {
 });
 
 router.post('/profile_edit', async (req, res) => {
-  let userId = req.session.user;
+  let userId = validation.verifyUUID(req.session.user, "userId");
+  let isUser = req.session.user===userId;
   let user = await usersDB.getUser(userId);
   let password = req.session.password;
+  //get user workouts
+  let userWorkouts = [];
+  let workouts = user.userMadeWorkouts;
+  for (let workoutID of workouts) {
+    let workout = await workoutDB.getWorkout(workoutID);
+    userWorkouts.push(workout);
+  }
   //get user workout logs from user
-  let userWorkoutoutLogs = []; 
-  let workoutLogs = await usersDB.getWorkoutLogs(userId);
   //get the actual workoutLog from each workoutLogId
-  for (let workoutLogId of workoutLogs) {
-    let workoutLog = await workoutLogsDB.getWorkoutLog(user, password, workoutLogId);
-    userWorkoutoutLogs.push(workoutLog);
+  let userWorkoutLogs = []
+  if (req.session.user){
+    let workoutLogs = await usersDB.getWorkoutLogs(userId);
+    userPassword = validation.verifyPassword(req.session.password);
+    for (let workoutLogId of workoutLogs) {
+      let workoutLog = await workoutLogsDB.getWorkoutLog(user, userPassword, workoutLogId);
+      userWorkoutoutLogs.push(workoutLog);
+    }
+  }
+  //get liked workouts
+  let userLikedWorkouts = [];
+  let likedWorkouts = user.userLikedWorkouts.reverse();
+  let i =0;
+  for (let likedWorkoutId of likedWorkouts) {
+    if (i<5) {
+      let workout = await workoutDB.getWorkout(likedWorkoutId);
+      userLikedWorkouts.push(workout);
+    } else {
+      break;
+    }
+    i+=1;
   }
   //verify email
   if (!req.body.inputEmail) {
@@ -392,9 +417,12 @@ router.post('/profile_edit', async (req, res) => {
     loggedIn: true, 
     errors: errors, 
     user: user, 
-    workoutLogs: userWorkoutoutLogs,
     password: password,
     checkInputs: true,
+    isUser: isUser,
+    likedWorkouts: userLikedWorkouts, 
+    workouts: userWorkouts, 
+    workoutLogs: userWorkoutLogs,
   }
   if (errors.length > 0) {
     inputHandlebars.errors = errors;
