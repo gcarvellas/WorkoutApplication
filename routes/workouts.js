@@ -114,10 +114,15 @@ router
     .route('/workout/:id')
     .get(async (req, res) => {
         let errors = [];
-        let user, password;
+        let user, password, workoutAuthorObject;
         try{
             const workoutId = validation.verifyUUID(req.params.id, "Workout id");
             const workout = await workouts.getWorkout(workoutId);
+            try{
+                workoutAuthorObject = await users.getUser(workout.author);
+            } catch (e) {
+                errors.push(`Error while working workout author data: ${e}`);
+            }
             
             /**
              * Render each exercise
@@ -184,10 +189,10 @@ router
                 errors.push(`Error while loading comments: ${e}`);
             }
             if (errors.length > 0){
-                res.status(400).render('workouts/workout', {workout: workout, exercises: exerciseResults, comments: commentResults, user: user, isAuthor: isAuthor, workoutLogs: myWorkoutLogs, errors: errors, loggedIn: (user ? true : false)});
+                res.status(400).render('workouts/workout', {workout: workout, exercises: exerciseResults, comments: commentResults, user: user, isAuthor: isAuthor, workoutLogs: myWorkoutLogs, workoutAuthorObject: workoutAuthorObject, errors: errors, loggedIn: (user ? true : false)});
             }
             else{
-                res.status(200).render('workouts/workout', {workout: workout, exercises: exerciseResults, comments: commentResults, user: user, isAuthor: isAuthor, workoutLogs: myWorkoutLogs, loggedIn: (user ? true : false)});
+                res.status(200).render('workouts/workout', {workout: workout, exercises: exerciseResults, comments: commentResults, user: user, isAuthor: isAuthor, workoutLogs: myWorkoutLogs, workoutAuthorObject: workoutAuthorObject, loggedIn: (user ? true : false)});
             }
         } catch (e) {
             res.status(400).render('workouts/workout', {errors: [e], loggedIn: (user ? true : false)});

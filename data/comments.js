@@ -23,6 +23,7 @@ module.exports = {
          * @return array of comment objects
          * @throws Will throw an exception if comment is not found
          */
+        _workoutId = validation.verifyUUID(_workoutId, "Workout ID");
         const commentCollection = await comments();
         let results = await commentCollection.find({workout: _workoutId});
         results = await results.toArray();
@@ -39,6 +40,7 @@ module.exports = {
          * @throws Will throw an exception if params are invalid, db insert fails, or user tries to edit other user's comment
          */
         user = validation.verifyUser(user);
+        userPassword = validation.verifyPassword(userPassword)
         user = await users.checkUser(user.email, userPassword);
 
         _id = validation.verifyUUID(_id, "Comment id");

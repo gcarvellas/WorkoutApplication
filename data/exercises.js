@@ -93,6 +93,7 @@ function isValidMuscleGroups(arr) {
  */
 const createExercise = async function createExercise(user, userPassword, name, muscles, equipment, note) {
     user = validation.verifyUser(user);
+    userPassword = validation.verifyPassword(userPassword);
     user = await users.checkUser(user.email, userPassword);
     checkArgumentCount('createExercise', arguments.length, createExercise.length);
     validation.verifyMessage(name, 'Provided value of exercise name');
@@ -153,6 +154,7 @@ const createExercise = async function createExercise(user, userPassword, name, m
  */
 const editExercise = async function editExercise(user, userPassword, _id, name, muscles, equipment, note) {
     user = validation.verifyUser(user);
+    userPassword = validation.verifyPassword(userPassword);
     user = await users.checkUser(user.email, userPassword);
     checkArgumentCount('editExercise', arguments.length, editExercise.length);
     validation.verifyUUID(_id, 'Provided value of exercise id');
@@ -205,33 +207,6 @@ const editExercise = async function editExercise(user, userPassword, _id, name, 
     return await this.getExercise(_id);
 }
 
-
-/**
- * Delete exercise by given ID
- * @param {String} _id 
- */
-const deleteExercise = async function deleteExercise(_id) {
-    checkArgumentCount('deleteExercise', arguments.length, deleteExercise.length);
-    validation.verifyUUID(_id, 'Provided value of exercise id');
-
-    const exerciseCollection = await exercises();
-    const exerciseToRemove = await this.getExercise(_id);
-
-    if (exerciseToRemove === null) {
-        throw `No exercise was found for the given ID`;
-    }
-
-    const deletionInfo = await exerciseCollection.deleteOne(
-        {_id: _id}
-    );
-
-    if (deletionInfo.deleteCount === 0) {
-        throw `Could not delete exercise with id of ${_id}`;
-    }
-
-    return true;
-}
-
 const getExercisesByName = async function getExercisesByName(exerciseName, limit = 10) {
     validation.verifyMessage(exerciseName, 'Provided value of exercise name');
     validation.verifyNumber(limit, 'Provided value of limit', 'int', 1, 500);
@@ -258,6 +233,5 @@ module.exports = {
     getExercise,
     getAllExercise,
     editExercise,
-    deleteExercise,
     getExercisesByName
 }

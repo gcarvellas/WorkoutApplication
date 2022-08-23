@@ -1,9 +1,10 @@
 const mongoCollections = require('../config/mongoCollections');
 const validation = require('./validation');
-const { v4 : uuidv4, validate} = require('uuid');
+const { v4 : uuidv4} = require('uuid');
 const workoutUser = mongoCollections.users;
 const bcrypt = require('bcryptjs');
 const SALT_ROUNDS = 10;
+const recursiveDelete = require('./recursiveDelete');
 
 module.exports = {
     async createUser(email, password, firstName, lastName="", birthDate=new Date(), bio="", weight=0, height=0, frequencyOfWorkingOut=0){
@@ -50,8 +51,8 @@ module.exports = {
     },
     async editUser(_id, oldEmail, oldPassword, email, password, firstName, lastName="", birthDate=new Date(), bio="", weight=0, height=0, frequencyOfWorkingOut=0){
         _id = validation.verifyUUID(_id, "User ID");
-        old_email = validation.verifyEmail(oldEmail);
-        old_password = validation.verifyPassword(oldPassword);
+        oldEmail = validation.verifyEmail(oldEmail);
+        oldPassword = validation.verifyPassword(oldPassword);
         email = validation.verifyEmail(email);
         password = validation.verifyPassword(password);
         firstName = validation.verifyFirstName(firstName);
@@ -95,15 +96,8 @@ module.exports = {
     },
     async deleteUser(user, userPassword){
         //Check if user is authorized.
-        user = validation.verifyUser(user);
-        user = await this.checkUser(user.email, userPassword);
-
-        const workoutUserCollection = await workoutUser();
-        const deletionInfo = await workoutUserCollection.deleteOne({_id: user._id});
-
-        if (deletionInfo.deletedCount === 0) throw `Could not delete user with id of ${user._id}`;
-    
-        return true;
+        let result = await recursiveDelete.deleteUser(user, userPassword)
+        return result;
     },
     async checkUser(email, password){
         email = validation.verifyEmail(email);
@@ -117,7 +111,7 @@ module.exports = {
         return user;
     },
     async getUser(_id){
-        _id = validation.verifyUUID(_id);
+        _id = validation.verifyUUID(_id, "User ID");
         const workoutUserCollection = await workoutUser();
         const user = await workoutUserCollection.findOne({_id: _id});
         if (user === null) throw 'No workoutUser with that id!';
@@ -126,7 +120,7 @@ module.exports = {
         return user;
     },
     async incrementTotalLikes(_id){
-        _id = validation.verifyUUID(_id);
+        _id = validation.verifyUUID(_id, "User Id");
         const user = await this.getUser(_id);
         const workoutUserCollection = await workoutUser();
         const updatedInfo = await workoutUserCollection.updateOne(
@@ -139,7 +133,7 @@ module.exports = {
         return user.totalLikesReceived+1;
     },
     async decrementTotalLikes(_id){
-        _id = validation.verifyUUID(_id);
+        _id = validation.verifyUUID(_id, "User ID");
         const user = await this.getUser(_id);
         if (user.totalLikesReceived < 1) throw "Total likes received cannot be negative";
         const workoutUserCollection = await workoutUser();
@@ -153,7 +147,7 @@ module.exports = {
         return user.totalLikesReceived-1;
     },
     async incrementTotalCommentsReceived(_id){
-        _id = validation.verifyUUID(_id);
+        _id = validation.verifyUUID(_id, "User ID");
         const user = await this.getUser(_id);
         const workoutUserCollection = await workoutUser();
         const updatedInfo = await workoutUserCollection.updateOne(
@@ -166,7 +160,7 @@ module.exports = {
         return user.totalCommentsReceived+1;
     },
     async decrementTotalCommentsReceived(_id){
-        _id = validation.verifyUUID(_id);
+        _id = validation.verifyUUID(_id, "User ID");
         const user = await this.getUser(_id);
         if (user.totalCommentsReceived < 1) throw "Total comments received cannot be negative";
         const workoutUserCollection = await workoutUser();
@@ -180,7 +174,7 @@ module.exports = {
         return user.totalCommentsReceived-1;
     },
     async getWorkoutLogs(_id){
-        _id = validation.verifyUUID(_id);
+        _id = validation.verifyUUID(_id, "User ID");
         const workoutUser = await this.getUser(_id);
         return workoutUser.workoutLogs;
     }

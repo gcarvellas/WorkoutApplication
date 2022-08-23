@@ -21,6 +21,7 @@ module.exports = {
     async createWorkoutLogFromWorkout(user, userPassword, parentWorkout, logInfo){
         //verify user
         user = validation.verifyUser(user); //contains id field we want to save
+        userPassword = validation.verifyPassword(userPassword);
         user = await users.checkUser(user.email, userPassword);
         //verify parentWorkout
         parentWorkout = validation.verifyWorkout(parentWorkout); //contains id field we want to save
@@ -82,6 +83,7 @@ module.exports = {
     async editWorkoutLog(user, userPassword, _workoutLogId, logInfo){
         //verify user
         user = validation.verifyUser(user);
+        userPassword = validation.verifyPassword(userPassword);
         user = await users.checkUser(user.email, userPassword);
         //verify _workoutLogId
         _workoutLogId = validation.verifyUUID(_workoutLogId, "Workout log id");
@@ -120,6 +122,7 @@ module.exports = {
     async copyWorkoutLog(user, userPassword, _workoutLogId){
         //verify user
         user = validation.verifyUser(user);
+        userPassword = validation.verifyPassword(userPassword);
         user = await users.checkUser(user.email, userPassword);
         //verify _workoutLogId
         _workoutLogId = validation.verifyUUID(_workoutLogId, "Workout log id");
@@ -142,6 +145,7 @@ module.exports = {
     async deleteWorkoutLog(user, userPassword, _workoutLogId){
         //verify user
         user = validation.verifyUser(user);
+        userPassword = validation.verifyPassword(userPassword);
         user = await users.checkUser(user.email, userPassword);
         //verify _workoutLogId
         _workoutLogId = validation.verifyUUID(_workoutLogId, "Workout log id");
@@ -189,6 +193,7 @@ module.exports = {
     async getWorkoutLog(user, userPassword, _workoutLogId) {
         //verify user
         user = validation.verifyUser(user);
+        userPassword = validation.verifyPassword(userPassword);
         user = await users.checkUser(user.email, userPassword);
         //verify _workoutLogId
         _workoutLogId = validation.verifyUUID(_workoutLogId, "Workout log id");

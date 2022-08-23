@@ -7,12 +7,12 @@ let open_form = false;
 
 function getWorkoutIdFromURL(){
     let url = window.location.href;
-    const REGEX = "\/workout\/(.*)";
+    const REGEX = "\/workout\/(.*)/?";
     return url.match(REGEX)[1];
 }
 
 function getWorkoutIdFromText(url){
-    const REGEX = "\/workout\/(.*)";
+    const REGEX = "\/workout\/(.*)/?";
     return url.match(REGEX)[1];
 }
 

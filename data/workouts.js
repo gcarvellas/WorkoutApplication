@@ -1,12 +1,13 @@
 const validation = require('./validation');
-const users = require('./users');
 const workoutSearch = require('./workoutSearch');
 const comments = require('./comments');
 const mongoCollections = require("../config/mongoCollections");
 const { v4 : uuidv4} = require('uuid');
+const recursiveDelete = require('./recursiveDelete');
 const workouts = mongoCollections.workouts;
 const userDB = mongoCollections.users;
 const commentDB = mongoCollections.comments;
+const users = require('./users');
 
 async function addUserMadeWorkout(user, userPassword, _id){
     /**
@@ -18,6 +19,7 @@ async function addUserMadeWorkout(user, userPassword, _id){
      * @throws Will throw an exception if workout is already in user made workouts or DB fails.
      */
     user = validation.verifyUser(user);
+    userPassword = validation.verifyPassword(userPassword);
     user = await users.checkUser(user.email, userPassword);
     _id = validation.verifyUUID(_id, "Workout id");
 
@@ -43,12 +45,13 @@ async function removeUserMadeWorkout(user, userPassword, _id){
      * @throws Will throw an exception if workout is not in user made workouts or DB fails.
      */
     user = validation.verifyUser(user);
+    userPassword = validation.verifyPassword(userPassword);
     user = await users.checkUser(user.email, userPassword);
     _id = validation.verifyUUID(_id, "Workout id");
 
     if (!user.userMadeWorkouts.includes(_id)) throw "Workout is not in user made workouts";
 
-    user.userMadeWorkouts.pop(_id);
+    user.userMadeWorkouts.splice(user.userMadeWorkouts.indexOf(_id), 1);
 
     const userCollection = await userDB();
     const updatedInfo = await userCollection.updateOne(
@@ -68,6 +71,7 @@ async function addUserLikedWorkout(user, userPassword, _id){
      * @throws Will throw an exception if workout is already in user liked workouts or DB fails.
      */
     user = validation.verifyUser(user);
+    userPassword = validation.verifyPassword(userPassword);
     user = await users.checkUser(user.email, userPassword);
     _id = validation.verifyUUID(_id, "Workout id");
 
@@ -93,12 +97,13 @@ async function removeUserLikedWorkout(user, userPassword, _id){
      * @throws Will throw an exception if workout is not in user liked workouts or DB fails.
      */
     user = validation.verifyUser(user);
+    userPassword = validation.verifyPassword(userPassword);
     user = await users.checkUser(user.email, userPassword);
     _id = validation.verifyUUID(_id, "Workout id");
 
     if (!user.userLikedWorkouts.includes(_id)) throw "Workout is not in user liked workouts";
 
-    user.userLikedWorkouts.pop(_id)
+    user.userLikedWorkouts.splice(user.userLikedWorkouts.indexOf(_id), 1)
 
     const userCollection = await userDB();
     const updatedInfo = await userCollection.updateOne(
@@ -120,6 +125,7 @@ const createComment = async (user, userPassword, _workoutId, message) => {
      * @throws Will throw an exception if params are invalid or db insert fails
      */
     user = validation.verifyUser(user);
+    userPassword = validation.verifyPassword(userPassword);
     user = await users.checkUser(user.email, userPassword);
 
     _workoutId = validation.verifyUUID(_workoutId, "Workout id");
@@ -156,6 +162,7 @@ const deleteComment = async (user, userPassword, _id) => {
     _id = validation.verifyUUID(_id, "Comment id");
 
     user = validation.verifyUser(user);
+    userPassword = validation.verifyPassword(userPassword);
     user = await users.checkUser(user.email, userPassword);
 
     const comment = await comments.getComment(_id);
@@ -181,6 +188,7 @@ const createWorkout = async (user, userPassword, workoutName, intensity, length,
          * @throws Will throw an exception if params are invalid, workout name already exists, or db insert fails
          */
      user = validation.verifyUser(user);
+     userPassword = validation.verifyPassword(userPassword);
      user = await users.checkUser(user.email, userPassword);
      workoutName = validation.verifyWorkoutName(workoutName);
      intensity = validation.verifyWorkoutIntensity(intensity);
@@ -227,6 +235,7 @@ const editWorkout = async (_id, user, userPassword, workoutName, intensity, leng
          * @throws Will throw an exception if params are invalid, workout name already exists, db insert fails, or user tries to edit other user's workout
          */
      user = validation.verifyUser(user);
+     userPassword = validation.verifyPassword(userPassword);
      user = await users.checkUser(user.email, userPassword);
      workoutName = validation.verifyWorkoutName(workoutName);
      intensity = validation.verifyWorkoutIntensity(intensity);
@@ -270,20 +279,8 @@ const deleteWorkout = async (user, userPassword, _id) => {
          * @return true if workout was successfully deleted
          * @throws will throw an exception if workout could not be deleted or workout is not made by user
          */
-     _id = validation.verifyUUID(_id, "Workout id");
-     user = validation.verifyUser(user);
-     user = await users.checkUser(user.email, userPassword);
-
-     const workout = await getWorkout(_id);
-     if (workout.author !== user._id) throw "User cannot delete other user's workout";
-
-     const workoutCollection = await workouts();
-     const deletionInfo = await workoutCollection.deleteOne({_id:_id});
-
-     if (deletionInfo.deletedCount === 0) throw "Could not delete workout";
-     await removeUserMadeWorkout(user, userPassword, _id);
-
-     return true;
+     let result = await recursiveDelete.deleteWorkout(user, userPassword, _id);
+     return result;
 }
 
 const getWorkout = async (_id) => {
@@ -309,6 +306,7 @@ const addCommentToWorkout = async (user, userPassword, _workoutId, comment) => {
          * @throws Will throw an exception if workout is not found or input is invalid
          */
      user = validation.verifyUser(user);
+     userPassword = validation.verifyPassword(userPassword);
      user = await users.checkUser(user.email, userPassword);
 
      _workoutId = validation.verifyUUID(_workoutId, "Workout id");
@@ -348,6 +346,7 @@ const removeCommentFromWorkout = async (user, userPassword, _workoutId, _comment
          * @throws Will throw an exception if workout is not found or input is invalid
          */
      user = validation.verifyUser(user);
+     userPassword = validation.verifyPassword(userPassword);
      user = await users.checkUser(user.email, userPassword);
 
      _workoutId = validation.verifyUUID(_workoutId, "Workout id");
@@ -359,7 +358,7 @@ const removeCommentFromWorkout = async (user, userPassword, _workoutId, _comment
 
      if (comment.author !== user._id) throw "User cannot remove other user's comment";
 
-     workout.comments.pop(comment._id)
+     workout.comments.splice(workout.comments.indexOf(comment._id), 1)
 
      const workoutCollection = await workouts();
      let editedWorkout = {
@@ -403,6 +402,7 @@ const addLikeToWorkout = async (user, userPassword, _workoutId) => {
      * @throws Will throw an exception if user has already liked workout or database function fails
      */
     user = validation.verifyUser(user);
+    userPassword = validation.verifyPassword(userPassword);
     user = await users.checkUser(user.email, userPassword);
     let workout = await getWorkout(_workoutId);
     let result = await checkIfUserLikedWorkout(user, workout._id);
@@ -433,13 +433,14 @@ const removeLikeFromWorkout = async (user, userPassword, _workoutId) => {
      * @throws Will throw an exception if user has not liked workout or database function fails
      */
     user = validation.verifyUser(user);
+    userPassword = validation.verifyPassword(userPassword);
     user = await users.checkUser(user.email, userPassword);
     let workout = await getWorkout(_workoutId);
     let result = await checkIfUserLikedWorkout(user, workout._id);
     if (result !== true) throw "User has not liked workout";
     const workoutCollection = await workouts();
 
-    workout.usersLiked.pop(user._id)
+    workout.usersLiked.splice(workout.usersLiked.indexOf(user._id), 1)
 
     //Update workout.usersLiked
     const updatedInfo = await workoutCollection.updateOne(
@@ -464,9 +465,10 @@ const copyWorkout = async (user, userPassword, _id) => {
      */
     _id = validation.verifyUUID(_id, "Workout id");
     user = validation.verifyUser(user);
+    userPassword = validation.verifyPassword(userPassword);
     user = await users.checkUser(user.email, userPassword);
     let newWorkout = await getWorkout(_id);
-    return await createWorkout(user, userPassword, `${newWorkout.name}_Copy`, newWorkout.intensity, newWorkout.length, newWorkout.exercises);
+    return await createWorkout(user, userPassword, `${newWorkout.name}_${uuidv4()}`, newWorkout.intensity, newWorkout.length, newWorkout.exercises);
 }
 
 module.exports = {
@@ -479,5 +481,7 @@ module.exports = {
     checkIfUserLikedWorkout,
     addLikeToWorkout,
     removeLikeFromWorkout,
-    copyWorkout
+    copyWorkout,
+    removeUserMadeWorkout,
+    removeUserLikedWorkout
 }
