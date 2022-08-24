@@ -28,19 +28,19 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="exercise-muscle-groups" class="col-sm-3 col-form-label">Muscle Groups: </label>
+                        <p class="col-sm-3 col-form-label">Muscle Groups: </p>
                         <div class="col-sm-9">
                             {{#each muscleGroups}}
                             <div class="form-check form-check-inline" id="{{this}}">
-                                <label class="form-check-label" for="muscle-group">{{this}}</label>
-                                <input class="form-check-input uncheckedBox muscleList" type="checkbox" value="{{this}}" name="muscle-group">
+                                <label class="form-check-label" for="muscle-group-{{this}}">{{this}}</label>
+                                <input id="muscle-group-{{this}}" class="form-check-input uncheckedBox muscleList" type="checkbox" value="{{this}}" name="muscle-group">
                             </div>
                             {{/each}}
 
                             {{#each exercise.muscles}}
                             <div class="form-check form-check-inline">
-                                <label class="form-check-label" for="muscle-group">{{this}}</label>
-                                <input class="form-check-input checkedBox muscleExisting" type="checkbox" value="{{this}}" name="muscle-group" checked>
+                                <label class="form-check-label" for="exercise-muscle-group-{{this}}">{{this}}</label>
+                                <input id="exercise-muscle-group-{{this}}" class="form-check-input checkedBox muscleExisting" type="checkbox" value="{{this}}" name="muscle-group" checked>
                             </div>
                             {{/each}}
                         </div>
@@ -48,13 +48,13 @@
                     <div class="form-group row">
                         <label for="exercise-note" class="col-sm-3 col-form-label">Note: </label>
                         <div class="col-sm-9">
-                            <textarea name="exercise-note" class="form-control" id="exercise-note" value="{{exercise.note}}">{{exercise.note}}</textarea>
+                            <textarea name="exercise-note" class="form-control" id="exercise-note">{{exercise.note}}</textarea>
                         </div>
                     </div>    
                     <div class="form-group row after-add-more">
                         <div class="input-group control-group addmore[]" id="exercise-equipment-id">  
                             <label for="exercise-equipment-add-button" class="col-sm-3 col-form-label">Equipment list: </label>
-                            <button class="btn btn-success add-more" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                            <button id="exercise-equipment-add-button" class="btn btn-success add-more" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
                             </svg>Add</button> 
                             <div class="input-group-btn">
@@ -64,9 +64,9 @@
                             </div>
                         </div>
                         {{#each exercise.equipment}}
-                            <div class="input-group control-group" id="exercise-equipment-id">
-                                <label for="exercise-equipment" class="col-sm-3 col-form-label removeEquipmentLabel">Additional Equipment: </label>
-                                <input type="text" name="exercise-equipment" class="form-control col-sm-5 removeEquipmentInput" value="{{this}}">  
+                            <div class="input-group control-group" id="additional-exercise-equipment-{{this}}">
+                                <label for="exercise-equipment-{{this}}" class="col-sm-3 col-form-label removeEquipmentLabel">Additional Equipment: </label>
+                                <input id="exercise-equipment-{{this}}" type="text" name="exercise-equipment" class="form-control col-sm-5 removeEquipmentInput" value="{{this}}">  
                             </div>
                         {{/each}}
                     </div>

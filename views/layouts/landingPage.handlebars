@@ -9,20 +9,15 @@
           <option value="{{this}}">{{this}}</option>
         {{/each}}
       </select>
-      <label class="my-1 mr-2" for="search">Search Workout:</label>
+      <label class="my-1 mr-2" for="search-name-value">Search Workout:</label>
       <input id="search-name-value" type="text" class="my-sm-3 my-1 mr-2" placeholder="Workout Name">
       <button type="submit" class="btn btn-primary">Submit</button>
       {{#if loggedIn}}
         <button id="user-workout-search" type="button" class="btn btn-outline-primary">My Workouts</button>
       {{/if}}
-      </div>
     </form>
     <div id="workout-search-error"></div>
     <div id="search-results" class="list-group"></div>
     <div class="pagination-pages" id="pagination"></div>
-  </div>
-
-  
-    
   </div>
 </div>
