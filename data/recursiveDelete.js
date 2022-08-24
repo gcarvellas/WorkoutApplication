@@ -2,12 +2,14 @@ const mongoCollections = require('../config/mongoCollections');
 const workoutUser = mongoCollections.users;
 const commentDB = mongoCollections.comments;
 const workoutDB = mongoCollections.workouts;
+const workoutLogs = mongoCollections.workoutLogs;
 
 module.exports = {
     deleteUser: async(user, userPassword) => {
         const users = require('./users');
         const workouts = require('./workouts');
         const validation = require('./validation');
+        const workoutLogs = require('./workoutLogs');
         user = validation.verifyUser(user);
         userPassword = validation.verifyPassword(userPassword);
         user = await users.checkUser(user.email, userPassword);
@@ -15,6 +17,11 @@ module.exports = {
         //Delete User's Workouts
         for(const workout of user.userMadeWorkouts){
             await workouts.deleteWorkout(user, userPassword, workout);
+        }
+        
+        //Delete User's Workout Logs
+        for (const log of user.workoutLogs){
+            await workoutLogs.deleteWorkoutLog(user, userPassword, log);
         }
 
         //Delete User
@@ -66,6 +73,42 @@ module.exports = {
             }
 
         }
+
+        //Delete all workout logs from that workout
+        
+        const workoutUserCollection = await workoutUser();
+        let results = await workoutUserCollection.find().toArray();
+        for (const user of results){
+            for(const log of user.workoutLogs){
+                const workoutLogsCollection = await workoutLogs();
+                if (!workoutLogsCollection) throw 'could not get workoutLogs collection';
+        
+                const workoutLog = await workoutLogsCollection.findOne({_id: log});
+                if (!workoutLog) throw 'could not find workoutLog for that given uuid';
+                if (workoutLog.workout === workout._id){
+                    const deleteInfo = await workoutLogsCollection.deleteOne({_id:log});
+                    if (deleteInfo.deletedCount === 0) throw 'could not delete workoutLog';
+
+                        //remove workout logs from user.workoutLogs
+                    let index = user.workoutLogs.indexOf(log);
+                    user.workoutLogs.splice(index, 1);
+                    //user.workoutLogs.pop(_workoutLogId);
+
+                    let updatedWorkoutUser = {
+                        workoutLogs: user.workoutLogs
+                    };
+
+                    const updatedInfo = await workoutUserCollection.updateOne(
+                        {_id: user._id},
+                        {$set: updatedWorkoutUser}
+                    );
+                    if (updatedInfo.modifiedCount === 0) {
+                        throw 'Could not update user successfully!';
+                    }
+                }
+            }
+        }
+
 
         //Delete Workout
 

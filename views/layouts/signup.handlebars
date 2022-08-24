@@ -15,14 +15,14 @@
   <form id="signup-form" class="form-signup" method="POST" action="/signup" novalidate>
       <div class="form-group">
         <label for="inputEmail" class="sr-only">Email address</label>
-        <input value="{{inputEmail}}" name="inputEmail" type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Email address" required>
+        <input value="{{inputEmail}}" name="inputEmail" type="email" class="form-control" id="inputEmail" placeholder="Email address" required>
         <div class="invalid-feedback">
           Email must be provided and be valid
         </div>
       </div>
       <div class="form-group">
         <label for="inputPassword" class="sr-only">Password</label>
-        <input name="inputPassword" type="password" class="form-control" id="inputPassword" aria-describedby="passwordHelpBlock" placeholder="Password" required>
+        <input name="inputPassword" type="password" class="form-control" id="inputPassword" placeholder="Password" required>
         <small id="passwordHelpBlock" class="form-text text-muted">
           Password must be provided
         </small>
@@ -72,7 +72,7 @@
       </div>
       <div class="form-group">
         <label for="inputFrequency" class="sr-only">Frequency of working out per week</label>
-        <input value="{{inputFrequency}}" name="inputFrequency" type="number" class="form-control" id="inputFrequency" aria-describedby="emailHelp" placeholder="Frequency of working out per week">
+        <input value="{{inputFrequency}}" name="inputFrequency" type="number" class="form-control" id="inputFrequency" placeholder="Frequency of working out per week">
         <div class="invalid-feedback">
             If provided, frequency needs to be between [0, 7]
         </div>

@@ -20,15 +20,15 @@
                                 {{/if}}
                             </li>
                             <li class="row">
-                                <h2 class="col-sm-5 h6">Likes: </h6>
+                                <h2 class="col-sm-5 h6">Likes: </h2>
                                 <div class="col-sm-7 text-secondary" id="totalLikes">{{workout.usersLiked.length}}</div>
                             </li>
                             <li class="row">
-                                <h2 class="col-sm-5 h6">Intensity: </h6>
+                                <h2 class="col-sm-5 h6">Intensity: </h2>
                                 <div class="col-sm-7 text-secondary" id="totalIntensity">{{workout.intensity}}</div>
                             </li>
                             <li class="row">
-                                <h2 class="col-sm-5 h6">Length: </h6>
+                                <h2 class="col-sm-5 h6">Length: </h2>
                                 <div class="col-sm-7 text-secondary">{{workout.length}} minutes</div>
                             </li>
                             {{#if user}}
@@ -40,6 +40,9 @@
                                     {{/each}}
                                     <script src="/public/js/workouts/workoutLogs.js"></script>
                                 {{/if}}
+                                <li class="row md-2">
+                                    <a class="btn btn-info" href="/workout/{{workout._id}}/log">Create Workout Log</a>
+                                </li>
                                 {{#if isAuthor}}
                                     <li class="row">
                                         <form action="/workout/{{workout._id}}/delete" method="POST">
@@ -49,9 +52,6 @@
                                     </li>
                                     <li class="row md-2">
                                         <a class="btn btn-info" href="/workout/{{workout._id}}/edit">Edit Workout</a>
-                                    </li>
-                                    <li class="row md-2">
-                                        <a class="btn btn-info" href="/workout/{{workout._id}}/log">Create Workout Log</a>
                                     </li>
                                     {{/if}}
                                     <li class="row md-2">
@@ -79,22 +79,22 @@
                         <h3 class="card-title"><a href="/exercise/{{this.exerciseId}}">{{this.name}}</a></h3>
                         <ul>
                             <li class="row">
-                                <h4 class="col-sm-5 h6">Sets: </h6>
+                                <h4 class="col-sm-5 h6">Sets: </h4>
                                 <div class="col-sm-7 text-secondary">{{this.sets}}</div>
                             </li>
                             <li class="row">
-                                <h4 class="col-sm-5 h6">Repetitions: </h6>
+                                <h4 class="col-sm-5 h6">Repetitions: </h4>
                                 <div class="col-sm-7 text-secondary">{{this.repetitions}}</div>
                             </li>
                             {{#if this.weight}}
                                 <li class="row">
-                                    <h4 class="col-sm-5 h6">Weight: </h6>
+                                    <h4 class="col-sm-5 h6">Weight: </h4>
                                     <div class="col-sm-7 text-secondary">{{this.weight}}</div>
                                 </li>
                             {{/if}}
                             {{#if this.comment}}
                                 <li class="row">
-                                    <h4 class="col-sm-5 h6">Comment: </h6>
+                                    <h4 class="col-sm-5 h6">Comment: </h4>
                                     <div class="col-sm-7 text-secondary">{{this.comment}}</div>
                                 </li>
                             {{/if}}

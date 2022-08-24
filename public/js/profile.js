@@ -103,6 +103,8 @@ weightInput.addEventListener('input', () => {
   //validate birthDate
   birthDateInput.addEventListener('input', () => {
     if (birthDateInput.value) {
+        let initialBirthDate = document.getElementById("dateText").value;
+
       if (birthDateInput.value.trim().length === 0) {
         birthDateInput.setCustomValidity('Birthdate must be provided');
         birthDateInput.checkValidity();
@@ -115,8 +117,10 @@ weightInput.addEventListener('input', () => {
         }
         if (years < 13) {
             birthDateInput.setCustomValidity('user\'s birthdate is below 13 years of age');        }
+            birthDateInput = initialBirthDate;
         if (years > 120) {
             birthDateInput.setCustomValidity('user\'s birthdate is above 120 years of age');
+            birthDateInput = initialBirthDate;
         }
         birthDateInput.setCustomValidity('');
       }
