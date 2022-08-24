@@ -309,150 +309,155 @@ router.get('/profile_edit', async (req, res) => {
 });
 
 router.post('/profile_edit', async (req, res) => {
-  let userId = validation.verifyUUID(req.session.user, "userId");
-  let isUser = req.session.user===userId;
-  let user = await usersDB.getUser(userId);
-  let password = req.session.password;
-  //get user workouts
-  let userWorkouts = [];
-  let workouts = user.userMadeWorkouts;
-  for (let workoutID of workouts) {
-    let workout = await workoutDB.getWorkout(workoutID);
-    userWorkouts.push(workout);
-  }
-  //get user workout logs from user
-  //get the actual workoutLog from each workoutLogId
-  let userWorkoutLogs = []
-  if (req.session.user){
-    let workoutLogs = await usersDB.getWorkoutLogs(userId);
-    userPassword = validation.verifyPassword(req.session.password);
-    for (let workoutLogId of workoutLogs) {
-      let workoutLog = await workoutLogsDB.getWorkoutLog(user, userPassword, workoutLogId);
-      userWorkoutLogs.push(workoutLog);
+  if (req.session.user) {
+    let userId = validation.verifyUUID(req.session.user, "userId");
+    let isUser = req.session.user===userId;
+    let user = await usersDB.getUser(userId);
+    let password = req.session.password;
+    //get user workouts
+    let userWorkouts = [];
+    let workouts = user.userMadeWorkouts;
+    for (let workoutID of workouts) {
+      let workout = await workoutDB.getWorkout(workoutID);
+      userWorkouts.push(workout);
     }
-  }
-  //get liked workouts
-  let userLikedWorkouts = [];
-  let likedWorkouts = user.userLikedWorkouts.reverse();
-  let i =0;
-  for (let likedWorkoutId of likedWorkouts) {
-    if (i<5) {
-      let workout = await workoutDB.getWorkout(likedWorkoutId);
-      userLikedWorkouts.push(workout);
-    } else {
-      break;
+    //get user workout logs from user
+    //get the actual workoutLog from each workoutLogId
+    let userWorkoutLogs = []
+    if (req.session.user){
+      let workoutLogs = await usersDB.getWorkoutLogs(userId);
+      userPassword = validation.verifyPassword(req.session.password);
+      for (let workoutLogId of workoutLogs) {
+        let workoutLog = await workoutLogsDB.getWorkoutLog(user, userPassword, workoutLogId);
+        userWorkoutLogs.push(workoutLog);
+      }
     }
-    i+=1;
-  }
-  //verify email
-  if (!req.body.inputEmail) {
-    errors.push({error: 'Email must be provided.'});
-  }
-  //verify password
-  if (!req.body.inputPassword) {
-    errors.push({error: 'Password must be provided.'});
-  }
-  //verify first name
-  if (!req.body.inputFirstName) {
-    errors.push({error: 'First name is not provided.'});
-  }
-  if (!req.body.inputFirstName.trim().length) {
-    errors.push({error: 'First name can\'t have numbers, be an empty string, or just spaces.'});
-  }
-  //verify last name if provided
-  if (req.body.inputLastName) {
-    if (!req.body.inputLastName.trim().length) {
-      errors.push({error: 'If last name is provided, it can\'t have numbers or be just spaces.'});
+    //get liked workouts
+    let userLikedWorkouts = [];
+    let likedWorkouts = user.userLikedWorkouts.reverse();
+    let i =0;
+    for (let likedWorkoutId of likedWorkouts) {
+      if (i<5) {
+        let workout = await workoutDB.getWorkout(likedWorkoutId);
+        userLikedWorkouts.push(workout);
+      } else {
+        break;
+      }
+      i+=1;
     }
-  }
-  //verify weight if provided
-  if (req.body.inputWeight) {
+    //verify email
+    if (!req.body.inputEmail) {
+      errors.push({error: 'Email must be provided.'});
+    }
+    //verify password
+    if (!req.body.inputPassword) {
+      errors.push({error: 'Password must be provided.'});
+    }
+    //verify first name
+    if (!req.body.inputFirstName) {
+      errors.push({error: 'First name is not provided.'});
+    }
+    if (!req.body.inputFirstName.trim().length) {
+      errors.push({error: 'First name can\'t have numbers, be an empty string, or just spaces.'});
+    }
+    //verify last name if provided
+    if (req.body.inputLastName) {
+      if (!req.body.inputLastName.trim().length) {
+        errors.push({error: 'If last name is provided, it can\'t have numbers or be just spaces.'});
+      }
+    }
+    //verify weight if provided
+    if (req.body.inputWeight) {
+      try {
+        validation.verifyWeight(parseInt(req.body.inputWeight));
+      } catch (e) {
+        errors.push({error: 'If weight is provided, it must be between 0 and 1400.'});
+      }
+    }
+    //verify height if provided
+    if (req.body.inputHeight) {
+      try {
+        validation.verifyHeight(parseInt(req.body.inputHeight));
+      } catch (e) {
+        errors.push({error: 'If height is provided, it must be between 0 and 108.'});
+      }
+    }
+    //verify birthdate
     try {
-      validation.verifyWeight(parseInt(req.body.inputWeight));
+      let birthDate = new Date(req.body.inputBirthDate + 'T00:00');
+      validation.verifyBirthDate(birthDate);
     } catch (e) {
-      errors.push({error: 'If weight is provided, it must be between 0 and 1400.'});
+      errors.push({error: 'You must be between 13 and 120 years old.'});
     }
-  }
-  //verify height if provided
-  if (req.body.inputHeight) {
-    try {
-      validation.verifyHeight(parseInt(req.body.inputHeight));
-    } catch (e) {
-      errors.push({error: 'If height is provided, it must be between 0 and 108.'});
+    //verify frequency if provided
+    if (req.body.inputFrequency) {
+      try {
+        validation.verifyFrequencyOfWorkingOut(parseInt(req.body.inputFrequency));
+      } catch (e) {
+        errors.push({error: 'If frequency is provided, it must be between 0 and 7.'});
+      }
     }
-  }
-  //verify birthdate
-  try {
-    let birthDate = new Date(req.body.inputBirthDate + 'T00:00');
-    validation.verifyBirthDate(birthDate);
-  } catch (e) {
-    errors.push({error: 'You must be between 13 and 120 years old.'});
-  }
-  //verify frequency if provided
-  if (req.body.inputFrequency) {
-    try {
-      validation.verifyFrequencyOfWorkingOut(parseInt(req.body.inputFrequency));
-    } catch (e) {
-      errors.push({error: 'If frequency is provided, it must be between 0 and 7.'});
+    //verify bio if provided
+    if (req.body.inputBio) {
+      try {
+        validation.verifyBio(req.body.inputBio);
+      } catch (e) {
+        errors.push({error: 'If biography is provided, it must be a non-empty string.'});
+      }
     }
-  }
-  //verify bio if provided
-  if (req.body.inputBio) {
-    try {
-      validation.verifyBio(req.body.inputBio);
-    } catch (e) {
-      errors.push({error: 'If biography is provided, it must be a non-empty string.'});
+    inputHandlebars = {
+      inputEmail: (req.body.inputEmail) ? xss(req.body.inputEmail.toLowerCase()) : "",
+      inputFirstName: (req.body.inputFirstName) ? xss(req.body.inputFirstName) : "",
+      inputLastName: (req.body.inputLastName) ? xss(req.body.inputLastName) : "",
+      inputBio: (req.body.inputBio) ? xss(req.body.inputBio) : "",
+      inputWeight: (req.body.inputWeight) ? parseInt(req.body.inputWeight) : 0,
+      inputHeight: (req.body.inputHeight) ? parseInt(req.body.inputHeight) : 0,
+      inputFrequency: (req.body.inputFrequency) ? parseInt(req.body.inputFrequency) : 0,
+      loggedIn: true, 
+      errors: errors, 
+      user: user, 
+      password: password,
+      checkInputs: true,
+      isUser: isUser,
+      likedWorkouts: userLikedWorkouts, 
+      workouts: userWorkouts, 
+      workoutLogs: userWorkoutLogs,
     }
-  }
-  inputHandlebars = {
-    inputEmail: (req.body.inputEmail) ? xss(req.body.inputEmail.toLowerCase()) : "",
-    inputFirstName: (req.body.inputFirstName) ? xss(req.body.inputFirstName) : "",
-    inputLastName: (req.body.inputLastName) ? xss(req.body.inputLastName) : "",
-    inputBio: (req.body.inputBio) ? xss(req.body.inputBio) : "",
-    inputWeight: (req.body.inputWeight) ? parseInt(req.body.inputWeight) : 0,
-    inputHeight: (req.body.inputHeight) ? parseInt(req.body.inputHeight) : 0,
-    inputFrequency: (req.body.inputFrequency) ? parseInt(req.body.inputFrequency) : 0,
-    loggedIn: true, 
-    errors: errors, 
-    user: user, 
-    password: password,
-    checkInputs: true,
-    isUser: isUser,
-    likedWorkouts: userLikedWorkouts, 
-    workouts: userWorkouts, 
-    workoutLogs: userWorkoutLogs,
-  }
-  if (errors.length > 0) {
-    inputHandlebars.errors = errors;
-    res.locals.post = user;
-    res.status(400).render('layouts/profile', inputHandlebars);
-  } else {
-    try {
-      let editUser = await usersDB.editUser(
-        userId,
-        user.email,
-        password,
-        xss(req.body.inputEmail.toLowerCase()), 
-        req.body.inputPassword,
-        xss(req.body.inputFirstName),
-        (req.body.inputLastName) ? xss(req.body.inputLastName) : "",
-        (req.body.inputBirthDate) ? new Date(req.body.inputBirthDate + 'T00:00') : new Date(),
-        (req.body.inputBio) ? xss(req.body.inputBio) : "",
-        (req.body.inputWeight) ? parseInt(req.body.inputWeight) : 0,
-        (req.body.inputHeight) ? parseInt(req.body.inputHeight) : 0,
-        (req.body.inputFrequency) ? parseInt(req.body.inputFrequency) : 0
-        );
-        if (editUser) {
-          res.redirect('/profile');
-        } else {
-          inputHandlebars.errors = [{error: 'Something went wrong, try again.'}];
-          res.status(400).render('layouts/profile', inputHandlebars);
-        }
-    } catch (e) {
-      inputHandlebars.errors = [{error: e}];
+    if (errors.length > 0) {
+      inputHandlebars.errors = errors;
+      res.locals.post = user;
       res.status(400).render('layouts/profile', inputHandlebars);
+    } else {
+      try {
+        let editUser = await usersDB.editUser(
+          userId,
+          user.email,
+          password,
+          xss(req.body.inputEmail.toLowerCase()), 
+          req.body.inputPassword,
+          xss(req.body.inputFirstName),
+          (req.body.inputLastName) ? xss(req.body.inputLastName) : "",
+          (req.body.inputBirthDate) ? new Date(req.body.inputBirthDate + 'T00:00') : new Date(),
+          (req.body.inputBio) ? xss(req.body.inputBio) : "",
+          (req.body.inputWeight) ? parseInt(req.body.inputWeight) : 0,
+          (req.body.inputHeight) ? parseInt(req.body.inputHeight) : 0,
+          (req.body.inputFrequency) ? parseInt(req.body.inputFrequency) : 0
+          );
+          if (editUser) {
+            res.redirect('/profile');
+          } else {
+            inputHandlebars.errors = [{error: 'Something went wrong, try again.'}];
+            res.status(400).render('layouts/profile', inputHandlebars);
+          }
+      } catch (e) {
+        inputHandlebars.errors = [{error: e}];
+        res.status(400).render('layouts/profile', inputHandlebars);
+      }
     }
+  } else {
+    res.status(400).redirect('/');
   }
+  
 });
 
 router.get('/profile_delete', async (req, res) => {
