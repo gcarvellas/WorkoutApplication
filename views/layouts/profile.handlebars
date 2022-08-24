@@ -29,15 +29,15 @@
         <div class="card-body">
           <div class="d-flex flex-column align-items-center text-center">
             <div class="mt-3 profile-card">
-              <h4>{{user.userInfo.firstName}} {{user.userInfo.lastName}}</h4>
+              <h2>{{user.userInfo.firstName}} {{user.userInfo.lastName}}</h2>
               <p class="text-secondary">{{user.userInfo.bio}}</p>
               <div class="d-flex flex-row align-items-center text-center">
                 <div class="flex-fill">
-                  <h6 class="mb-0">Likes:</h6>
+                  <h3 class="mb-0">Likes:</h3>
                   <span class="text-secondary">{{user.totalLikesReceived}}</span>
                 </div>
                 <div class="flex-fill">
-                  <h6 class="mb-0">Comments:</h6>
+                  <h3 class="mb-0">Comments:</h3>
                   <span class="text-secondary">{{user.totalCommentsReceived}}</span>
                 </div>
               </div>
@@ -180,7 +180,7 @@
     </div>
   </div>
   <div class="card p-card">
-    <h5 class="card-header">Created Workouts</h5>
+    <h4 class="card-header">Created Workouts</h4>
     <div class="card-body bg-light">
       {{!-- this is made for each workout card--}}
       {{#if user.userMadeWorkouts.length}}
@@ -189,7 +189,7 @@
             <div class="card-body">
               <div class="row">
                 <a class="profile-text" href="/workout/{{this._id}}">
-                  <h4 class="card-text">{{this.name}}</h4>
+                  <h5 class="card-text">{{this.name}}</h5>
                   <p class="card-text">
                      <span class="mb-1 profile-text"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
                         <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
@@ -205,13 +205,13 @@
           </div>
         {{/each}}
       {{else}}
-      <h4 class="card-title">No workouts available</h4>
+      <h5 class="card-title">No workouts available</h5>
       {{/if}}
     </div>
   </div>
   {{#if isUser}}
     <div class="card p-card">
-      <h5 class="card-header">Logged Workouts</h5>
+      <h4 class="card-header">Logged Workouts</h4>
         <div class="card-body bg-light">
         {{!-- this is made for each workout log card --}}
         {{#if workoutLogs.length}}
@@ -232,15 +232,15 @@
                 <div class="d-flex flex-row flex-wrap justify-content-between align-items-center text-center">
                   <div class="d-flex flex-row">
                     <div class="d-flex flex-column mr-4">
-                      <h6 class="mb-0">Intensity:</h6>
+                      <h5 class="mb-0">Intensity:</h5>
                       <span class="text-secondary">{{logInfo.intensity}}</span>
                     </div>
                     <div class="d-flex flex-column mr-4">
-                      <h6 class="mb-0">Length:</h6>
+                      <h5 class="mb-0">Length:</h5>
                       <span class="text-secondary">{{logInfo.length}}</span>
                     </div>
                     <div class="d-flex flex-column mr-4">
-                      <h6 class="mb-0">Exercises:</h6>
+                      <h5 class="mb-0">Exercises:</h5>
                       <span class="text-secondary">{{logInfo.exercises.length}}</span>
                     </div>
                   </div>
@@ -265,7 +265,7 @@
     </div>
   {{/if}}
   <div class="card p-card">
-    <h5 class="card-header">Most Recent Liked Workouts</h5>
+    <h4 class="card-header">Most Recent Liked Workouts</h4>
       <div class="card-body bg-light">
       {{!-- this is made for each workout card--}}
       {{#if user.userLikedWorkouts.length}}
@@ -290,7 +290,7 @@
           </div>
         {{/each}}
       {{else}}
-      <h4 class="card-title">No liked workouts available</h4>
+      <h5 class="card-title">No liked workouts available</h5>
       {{/if}}
     </div>
   </div>
