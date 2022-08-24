@@ -455,7 +455,7 @@ router.post('/profile_edit', async (req, res) => {
       }
     }
   } else {
-    res.status(400).redirect('/');
+    res.status(400).redirect('/signin');
   }
   
 });
