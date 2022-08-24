@@ -219,7 +219,7 @@ router.get('/profile', async (req, res) => {
       userWorkouts.push(workout);
     }
     //get user workout logs from user
-    let userWorkoutoutLogs = []; 
+    let userWorkoutoutLogs = [];
     let workoutLogs = await usersDB.getWorkoutLogs(userId);
     //get the actual workoutLog from each workoutLogId and the workout name
     for (let workoutLogId of workoutLogs) {
