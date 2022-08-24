@@ -23,41 +23,41 @@
                 </div>
             </div>
         </div>
-    <section class="card">
+    <div class="card">
         <h2 class="card-title">Exercises</h2>
         <ul class="card-body" id="exerciseList">
             {{#each workout.exercises}}
                 <li class="exercise card pb-0 px-3">
                     <h2><a class="exerciseName" href="/exercise/{{this.exerciseId}}">{{this.name}}</a></h2>
-                    <button type="click" class="deleteExercise btn btn-danger" style="width: 200px">Delete</button>
-                    <section>
-                        <label>Sets: </label>
+                    <button type="button" class="deleteExercise btn btn-danger" style="width: 200px">Delete</button>
+                    <div>
+                        <label for="{{this.exerciseId}}_sets">Sets: </label>
                         <input class="form-control md-2" id="{{this.exerciseId}}_sets" name="{{this.exerciseId}}_sets" value="{{this.sets}}">
-                    </section>
-                    <section>
-                        <label>Repetitions: </label>
+                    </div>
+                    <div>
+                        <label for="{{this.exerciseId}}_repetitions">Repetitions: </label>
                         <input class="form-control md-2" id="{{this.exerciseId}}_repetitions" name="{{this.exerciseId}}_repetitions" value="{{this.repetitions}}">
-                    </section>
-                    <section>
-                        <label>Rest: </label>
+                    </div>
+                    <div>
+                        <label for="{{this.exerciseId}}_rest">Rest: </label>
                         <input class="form-control md-2" id="{{this.exerciseId}}_rest" name="{{this.exerciseId}}_rest" value="{{this.rest}}">
-                    </section>
-                    <section>
-                        <label>Weight: </label>
+                    </div>
+                    <div>
+                        <label for="{{this.exerciseId}}_weight">Weight: </label>
                         {{#if this.weight}}
                             <input class="form-control md-2" id="{{this.exerciseId}}_weight" name="{{this.exerciseId}}_weight" value="{{this.weight}}">
                         {{else}}
                             <input class="form-control md-2" id="{{this.exerciseId}}_weight" name="{{this.exerciseId}}_weight">
                         {{/if}}
-                    </section>
-                    <section>
-                        <label>Comment: </label>
+                    </div>
+                    <div>
+                        <label for="{{this.exerciseId}}_comment">Comment: </label>
                         <input class="form-control md-2" id="{{this.exerciseId}}_comment" name="{{this.exerciseId}}_comment" value="{{this.comment}}">
-                    </section>
+                    </div>
                 </li>
             {{/each}}
         </ul>
-    </section>
+    </div>
     <div class="card-body">
         <input type="hidden" id="exercises" class="row {{exerciseIdString}}">
         <button type="Submit" class="row btn btn-primary">{{submitButtonText}}</button>
@@ -67,7 +67,10 @@
     <div class="card-body">
         <button type="button" id="addExercise" class="btn btn-info">Add Exercise</button>
         <a href="/exercises/new" rel="noopener noreferrer" class="btn btn-info" target="_blank">Create Exercise</a>
-        <input type="text" id="exerciseSearchBar" class="hidden" placeholder="Search exercises...">
+        <div>
+            <label for="exerciseSearchBar"></label>
+            <input type="text" id="exerciseSearchBar" name="exerciseSearchBar" class="hidden" placeholder="Search exercises...">
+        </div>
         <ul id="exerciseSearchResults"></ul>
     </div>
 </div>

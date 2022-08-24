@@ -18,6 +18,7 @@ function xss(input){
   if (typeof input !== 'string') return input;
   REGEX = "<(“[^”]*”|'[^’]*’|[^'”>])*>";
   if (input.match(REGEX) !== null) throw "Cannot use this";
+  return input;
 }
 
 function addError(message){
