@@ -40,6 +40,9 @@
                                     {{/each}}
                                     <script src="/public/js/workouts/workoutLogs.js"></script>
                                 {{/if}}
+                                <li class="row md-2">
+                                    <a class="btn btn-info" href="/workout/{{workout._id}}/log">Create Workout Log</a>
+                                </li>
                                 {{#if isAuthor}}
                                     <li class="row">
                                         <form action="/workout/{{workout._id}}/delete" method="POST">
@@ -49,9 +52,6 @@
                                     </li>
                                     <li class="row md-2">
                                         <a class="btn btn-info" href="/workout/{{workout._id}}/edit">Edit Workout</a>
-                                    </li>
-                                    <li class="row md-2">
-                                        <a class="btn btn-info" href="/workout/{{workout._id}}/log">Create Workout Log</a>
                                     </li>
                                     {{/if}}
                                     <li class="row md-2">
