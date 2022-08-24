@@ -219,14 +219,14 @@ router.get('/profile', async (req, res) => {
       userWorkouts.push(workout);
     }
     //get user workout logs from user
-    let userWorkoutoutLogs = [];
+    let userWorkoutLogs = [];
     let workoutLogs = await usersDB.getWorkoutLogs(userId);
     //get the actual workoutLog from each workoutLogId and the workout name
     for (let workoutLogId of workoutLogs) {
       let workoutLog = await workoutLogsDB.getWorkoutLog(user, userPassword, workoutLogId);
       let workout = await workoutDB.getWorkout(workoutLog.workout);
       workoutLog['name'] = workout.name;
-      userWorkoutoutLogs.push(workoutLog);
+      userWorkoutLogs.push(workoutLog);
     }
     //get liked workouts
     let userLikedWorkouts = [];
@@ -241,7 +241,7 @@ router.get('/profile', async (req, res) => {
       }
       i+=1;
     }
-  res.render('layouts/profile', { loggedIn: (user ? true : false), isUser: isUser, user: user, likedWorkouts: userLikedWorkouts, workouts: userWorkouts, workoutLogs: userWorkoutoutLogs, password: userPassword });
+  res.render('layouts/profile', { loggedIn: (user ? true : false), isUser: isUser, user: user, likedWorkouts: userLikedWorkouts, workouts: userWorkouts, workoutLogs: userWorkoutLogs, password: userPassword });
   } catch (e) {
     res.render('layouts/profile', {loggedIn: (req.session.user ? true : false), error: e});
   }
@@ -274,7 +274,7 @@ router.get('/user/:id', async (req, res) => {
         userPassword = validation.verifyPassword(req.session.password);
         for (let workoutLogId of workoutLogs) {
           let workoutLog = await workoutLogsDB.getWorkoutLog(user, userPassword, workoutLogId);
-          userWorkoutoutLogs.push(workoutLog);
+          userWorkoutLogs.push(workoutLog);
         }
       }
       //get liked workouts
@@ -330,7 +330,7 @@ router.post('/profile_edit', async (req, res) => {
     userPassword = validation.verifyPassword(req.session.password);
     for (let workoutLogId of workoutLogs) {
       let workoutLog = await workoutLogsDB.getWorkoutLog(user, userPassword, workoutLogId);
-      userWorkoutoutLogs.push(workoutLog);
+      userWorkoutLogs.push(workoutLog);
     }
   }
   //get liked workouts
