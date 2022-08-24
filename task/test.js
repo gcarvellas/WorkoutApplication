@@ -435,23 +435,23 @@ async function dbSanityTest(){
     }
     async function verifyWorkoutSearchFunctions(workout1, workout2, user){
         let result = await workoutSearch.getWorkoutsByAuthor(user._id);
-        assert(result.length === 2);
+        assert(result.data.length === 2);
         console.log("Workout Search: Verified getWorkoutsByAuthor()");
 
         result = await workoutSearch.getWorkoutsByMuscleGroup("legs");
-        assert(result.length === 1);
+        assert(result.data.length === 1);
         console.log("Workout Search: Verified getWorkoutsByMuscleGroup()")
 
         result = await workoutSearch.getWorkoutsByName("Test Workout Sanity");
-        assert(result.length === 2);
+        assert(result.data.length === 2);
         result = await workoutSearch.getWorkoutsByName("Test Workout Sanity_Copy");
-        assert(result.length === 1);
+        assert(result.data.length === 1);
         console.log("Workout Search: Verified getWorkoutsByName()");
 
         await workouts.addLikeToWorkout(user, USER_PASSWORD, workout2._id);
         result = await workoutSearch.getMostPopularWorkouts();
-        assert(result[0]._id === workout2._id);
-        assert(result[1]._id === workout1._id);
+        assert(result.data[0]._id === workout2._id);
+        assert(result.data[1]._id === workout1._id);
         console.log("Workout Search: Verified getMostPopularWorkouts()");
         await workouts.removeLikeFromWorkout(user, USER_PASSWORD, workout2._id);
 

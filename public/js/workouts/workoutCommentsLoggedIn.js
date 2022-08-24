@@ -8,12 +8,12 @@ let open_form = false;
 function getWorkoutIdFromURL(){
     let url = window.location.href;
     const REGEX = "\/workout\/(.*)/?";
-    return url.match(REGEX)[1];
+    return url.match(REGEX)[1].split('/')[0];
 }
 
 function getWorkoutIdFromText(url){
     const REGEX = "\/workout\/(.*)/?";
-    return url.match(REGEX)[1];
+    return url.match(REGEX)[1].split('/')[0];
 }
 
 function insertAfter(newNode, existingNode) {

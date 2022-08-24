@@ -29,27 +29,31 @@
             {{#each workout.exercises}}
                 <li class="exercise card pb-0 px-3">
                     <h2><a class="exerciseName" href="/exercise/{{this.exerciseId}}">{{this.name}}</a></h2>
-                    <button type="button" class="deleteExercise btn btn-danger" style="width: 200px">Delete</button>
-                    <div>
+                    <button type="click" class="deleteExercise btn btn-danger" style="width: 200px">Delete</button>
+                    <section>
                         <label>Sets: </label>
                         <input class="form-control md-2" id="{{this.exerciseId}}_sets" name="{{this.exerciseId}}_sets" value="{{this.sets}}">
-                    </div>
-                    <div>
+                    </section>
+                    <section>
                         <label>Repetitions: </label>
                         <input class="form-control md-2" id="{{this.exerciseId}}_repetitions" name="{{this.exerciseId}}_repetitions" value="{{this.repetitions}}">
-                    </div>
-                    <div>
+                    </section>
+                    <section>
                         <label>Rest: </label>
                         <input class="form-control md-2" id="{{this.exerciseId}}_rest" name="{{this.exerciseId}}_rest" value="{{this.rest}}">
-                    </div>
-                    <div>
+                    </section>
+                    <section>
                         <label>Weight: </label>
-                        <input class="form-control md-2" id="{{this.exerciseId}}_weight" name="{{this.exerciseId}}_weight" value="{{this.weight}}">
-                    </div>
-                    <div>
+                        {{#if this.weight}}
+                            <input class="form-control md-2" id="{{this.exerciseId}}_weight" name="{{this.exerciseId}}_weight" value="{{this.weight}}">
+                        {{else}}
+                            <input class="form-control md-2" id="{{this.exerciseId}}_weight" name="{{this.exerciseId}}_weight">
+                        {{/if}}
+                    </section>
+                    <section>
                         <label>Comment: </label>
                         <input class="form-control md-2" id="{{this.exerciseId}}_comment" name="{{this.exerciseId}}_comment" value="{{this.comment}}">
-                    </div>
+                    </section>
                 </li>
             {{/each}}
         </ul>

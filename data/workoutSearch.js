@@ -96,10 +96,6 @@ const getWorkoutsByMuscleGroup = async function getWorkoutsByMuscleGroup(muscleG
     return [];
   }
 
-  if (limit > workoutsList.length) {
-    limit = workoutsList.length;
-  }
-
   let resultArr = [];
   let resultArrIds = [];
 
@@ -109,7 +105,7 @@ const getWorkoutsByMuscleGroup = async function getWorkoutsByMuscleGroup(muscleG
           let exerciseFound = await exerciseData.getExercise(exercise.exerciseId);
           exerciseFound.muscles.forEach((muscle, i) => {
             if(!resultArrIds.includes(workout._id)){
-              if(resultArr.length < limit) {
+              if(resultArr.length <= limit) {
                 if(muscle === muscleGroup) {
                   resultArr.push(workout);
                   resultArrIds.push(workout._id);
@@ -129,7 +125,7 @@ const getWorkoutsByMuscleGroup = async function getWorkoutsByMuscleGroup(muscleG
     page: page,
     hasNextPage: hasNext,
     totalPages : totalPages,
-    totalItems: resultArr.length,
+    totalItems: workoutsList.length,
     data: data
   };
 }

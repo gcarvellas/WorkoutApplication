@@ -20,7 +20,7 @@ module.exports = {
 
         const workoutUserCollection = await workoutUser();
         const checkEmail = await workoutUserCollection.findOne({email: email});
-        if (checkEmail !== null) throw 'Email is already registered!'
+        if (checkEmail !== null) throw 'A user is already registered with this email!'
 
         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
@@ -104,7 +104,7 @@ module.exports = {
         password = validation.verifyPassword(password);
         let workoutUserCollection = await workoutUser();
         const user = await workoutUserCollection.findOne({email: email});
-        if (user === null) throw 'Email does not match!';
+        if (user === null) throw 'No user found with this email!';
         let compareToMatch = await bcrypt.compare(password, user.hashedPassword);
         if (!compareToMatch) throw "Password is invalid";
 
