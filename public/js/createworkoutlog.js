@@ -1,4 +1,4 @@
-function xss(input){
+function xss_helper(input){
   /**
    * Will throw an exception if string contains an HTML element
    * @param {String} input input string
@@ -8,6 +8,7 @@ function xss(input){
   if (typeof input !== 'string') return input;
   REGEX = "<(“[^”]*”|'[^’]*’|[^'”>])*>";
   if (input.match(REGEX) !== null) throw "Cannot use this";
+  return input;
 }
 
 //log creation elements
@@ -25,7 +26,6 @@ function addError(message){
   logButton.insertAdjacentElement('beforebegin', p);
   p.classList.add('error');
   p.textContent = message;
-  
 }
 
 
@@ -228,23 +228,25 @@ function searchResultListener(event) {
 function addToExerciseList(exercise) {
   try{
     let exerciseHref = exercise.href;
+    console.log(exerciseHref.split('/')[4])
+    console.log("content", xss_helper(exercise.textContent))
     let exerciseId = exerciseHref.split('/')[4];
   
     let time = Date.now().toString();
   
     let exerciseHTML = `
-    <div class="card mb-2" id="workoutlog-exerice-added${xss(time)}">
+    <div class="card mb-2" id="workoutlog-exerice-added${time}">
     <div class="card-body">
       <div class="card-title d-flex flex-row justify-content-between">
-        <h4 class=""><a target="_blank" rel="noopener noreferrer" href="/exercise/${xss(exerciseId)}">${xss(exercise.textContent)}</a></h4>
-        <button id="removeExerciseButton${xss(time)}" class="btn btn-outline-danger">Remove Exercise</button>
+        <h3 class="h4"><a target="_blank" rel="noopener noreferrer" href="/exercise/${xss_helper(exerciseId)}">${xss_helper(exercise.textContent)}</a></h4>
+        <button id="removeExerciseButton${xss_helper(time)}" class="btn btn-outline-danger">Remove Exercise</button>
       </div>
   
-      <form id="form-workoutlog-exerice${xss(time)}" class="form-workoutlog-exerice needs-validation" novalidate>
+      <form id="form-workoutlog-exerice${xss_helper(time)}" class="form-workoutlog-exerice needs-validation" novalidate>
         <div class="form-group row">
-          <label for="inputExerciseSet${xss(time)}" class="col-sm-4 col-form-label">Sets</label>
+          <label for="inputExerciseSet${xss_helper(time)}" class="col-sm-4 col-form-label">Sets</label>
           <div class="col-sm-8">
-            <input id="inputExerciseSet${xss(time)}" data-exerciseid="${xss(exerciseId)}" name="inputExerciseSet" type="number" class="form-control" placeholder="Sets" required>
+            <input id="inputExerciseSet${xss_helper(time)}" data-exerciseid="${xss_helper(exerciseId)}" name="inputExerciseSet" type="number" class="form-control" placeholder="Sets" required>
             <div class="invalid-feedback">
               Exercise set count must be provided and between 1 and 500
             </div>
@@ -253,9 +255,9 @@ function addToExerciseList(exercise) {
         </div>
   
         <div class="form-group row">
-          <label for="inputExerciseReps${xss(time)}" class="col-sm-4 col-form-label">Reps</label>
+          <label for="inputExerciseReps${xss_helper(time)}" class="col-sm-4 col-form-label">Reps</label>
           <div class="col-sm-8">
-            <input id="inputExerciseReps${xss(time)}" name="inputExerciseReps" type="number" class="form-control" placeholder="Repetitions" required>
+            <input id="inputExerciseReps${xss_helper(time)}" name="inputExerciseReps" type="number" class="form-control" placeholder="Repetitions" required>
             <div class="invalid-feedback">
               Exercise repetition count must be provided and between 1 and 500
             </div>
@@ -264,9 +266,9 @@ function addToExerciseList(exercise) {
         </div>
   
         <div class="form-group row">
-          <label for="inputExerciseRest${xss(time)}" class="col-sm-4 col-form-label">Rest</label>
+          <label for="inputExerciseRest${xss_helper(time)}" class="col-sm-4 col-form-label">Rest</label>
           <div class="col-sm-8">
-            <input id="inputExerciseRest${xss(time)}" name="inputExerciseRest" type="number" class="form-control" placeholder="Rest" required>
+            <input id="inputExerciseRest${xss_helper(time)}" name="inputExerciseRest" type="number" class="form-control" placeholder="Rest" required>
             <div class="invalid-feedback">
               Exercise rest must be provided and between 0 and 500
             </div>
@@ -275,9 +277,9 @@ function addToExerciseList(exercise) {
         </div>
   
         <div class="form-group row">
-          <label for="inputExerciseWeight${xss(time)}" class="col-sm-4 col-form-label">Weight</label>
+          <label for="inputExerciseWeight${xss_helper(time)}" class="col-sm-4 col-form-label">Weight</label>
           <div class="col-sm-8">
-            <input id="inputExerciseWeight${xss(time)}" name="inputExerciseWeight" type="number" class="form-control" placeholder="Weight">
+            <input id="inputExerciseWeight${xss_helper(time)}" name="inputExerciseWeight" type="number" class="form-control" placeholder="Weight">
             <div class="invalid-feedback">
               If provided, weight must be between 0 and 500
             </div>
@@ -285,9 +287,9 @@ function addToExerciseList(exercise) {
         </div>
   
         <div class="form-group row">
-          <label for="inputExerciseNote${xss(time)}" class="col-sm-4 col-form-label">Note</label>
+          <label for="inputExerciseNote${xss_helper(time)}" class="col-sm-4 col-form-label">Note</label>
           <div class="col-sm-8">
-            <input id="inputExerciseNote${xss(time)}" name="inputExerciseNote" type="text" class="form-control" placeholder="Note">
+            <input id="inputExerciseNote${xss_helper(time)}" name="inputExerciseNote" type="text" class="form-control" placeholder="Note">
             <div class="invalid-feedback">
               If provided, note cannot be empty or just spaces
             </div>
@@ -356,7 +358,7 @@ function addToExerciseList(exercise) {
               let errorHTML = `
               <div class="container text-center errorContainer">
                 <div class="alert alert-danger alert-dismissible row" role="alert">
-                  <div>${xss(error)}</div>
+                  <div>${xss_helper(error)}</div>
                   <button type="button" class="close errorBtn" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>

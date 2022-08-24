@@ -43,7 +43,7 @@ function setErrorToErrorElement(commentError, text){
 
 function createClickButton(text){
     let submitButton = document.createElement('button');
-    submitButton.type = "click";
+    submitButton.type = "button";
     submitButton.textContent = text;
     return submitButton;
 }
