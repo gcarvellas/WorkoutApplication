@@ -37,7 +37,7 @@ function createExerciseListElement(exerciseName, exerciseId, toRemoveElement){
     a.href = `/exercise/${exerciseId}`;
 
     var deleteButton = document.createElement('button');
-    deleteButton.type = 'click';
+    deleteButton.type = 'button';
     deleteButton.textContent = 'Delete';
     deleteButton.classList.add("deleteExercise");
     deleteButton.addEventListener('click', deleteExerciseEvent);
@@ -48,12 +48,11 @@ function createExerciseListElement(exerciseName, exerciseId, toRemoveElement){
     h2.appendChild(a);
 
     for (const subExercise of SUB_EXERCISE_DATA){
-        var exerciseSection = document.createElement("section"); 
+        var exerciseSection = document.createElement("div"); 
         insertElement.appendChild(exerciseSection);
         var exerciseInput = document.createElement("input");
         var exerciseLabel = document.createElement("label");
         var subExerciseId = `${exerciseId}_${subExercise}`;
-        exerciseLabel.for = subExercise;
         exerciseLabel.name = subExercise;
         let labelName = subExercise.charAt(0).toUpperCase() + subExercise.substring(1) + ": ";
         exerciseLabel.textContent = labelName;
@@ -63,6 +62,7 @@ function createExerciseListElement(exerciseName, exerciseId, toRemoveElement){
 
         exerciseSection.appendChild(exerciseLabel);
         exerciseSection.appendChild(exerciseInput);
+        exerciseLabel.setAttribute('for',subExerciseId);
         
         exerciseInput.classList.add('form-control');
         exerciseInput.classList.add('md-2');
