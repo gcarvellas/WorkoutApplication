@@ -8,7 +8,7 @@ const deleteExerciseButtons = document.getElementsByClassName("deleteExercise");
 
 function getExerciseIdFromURL(url){
     const REGEX = `\/exercise\/(.*)/?`;
-    return url.match(REGEX)[1];
+    return url.match(REGEX)[1].split('/')[0];
 }
 
 function setError(message){
