@@ -8,7 +8,7 @@ function xss_helper(input){
   if (typeof input !== 'string') return input;
   REGEX = "<(“[^”]*”|'[^’]*’|[^'”>])*>";
   if (input.match(REGEX) !== null) throw "Cannot use this";
-  return input
+  return input;
 }
 
 //log creation elements
