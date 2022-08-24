@@ -224,7 +224,7 @@ router.get('/profile', async (req, res) => {
     //get the actual workoutLog from each workoutLogId and the workout name
     for (let workoutLogId of workoutLogs) {
       let workoutLog = await workoutLogsDB.getWorkoutLog(user, userPassword, workoutLogId);
-      let workout = await workouts.getWorkout(workoutLog.workout);
+      let workout = await workoutDB.getWorkout(workoutLog.workout);
       workoutLog['name'] = workout.name;
       userWorkoutoutLogs.push(workoutLog);
     }

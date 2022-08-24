@@ -221,7 +221,7 @@
                 <div class="row">
                   {{!-- figure out if we want to get the parentWorkout name here --}}
                   <div class="col-12">
-                    <h4 class="card-title">{{workout}}</h4>
+                    <h4 class="card-title">{{this.name}}</h4>
                   </div>
                   <div class="col">
                     <div class="card-subtitle mb-2 text-muted">
@@ -246,8 +246,8 @@
                   </div>
                   
                   <div>
-                    <button class="btn btn-primary" href="/workoutLog/{{logInfo.workout}}">View</button>
-                    <button class="btn btn-outline-primary" href="/workoutLog/edit/{{logInfo.workout}}">Edit Workout Log</button>
+                    <a class="btn btn-primary" href="/workoutLog/{{this._id}}">View</a>
+                    <a class="btn btn-outline-primary" href="/workout/{{this.workout}}/logedit/{{this._id}}">Edit Workout Log</a>
                   </div>
                 </div>
 
