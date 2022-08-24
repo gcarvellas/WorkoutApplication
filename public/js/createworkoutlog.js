@@ -1,3 +1,15 @@
+function xss(input){
+  /**
+   * Will throw an exception if string contains an HTML element
+   * @param {String} input input string
+   * @return {String} input string
+   * @throws will throw an exception if html is in string
+   */
+  if (typeof input !== 'string') return input;
+  REGEX = "<(“[^”]*”|'[^’]*’|[^'”>])*>";
+  if (input.match(REGEX) !== null) throw "Cannot use this";
+}
+
 //log creation elements
 const logButton = document.getElementById('logButton');
 const deleteLogButton = document.getElementById('deleteLogButton');
@@ -8,6 +20,13 @@ const inputLength = document.getElementById('inputLength');
 const inputDate = document.getElementById('inputDate');
 const inputComment = document.getElementById('inputComment');
 
+function addError(message){
+  let p = document.createElement('p');
+  logButton.insertAdjacentElement('beforebegin', p);
+  p.classList.add('error');
+  p.textContent = message;
+  
+}
 
 
 //functions for validating all inputs of workout log
@@ -207,83 +226,87 @@ function searchResultListener(event) {
 }
 
 function addToExerciseList(exercise) {
-  let exerciseHref = exercise.href;
-  let exerciseId = exerciseHref.split('/')[4];
-
-  let time = Date.now().toString();
-
-  let exerciseHTML = `
-  <div class="card mb-2" id="workoutlog-exerice-added${time}">
-  <div class="card-body">
-    <div class="card-title d-flex flex-row justify-content-between">
-      <h4 class=""><a target="_blank" rel="noopener noreferrer" href="/exercise/${exerciseId}">${exercise.textContent}</a></h4>
-      <button id="removeExerciseButton${time}" class="btn btn-outline-danger">Remove Exercise</button>
+  try{
+    let exerciseHref = exercise.href;
+    let exerciseId = exerciseHref.split('/')[4];
+  
+    let time = Date.now().toString();
+  
+    let exerciseHTML = `
+    <div class="card mb-2" id="workoutlog-exerice-added${xss(time)}">
+    <div class="card-body">
+      <div class="card-title d-flex flex-row justify-content-between">
+        <h4 class=""><a target="_blank" rel="noopener noreferrer" href="/exercise/${xss(exerciseId)}">${xss(exercise.textContent)}</a></h4>
+        <button id="removeExerciseButton${xss(time)}" class="btn btn-outline-danger">Remove Exercise</button>
+      </div>
+  
+      <form id="form-workoutlog-exerice${xss(time)}" class="form-workoutlog-exerice needs-validation" novalidate>
+        <div class="form-group row">
+          <label for="inputExerciseSet${xss(time)}" class="col-sm-4 col-form-label">Sets</label>
+          <div class="col-sm-8">
+            <input id="inputExerciseSet${xss(time)}" data-exerciseid="${xss(exerciseId)}" name="inputExerciseSet" type="number" class="form-control" placeholder="Sets" required>
+            <div class="invalid-feedback">
+              Exercise set count must be provided and between 1 and 500
+            </div>
+          </div>
+  
+        </div>
+  
+        <div class="form-group row">
+          <label for="inputExerciseReps${xss(time)}" class="col-sm-4 col-form-label">Reps</label>
+          <div class="col-sm-8">
+            <input id="inputExerciseReps${xss(time)}" name="inputExerciseReps" type="number" class="form-control" placeholder="Repetitions" required>
+            <div class="invalid-feedback">
+              Exercise repetition count must be provided and between 1 and 500
+            </div>
+            </div>
+  
+        </div>
+  
+        <div class="form-group row">
+          <label for="inputExerciseRest${xss(time)}" class="col-sm-4 col-form-label">Rest</label>
+          <div class="col-sm-8">
+            <input id="inputExerciseRest${xss(time)}" name="inputExerciseRest" type="number" class="form-control" placeholder="Rest" required>
+            <div class="invalid-feedback">
+              Exercise rest must be provided and between 0 and 500
+            </div>
+            </div>
+  
+        </div>
+  
+        <div class="form-group row">
+          <label for="inputExerciseWeight${xss(time)}" class="col-sm-4 col-form-label">Weight</label>
+          <div class="col-sm-8">
+            <input id="inputExerciseWeight${xss(time)}" name="inputExerciseWeight" type="number" class="form-control" placeholder="Weight">
+            <div class="invalid-feedback">
+              If provided, weight must be between 0 and 500
+            </div>
+            </div>
+        </div>
+  
+        <div class="form-group row">
+          <label for="inputExerciseNote${xss(time)}" class="col-sm-4 col-form-label">Note</label>
+          <div class="col-sm-8">
+            <input id="inputExerciseNote${xss(time)}" name="inputExerciseNote" type="text" class="form-control" placeholder="Note">
+            <div class="invalid-feedback">
+              If provided, note cannot be empty or just spaces
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
-
-    <form id="form-workoutlog-exerice${time}" class="form-workoutlog-exerice needs-validation" novalidate>
-      <div class="form-group row">
-        <label for="inputExerciseSet${time}" class="col-sm-4 col-form-label">Sets</label>
-        <div class="col-sm-8">
-          <input id="inputExerciseSet${time}" data-exerciseid="${exerciseId}" name="inputExerciseSet" type="number" class="form-control" placeholder="Sets" required>
-          <div class="invalid-feedback">
-            Exercise set count must be provided and between 1 and 500
-          </div>
-        </div>
-
-      </div>
-
-      <div class="form-group row">
-        <label for="inputExerciseReps${time}" class="col-sm-4 col-form-label">Reps</label>
-        <div class="col-sm-8">
-          <input id="inputExerciseReps${time}" name="inputExerciseReps" type="number" class="form-control" placeholder="Repetitions" required>
-          <div class="invalid-feedback">
-            Exercise repetition count must be provided and between 1 and 500
-          </div>
-          </div>
-
-      </div>
-
-      <div class="form-group row">
-        <label for="inputExerciseRest${time}" class="col-sm-4 col-form-label">Rest</label>
-        <div class="col-sm-8">
-          <input id="inputExerciseRest${time}" name="inputExerciseRest" type="number" class="form-control" placeholder="Rest" required>
-          <div class="invalid-feedback">
-            Exercise rest must be provided and between 0 and 500
-          </div>
-          </div>
-
-      </div>
-
-      <div class="form-group row">
-        <label for="inputExerciseWeight${time}" class="col-sm-4 col-form-label">Weight</label>
-        <div class="col-sm-8">
-          <input id="inputExerciseWeight${time}" name="inputExerciseWeight" type="number" class="form-control" placeholder="Weight">
-          <div class="invalid-feedback">
-            If provided, weight must be between 0 and 500
-          </div>
-          </div>
-      </div>
-
-      <div class="form-group row">
-        <label for="inputExerciseNote${time}" class="col-sm-4 col-form-label">Note</label>
-        <div class="col-sm-8">
-          <input id="inputExerciseNote${time}" name="inputExerciseNote" type="text" class="form-control" placeholder="Note">
-          <div class="invalid-feedback">
-            If provided, note cannot be empty or just spaces
-          </div>
-        </div>
-      </div>
-    </form>
   </div>
-</div>
-    `;
-
-  exerciseNew = $.parseHTML(exerciseHTML);
-
-  setExerciseListeners($(exerciseNew));
-
-  let exerciseList = $('#loggedExercises');
-  exerciseList.append(exerciseNew);
+      `;
+  
+    exerciseNew = $.parseHTML(exerciseHTML);
+  
+    setExerciseListeners($(exerciseNew));
+  
+    let exerciseList = $('#loggedExercises');
+    exerciseList.append(exerciseNew);
+  } catch (e) {
+    addError(e);
+  }
 }
 
 (function ($) {
@@ -333,7 +356,7 @@ function addToExerciseList(exercise) {
               let errorHTML = `
               <div class="container text-center errorContainer">
                 <div class="alert alert-danger alert-dismissible row" role="alert">
-                  <div>${error}</div>
+                  <div>${xss(error)}</div>
                   <button type="button" class="close errorBtn" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
@@ -346,6 +369,7 @@ function addToExerciseList(exercise) {
         }
         $.ajax(requestConfig);
       } catch (e) {
+        addError(e);
         console.log("shit2", e);
       }
     }

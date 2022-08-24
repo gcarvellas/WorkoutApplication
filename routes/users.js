@@ -172,7 +172,9 @@ router.post('/signin', async (req, res) => {
     res.status(400).render('layouts/signin', inputHandlebars);
   } else {
     try {
-      let loginUser = await usersDB.checkUser(req.body.inputEmail.toLowerCase(), req.body.inputPassword);
+      let email = validation.verifyEmail(req.body.inputEmail);
+      let password = validation.verifyPassword(req.body.inputPassword);
+      let loginUser = await usersDB.checkUser(email, password);
       req.session.user = loginUser._id;
       req.session.password = req.body.inputPassword;
       res.redirect('/');
