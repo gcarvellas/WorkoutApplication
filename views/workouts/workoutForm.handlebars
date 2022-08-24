@@ -7,49 +7,49 @@
         <p class="error,hidden" id="error"></p>
     {{/if}}
     <form class="col-md-7" action="{{formAction}}" method="POST">
-        <section class="card">
+        <div class="card">
             <div class="card-body">
-                <section class="row">
+                <div class="row">
                     <label for="workoutName">Workout Name: </label>
                     <input type="text" class="form-control" id="workoutName" name="workoutName" value="{{workout.name}}">
-                </section>
-                <section class="row">
+                </div>
+                <div class="row">
                     <label for="intensity">Intensity (1-5): </label>
                     <input type="text" class="form-control" id="intensity" name="intensity" value="{{workout.intensity}}">
-                </section>
-                <section class="row">
+                </div>
+                <div class="row">
                     <label for="length">Length (Minutes): </label>
                     <input type="text" class="form-control" id="length" name="length" value="{{workout.length}}">
-                </section>
+                </div>
             </div>
-        </section>
+        </div>
     <section class="card">
         <h2 class="card-title">Exercises</h2>
         <ul class="card-body" id="exerciseList">
             {{#each workout.exercises}}
                 <li class="exercise card pb-0 px-3">
                     <h2><a class="exerciseName" href="/exercise/{{this.exerciseId}}">{{this.name}}</a></h2>
-                    <button type="click" class="deleteExercise btn btn-danger" style="width: 200px">Delete</button>
-                    <section>
+                    <button type="button" class="deleteExercise btn btn-danger" style="width: 200px">Delete</button>
+                    <div>
                         <label>Sets: </label>
                         <input class="form-control md-2" id="{{this.exerciseId}}_sets" name="{{this.exerciseId}}_sets" value="{{this.sets}}">
-                    </section>
-                    <section>
+                    </div>
+                    <div>
                         <label>Repetitions: </label>
                         <input class="form-control md-2" id="{{this.exerciseId}}_repetitions" name="{{this.exerciseId}}_repetitions" value="{{this.repetitions}}">
-                    </section>
-                    <section>
+                    </div>
+                    <div>
                         <label>Rest: </label>
                         <input class="form-control md-2" id="{{this.exerciseId}}_rest" name="{{this.exerciseId}}_rest" value="{{this.rest}}">
-                    </section>
-                    <section>
+                    </div>
+                    <div>
                         <label>Weight: </label>
                         <input class="form-control md-2" id="{{this.exerciseId}}_weight" name="{{this.exerciseId}}_weight" value="{{this.weight}}">
-                    </section>
-                    <section>
+                    </div>
+                    <div>
                         <label>Comment: </label>
                         <input class="form-control md-2" id="{{this.exerciseId}}_comment" name="{{this.exerciseId}}_comment" value="{{this.comment}}">
-                    </section>
+                    </div>
                 </li>
             {{/each}}
         </ul>
@@ -59,13 +59,13 @@
         <button type="Submit" class="row btn btn-primary">{{submitButtonText}}</button>
     </div>
 </form>
-<section class="card">
+<div class="card">
     <div class="card-body">
         <button type="button" id="addExercise" class="btn btn-info">Add Exercise</button>
         <input type="text" id="exerciseSearchBar" class="hidden" placeholder="Search exercises...">
         <ul id="exerciseSearchResults"></ul>
     </div>
-</section>
+</div>
 <script type="module" src="/public/js/workouts/workoutForm.js"></script>
 {{else}}
     {{#if error}}

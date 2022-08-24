@@ -107,6 +107,17 @@ weightInput.addEventListener('input', () => {
         birthDateInput.setCustomValidity('Birthdate must be provided');
         birthDateInput.checkValidity();
       } else {
+        let today = new Date();
+        let years = today.getFullYear() - birthDateInput.value.getFullYear();
+        let months = today.getMonth() - birthDateInput.value.getMonth();
+        if (months < 0 || (months === 0 && today.getDate() < birthDateInput.value.getDate())) {
+            years--;
+        }
+        if (years < 13) {
+            birthDateInput.setCustomValidity('user\'s birthdate is below 13 years of age');        }
+        if (years > 120) {
+            birthDateInput.setCustomValidity('user\'s birthdate is above 120 years of age');
+        }
         birthDateInput.setCustomValidity('');
       }
     } else {
@@ -131,4 +142,3 @@ myForm.addEventListener('submit', (event) => {
     myForm.classList.add('was-validated');
 });
 } 
-

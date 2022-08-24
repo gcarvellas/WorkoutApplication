@@ -43,22 +43,18 @@
                                             <button class="btn btn-danger mb-2" type="submit">Delete Workout</button>
                                         </form>
                                     </li>
-                                    <div>
-                                        <li class="row md-2">
-                                            <a class="btn btn-info" href="/workout/{{workout._id}}/edit">Edit Workout</a>
-                                        </li>
-                                        <li class="row md-2">
-                                            <a class="btn btn-info" href="/workout/{{workout._id}}/log">Create Workout Log</a>
-                                        </li>
-                                {{else}}
-                                    <div class="d-flex justify-content-between">
+                                    <li class="row md-2">
+                                        <a class="btn btn-info" href="/workout/{{workout._id}}/edit">Edit Workout</a>
+                                    </li>
+                                    <li class="row md-2">
+                                        <a class="btn btn-info" href="/workout/{{workout._id}}/log">Create Workout Log</a>
+                                    </li>
                                     {{/if}}
                                     <li class="row md-2">
-                                        <button class="btn btn-info" type="click" id="copyWorkout">Copy Workout</button>
+                                        <button class="btn btn-info" type="button" id="copyWorkout">Copy Workout</button>
                                     </li>
-                                </div>
                                 <li class="row">
-                                    <button class="btn btn-block btn-primary" type="checkbox" id="likeButton">Like</button>
+                                    <button class="btn btn-block btn-primary" type="button" id="likeButton">Like</button>
                                 </li>
                                 <li class="row">
                                     <p class="hidden" id="likeResult"></p>
@@ -75,7 +71,7 @@
             <ul class="card-body">
                 {{#each exercises}}
                 <li class="card border-5 pb-0 px-3">
-                    <section class="exercise col-md-7" id="this.exerciseId">
+                    <section class="exercise col-md-7" id="{{this.exerciseId}}">
                         <h3 class="card-title"><a href="/exercise/{{this.exerciseId}}">{{this.name}}</a></h3>
                         <ul>
                             <li class="row">
@@ -108,23 +104,23 @@
         <section id="comments" class="card mb-2">
             <h2 class="card-title">Comments</h2>
             {{#if user}}
-                <button type="click" id="addComment" class="btn btn-primary btn-sm" style="width: 50px">+</button>
+                <button type="button" id="addComment" class="btn btn-primary btn-sm" style="width: 50px">+</button>
             {{/if}}
             {{#if comments.length}}
             <ul>
             {{#each comments}} <!-- TODO Implement delete and edit comments. Waiting for user auth -->
                 <li class="row">
-                    <section class="comment card border-5 pb-0 px-3" id="{{this._id}}">
+                    <div class="comment card border-5 pb-0 px-3" id="{{this._id}}">
                         <div class="card-body">
                             <a href="/user/{{this.author}}">{{this.name}}</a>
                             {{#if this.isAuthor}}
-                                <button type='click' class="editComment btn btn-info btn-sm">Edit</button>
-                                <button type="click" class="deleteComment btn btn-danger btn-sm">Delete</button>
+                                <button type='button' class="editComment btn btn-info btn-sm">Edit</button>
+                                <button type="button" class="deleteComment btn btn-danger btn-sm">Delete</button>
                             {{/if}}
                             <p class="workoutDate text-secondary">{{this.currentTime}}</p>
                             <p class="workoutMessage">{{this.comment}}</p>
                         </div>
-                    </section>
+                    </div>
                 </li>
             {{/each}}
             </ul>
