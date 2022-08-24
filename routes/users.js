@@ -51,10 +51,6 @@ router.post('/signup', async (req, res) => {
     if (!req.body.inputPassword) {
       errors.push({error: 'Password must be provided.'});
     }
-    let passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-    if (!req.body.inputPassword.match(passwordRegex)) {
-      errors.push({error: 'Password must be valid.'});
-    }
     //verify first name
     if (!req.body.inputFirstName) {
       errors.push({error: 'First name is not provided.'});
