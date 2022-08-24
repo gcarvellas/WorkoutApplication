@@ -314,6 +314,8 @@ module.exports = {
         if (!Array.isArray(subExercises)) throw 'subExercises must be an array';
 
         //verify that each object in subExercises is a valid subExercise
+
+        if (!(subExercises.length > 0)) throw "You must provide an exercise";
         
         subExercises.forEach((val, i) => {
             try {

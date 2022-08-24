@@ -13,7 +13,11 @@
                     <div class="col-md-7">
                         <ul class="card-body">
                             <li class="row">
-                                <div class="col-sm-5"><a href="/user/{{workout.author}}">Author</a></div>
+                                {{#if workoutAuthorObject}}
+                                    <div class="col-sm-5"><a href="/user/{{workout.author}}">Author: {{workoutAuthorObject.userInfo.firstName}} {{workoutAuthorObject.userInfo.lastName}}</a></div>
+                                {{else}}
+                                    <div class="col-sm-5"><a href="/user/{{workout.author}}">Author</a></div>
+                                {{/if}}
                             </li>
                             <li class="row">
                                 <h6 class="col-sm-5">Likes: </h6>
@@ -21,7 +25,7 @@
                             </li>
                             <li class="row">
                                 <h6 class="col-sm-5">Intensity: </h6>
-                                <div class="col-sm-7 text-secondary">{{workout.intensity}}/5</div>
+                                <div class="col-sm-7 text-secondary" id="totalIntensity">{{workout.intensity}}</div>
                             </li>
                             <li class="row">
                                 <h6 class="col-sm-5">Length: </h6>

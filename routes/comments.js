@@ -44,7 +44,7 @@ router
 
             [user, password] = await util.getAuthUsernameAndPasswordFromSession(req);
 
-            let commentResult = await workouts.removeCommentFromWorkout(user, password, id, commentId);
+            let commentResult = await workouts.removeCommentFromWorkout(user, id, commentId);
             return res.status(200).json({result: commentResult});
         } catch (e) {
             return res.status(400).json({error: e});

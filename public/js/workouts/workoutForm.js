@@ -7,7 +7,7 @@ const exercisesHiddenInput = document.getElementById("exercises");
 const deleteExerciseButtons = document.getElementsByClassName("deleteExercise");
 
 function getExerciseIdFromURL(url){
-    const REGEX = `\/exercise\/(.*)`;
+    const REGEX = `\/exercise\/(.*)/?`;
     return url.match(REGEX)[1];
 }
 
