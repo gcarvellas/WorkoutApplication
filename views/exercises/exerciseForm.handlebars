@@ -64,9 +64,9 @@
                             </div>
                         </div>
                         {{#each exercise.equipment}}
-                            <div class="input-group control-group" id="additional-exercise-equipment-{{this}}">
-                                <label for="exercise-equipment-{{this}}" class="col-sm-3 col-form-label removeEquipmentLabel">Additional Equipment: </label>
-                                <input id="exercise-equipment-{{this}}" type="text" name="exercise-equipment" class="form-control col-sm-5 removeEquipmentInput" value="{{this}}">  
+                            <div class="input-group control-group" id="additional-exercise-equipment-{{@index}}">
+                                <label for="exercise-equipment-{{@index}}" class="col-sm-3 col-form-label removeEquipmentLabel">Additional Equipment: </label>
+                                <input id="exercise-equipment-{{@index}}" type="text" name="exercise-equipment" class="form-control col-sm-5 removeEquipmentInput" value="{{this}}">  
                             </div>
                         {{/each}}
                     </div>
