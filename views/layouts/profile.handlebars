@@ -81,7 +81,7 @@
               {{user.email}}
             </div>
             <label id="editEmailLabel" hidden class="col-sm-5" for="inputEmail">Email address</label>
-            <input hidden value="{{user.email}}" name="inputEmail" type="email" class="form-control col-sm-6 text-secondary" id="inputEmail" aria-describedby="emailHelp" placeholder="Email address" required>
+            <input hidden value="{{user.email}}" name="inputEmail" type="email" class="form-control col-sm-6 text-secondary" id="inputEmail" placeholder="Email address" required>
             <div class="invalid-feedback">
               Email must be provided and be valid
             </div>
@@ -89,7 +89,7 @@
           <div hidden id="hr"><hr></div>
           <div id="editPassword" hidden class="row">
             <label class="col-sm-5" for="inputPassword">Password</label>
-            <input value="{{password}}" name="inputPassword" type="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" class="form-control col-sm-6" id="inputPassword" aria-describedby="passwordHelpBlock" placeholder="Password" required>
+            <input value="{{password}}" name="inputPassword" type="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" class="form-control col-sm-6" id="inputPassword" placeholder="Password" required>
             <small id="passwordHelpBlock" class="form-text text-muted col-sm-5">
               Password must be at at least eight characters, containing at least one uppercase letter, one lowercase letter, one number, and one special character
             </small>
@@ -99,7 +99,7 @@
             <div id="dateLabel" class="col-sm-5">
               Birthday
             </div>
-            <div id="dateText"class="col-sm-7 text-secondary">
+            <div id="dateText" class="col-sm-7 text-secondary">
               {{dateFormat user.userInfo.birthDate "MM/DD/YYYY"}}
             </div>
             <label id="editDateLabel" hidden for="inputBirthDate" class="col-sm-5">Birth Date</label>
@@ -145,7 +145,7 @@
               {{check user.userInfo.frequencyOfWorkingOut 0 ' times a week'}}
             </div>
             <label id="editFLabel" hidden class="col-sm-5" for="inputFrequency">Frequency</label>
-            <input hidden value="{{user.userInfo.frequencyOfWorkingOut}}" min=0 max=7 name="inputFrequency" type="number" class="form-control col-sm-6 text-secondary" id="inputFrequency" aria-describedby="emailHelp" placeholder="Frequency of working out per week">
+            <input hidden value="{{user.userInfo.frequencyOfWorkingOut}}" min=0 max=7 name="inputFrequency" type="number" class="form-control col-sm-6 text-secondary" id="inputFrequency" placeholder="Frequency of working out per week">
             <div class="invalid-feedback">
               If provided, frequency needs to be between [0, 7]
             </div>
@@ -175,7 +175,6 @@
             </div>
           </div>
           {{/if}}
-        </div>
         </form>
       </div>
     </div>
@@ -298,3 +297,4 @@
   <script src="../../public/js/profile.js"></script>
 </div>
 {{/if}}
+</div>
