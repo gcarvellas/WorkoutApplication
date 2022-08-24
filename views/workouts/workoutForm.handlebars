@@ -7,22 +7,22 @@
         <p class="error,hidden" id="error"></p>
     {{/if}}
     <form class="col-md-7" action="{{formAction}}" method="POST">
-        <section class="card">
+        <div class="card">
             <div class="card-body">
-                <section class="row">
+                <div class="row">
                     <label for="workoutName">Workout Name: </label>
                     <input type="text" class="form-control" id="workoutName" name="workoutName" value="{{workout.name}}">
-                </section>
-                <section class="row">
+                </div>
+                <div class="row">
                     <label for="intensity">Intensity (1-5): </label>
                     <input type="text" class="form-control" id="intensity" name="intensity" value="{{workout.intensity}}">
-                </section>
-                <section class="row">
+                </div>
+                <div class="row">
                     <label for="length">Length (Minutes): </label>
                     <input type="text" class="form-control" id="length" name="length" value="{{workout.length}}">
-                </section>
+                </div>
             </div>
-        </section>
+        </div>
     <section class="card">
         <h2 class="card-title">Exercises</h2>
         <ul class="card-body" id="exerciseList">
@@ -63,14 +63,14 @@
         <button type="Submit" class="row btn btn-primary">{{submitButtonText}}</button>
     </div>
 </form>
-<section class="card">
+<div class="card">
     <div class="card-body">
         <button type="button" id="addExercise" class="btn btn-info">Add Exercise</button>
         <a href="/exercises/new" rel="noopener noreferrer" class="btn btn-info" target="_blank">Create Exercise</a>
         <input type="text" id="exerciseSearchBar" class="hidden" placeholder="Search exercises...">
         <ul id="exerciseSearchResults"></ul>
     </div>
-</section>
+</div>
 <script type="module" src="/public/js/workouts/workoutForm.js"></script>
 {{else}}
     {{#if error}}
