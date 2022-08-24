@@ -472,8 +472,6 @@ router.get('/profile_delete', async (req, res) => {
   } catch (e) {
     res.status(400).render('layouts/profile', { error: e });
   }
-
-
 });
 
 module.exports = router;

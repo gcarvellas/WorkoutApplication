@@ -8,10 +8,6 @@ const workouts = data.workouts;
 const exercises = data.exercises;
 const xss = require('xss');
 
-router.get('/workoutLogs/:id', (req, res) => {
-  //given a user id, get all the workoutLogs and return them
-  
-})
 
 router.get('/workout/:workoutId/log', async (req, res) => {
   //given a workout id, go to a workoutLog creation page
