@@ -5,7 +5,7 @@ const INTENSITY_HTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" heigh
 function getWorkoutIdFromURL(){
     let url = window.location.href;
     const REGEX = "\/workout\/(.*)/?";
-    return url.match(REGEX)[1];
+    return url.match(REGEX)[1].split('/')[0];
 }
 
 function generateFire(){
