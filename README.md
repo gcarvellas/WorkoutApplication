@@ -30,13 +30,15 @@ Password: 2018hfask
 
 Note: When logged in as [admin@gmail.com](mailto:admin@gmail.com), the landing page lists all users' workouts which can then be sorted or searched for specific categories.
 
+Note: The seed does not have any workout logs, since a user can only see his/her own workout logs
+
 About the Website:
 
 To log in, in the top right hand side of the website, there will be a sign in button where you can log in as one of the provided users above to log in. Otherwise, you can press the join button to create a new user.
 
 Whether the user has an account or not, they will be presented with a workout search in the landing page, where the user can view workouts and sort them by muscle groups or popularity. The user can also make a search by workout name to view the workouts matching that name. If the user has an account and they are logged in, they will have the option to get their workouts via a button "My Workouts" where the user will be able to see a list of their workouts in a minimized list otherwise also seen in the user's profile.
 
-Users can create workouts, which contain multiple exercises and their sets, reps, weights, etc. Users can also view other users' workouts and comment/like on them. Users can also create a workout log, which is a personal log that they can modify. This is used so if a user does a workout from another user and thinks the set/rep count is too high, the user can change it in the log to keep track of the modified changes. Users can make multiple workout logs per workout to view their progress of doing a workout overtime.
+Users can create workouts, which contain multiple exercises and their sets, reps, weights, etc. Users can also view other users' workouts and comment/like on them. Users can also create a workout log, which is a personal log that they can modify. A user can only see his/her own workout log. This is used so if a user does a workout from another user and thinks the set/rep count is too high, the user can change it in the log to keep track of the modified changes. Users can make multiple workout logs per workout to view their progress of doing a workout overtime.
 
 When viewing a user's profile, it will display their basic information including frequency of working out, their biography, workouts that they created, and workouts that they most recently liked. The user's profile page also shows how many likes and comments they received. If the user is logged in and viewing their own profile, they can edit/delete their account information and view their own workout logs.
 
