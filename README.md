@@ -1,3 +1,5 @@
+# CS-546-A Final Project Submission. This project is for personal use and is now read-only
+
 To first pull the code:
 
 - Get to the repository website at [**https://github.com/gcarvellas/WorkoutApplication.git**](https://github.com/gcarvellas/WorkoutApplication.git)
